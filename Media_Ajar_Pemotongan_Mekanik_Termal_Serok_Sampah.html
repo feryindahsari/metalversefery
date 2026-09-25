@@ -1,0 +1,1764 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Media Ajar Interaktif & Simulator: Pemotongan Mekanik & Termal (Proyek Serok Sampah)</title>
+<style>
+  :root {
+    --primary: #1a365d;
+    --primary-light: #2b6cb0;
+    --accent: #d97706;
+    --accent-light: #fef3c7;
+    --dark: #0f172a;
+    --dark-surface: #1e293b;
+    --gray-bg: #f8fafc;
+    --gray-border: #e2e8f0;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --success: #16a34a;
+    --danger: #dc2626;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background-color: var(--gray-bg);
+    color: var(--text-main);
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+    color: white;
+    padding: 16px 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-bottom: 3px solid var(--accent);
+  }
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .brand-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .badge-school {
+    background-color: var(--accent);
+    color: var(--dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+  }
+  .header-meta {
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    text-align: right;
+  }
+
+  /* NAVIGATION TABS */
+  nav.tabs-nav {
+    background-color: white;
+    border-bottom: 1px solid var(--gray-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  }
+  .tabs-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+    padding: 6px 16px;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  .tab-btn:hover {
+    background-color: var(--gray-bg);
+    color: var(--primary);
+  }
+  .tab-btn.active {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  /* MAIN CONTENT AREA */
+  main {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+  .tab-pane {
+    display: none;
+    animation: fadeIn 0.3s ease forwards;
+  }
+  .tab-pane.active {
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* CARDS & CONTAINERS */
+  .card {
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid var(--gray-border);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .card-header {
+    border-bottom: 2px solid var(--gray-bg);
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* SLIDES PRESENTATION COMPONENT */
+  .slide-box {
+    background-color: var(--dark-surface);
+    color: white;
+    border-radius: 12px;
+    min-height: 480px;
+    position: relative;
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+  }
+  .slide-header {
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .slide-category {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .slide-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin-top: 4px;
+  }
+  .slide-content {
+    flex: 1;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+  }
+  .slide-content ul {
+    margin-left: 24px;
+    margin-top: 10px;
+  }
+  .slide-content li {
+    margin-bottom: 8px;
+  }
+  .slide-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 18px;
+    margin-top: 24px;
+  }
+  .slide-btn {
+    background-color: var(--primary-light);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .slide-btn:hover { background-color: var(--accent); color: var(--dark); }
+  .slide-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .slide-counter {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+  .progress-bar {
+    height: 4px;
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background-color: var(--accent);
+    width: 10%;
+    transition: width 0.3s ease;
+  }
+
+  /* SIMULATOR STYLES */
+  .sim-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+  }
+  @media (max-width: 900px) {
+    .sim-grid { grid-template-columns: 1fr; }
+  }
+  .canvas-container {
+    background-color: #0b1329;
+    border-radius: 10px;
+    border: 2px solid #1e293b;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 420px;
+  }
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  .sim-controls-panel {
+    background-color: var(--gray-bg);
+    border: 1px solid var(--gray-border);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .control-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    justify-content: space-between;
+  }
+  .control-val {
+    color: var(--primary-light);
+    font-family: monospace;
+    font-weight: 700;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--primary-light);
+    cursor: pointer;
+  }
+  .btn-action {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-action:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-1px);
+  }
+  .status-badge {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+  }
+  .status-ideal { background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+  .status-warn { background-color: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+  .status-danger { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+  /* QUIZ STYLES */
+  .quiz-q {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--primary);
+  }
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .quiz-opt {
+    background-color: var(--gray-bg);
+    border: 1.5px solid var(--gray-border);
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    text-align: left;
+  }
+  .quiz-opt:hover {
+    background-color: #ebf8ff;
+    border-color: var(--primary-light);
+  }
+  .quiz-opt.correct {
+    background-color: #dcfce7 !important;
+    border-color: #22c55e !important;
+    color: #15803d;
+    font-weight: 700;
+  }
+  .quiz-opt.wrong {
+    background-color: #fee2e2 !important;
+    border-color: #ef4444 !important;
+    color: #b91c1c;
+    font-weight: 700;
+  }
+  .quiz-feedback {
+    display: none;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-top: 12px;
+  }
+
+  /* CALLOUT ALERT */
+  .callout {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 0.95rem;
+    border-left: 4px solid;
+  }
+  .callout-info { background-color: #f0f9ff; border-color: #0284c7; color: #0369a1; }
+  .callout-warning { background-color: #fffbeb; border-color: #d97706; color: #b45309; }
+  .callout-danger { background-color: #fef2f2; border-color: #dc2626; color: #b91c1c; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-container">
+    <div class="brand-title">
+      <span>🛠️ MEDIA AJAR INTERAKTIF FABRIKASI LOGAM</span>
+      <span class="badge-school">SMK N 2 Depok Sleman</span>
+    </div>
+    <div class="header-meta">
+      <b>Fase F / Kelas XI</b> | Pemotongan Mekanik &amp; Termal (Proyek Serok Sampah)
+    </div>
+  </div>
+</header>
+
+<!-- NAVIGATION TABS -->
+<nav class="tabs-nav">
+  <div class="tabs-container">
+    <button class="tab-btn active" onclick="switchTab('tab-slides')">🖥️ Slide Presentasi (12 Slide)</button>
+    <button class="tab-btn" onclick="switchTab('tab-serok')">📐 Simulator Bentangan Serok Sampah</button>
+    <button class="tab-btn" onclick="switchTab('tab-guillotine')">✂️ Simulator Mesin Guillotine</button>
+    <button class="tab-btn" onclick="switchTab('tab-oxyfuel')">🔥 Simulator Oxy-Fuel Draglines</button>
+    <button class="tab-btn" onclick="switchTab('tab-quiz')">📝 Kuis Interaktif HOTS</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ======================================================================= -->
+  <!-- TAB 1: SLIDE PRESENTASI INTERAKTIF KELAS -->
+  <!-- ======================================================================= -->
+  <section id="tab-slides" class="tab-pane active">
+    <div class="slide-box">
+      <div>
+        <div class="slide-header">
+          <div>
+            <div id="slideCat" class="slide-category">SLIDE 1 DARI 12 • PEMBUKA</div>
+            <div id="slideTitle" class="slide-title">Judul Slide</div>
+            <div style="margin-top:6px;"><a href="MetalVerseFery.html" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:#0f172a;border:1px solid #334155;color:#38bdf8;font-size:0.75rem;font-weight:700;text-decoration:none;margin-right:6px;box-shadow:0 1px 3px rgba(0,0,0,0.2);" title="Kembali ke Dashboard Utama MetalVerse">?? Dashboard Utama</a></div>
+          </div>
+          <button class="slide-btn" onclick="toggleFullscreen()" style="padding: 6px 12px; font-size: 0.8rem;">⛶ Layar Penuh</button>
+        </div>
+        <div id="slideBody" class="slide-content">
+          Konten slide akan dimuat di sini...
+        </div>
+      </div>
+      <div>
+        <div class="progress-bar">
+          <div id="slideProgress" class="progress-fill"></div>
+        </div>
+        <div class="slide-controls">
+          <button id="btnPrevSlide" class="slide-btn" onclick="changeSlide(-1)">◀ Sebelumnya</button>
+          <div id="slideNum" class="slide-counter">Slide 1 / 12</div>
+          <button id="btnNextSlide" class="slide-btn" onclick="changeSlide(1)">Selanjutnya ▶</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- TAB 2: SIMULATOR BENTANGAN & PENEKUKAN SEROK SAMPAH -->
+  <!-- ======================================================================= -->
+  <section id="tab-serok" class="tab-pane">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"><a href="MetalVerseFery.html" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:#0f172a;border:1px solid #334155;color:#38bdf8;font-size:0.75rem;font-weight:700;text-decoration:none;margin-right:6px;box-shadow:0 1px 3px rgba(0,0,0,0.2);" title="Kembali ke Dashboard Utama MetalVerse">?? Dashboard Utama</a>📐 Simulator Interaktif Bentangan &amp; Penekukan Serok Sampah</div>
+        <span class="badge-school" style="background-color:#e0f2fe; color:#0369a1;">Gambar Kerja Teknik Asli</span>
+      </div>
+
+      <div class="sim-grid">
+        <div class="canvas-container">
+          <canvas id="canvasSerok" width="560" height="440"></canvas>
+        </div>
+
+        <div class="sim-controls-panel">
+          <div class="control-group">
+            <div class="control-label">
+              <span>Tahapan Pembentukan:</span>
+              <span id="stepLabel" class="control-val">Tahap 1: Pola Datar</span>
+            </div>
+            <input type="range" id="serokStep" min="0" max="4" value="0" step="1" oninput="updateSerokSim()">
+          </div>
+
+          <div id="stepExplanation" class="callout callout-info" style="font-size: 0.9rem;">
+            <b>Tahap 0: Lembaran Awal</b><br>
+            Pelat dipotong awal berukuran segi empat 400 &times; 400 mm di mesin <i>guillotine shearing</i> sebelum dilukis.
+          </div>
+
+          <div style="background-color:white; padding:12px; border-radius:8px; border:1px solid #cbd5e1; font-size:0.85rem;">
+            <b>Dimensi Geometri Kritis:</b>
+            <ul style="margin-left: 18px; margin-top: 6px; color:#475569;">
+              <li>Bukaan Depan: <b>300 mm</b> (Busur Cembung)</li>
+              <li>Panjang Badan: <b>280 - 300 mm</b></li>
+              <li>Dinding Belakang: <b>Lebar 230 mm, Tinggi 80 mm</b></li>
+              <li>Dinding Samping: <b>Panjang 260 mm, Tinggi 80 mm</b></li>
+              <li>Lipatan Penguat (Hem): <b>9 mm</b> (Kiri, Kanan, Belakang)</li>
+              <li>Kupingan Keling (Tab): <b>15 mm</b> &amp; Notch <b>90&deg;</b></li>
+            </ul>
+          </div>
+
+          <button class="btn-action" onclick="animateSerokFolding()">▶ Putar Animasi Lipatan</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- TAB 3: SIMULATOR MESIN GUILLOTINE & CELAH PISAU -->
+  <!-- ======================================================================= -->
+  <section id="tab-guillotine" class="tab-pane">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"><a href="MetalVerseFery.html" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:#0f172a;border:1px solid #334155;color:#38bdf8;font-size:0.75rem;font-weight:700;text-decoration:none;margin-right:6px;box-shadow:0 1px 3px rgba(0,0,0,0.2);" title="Kembali ke Dashboard Utama MetalVerse">?? Dashboard Utama</a>✂️ Simulator Celah Pisau Mesin Guillotine (Blade Clearance)</div>
+        <span class="badge-school">Mekanika Pemotongan Gaya Geser</span>
+      </div>
+
+      <!-- Referensi Visual Mesin Guillotine Shearing Riil Sesuai Spesifikasi Bengkel -->
+      <div style="background:#0f172a; border:2px solid #2563eb; border-radius:12px; padding:12px; margin-bottom:16px; color:#e2e8f0; display:flex; flex-wrap:wrap; gap:16px; align-items:center;">
+        <div style="flex:1; min-width:220px; max-width:280px; background:#020617; border-radius:8px; overflow:hidden; border:1px solid #334155; text-align:center;">
+          <img src="assets/guillotine_machine.png" alt="Mesin Guillotine Shearing Industri" style="width:100%; height:auto; display:block;" onerror="this.src='C:/Users/ThinkPad/Downloads/Screenshot 2026-09-12 213243.png'">
+          <div style="font-size:0.75rem; color:#94a3b8; padding:4px; font-weight:bold; background:#1e293b;">Foto Referensi Mesin Standar Bengkel</div>
+        </div>
+        <div style="flex:2; min-width:260px; font-size:0.85rem;">
+          <div style="font-weight:bold; color:#60a5fa; font-size:0.95rem; margin-bottom:6px;">Mesin Guillotine Shearing Hidrolik (QC12Y Series)</div>
+          <p style="color:#cbd5e1; margin:0 0 8px 0; line-height:1.4;">
+            Visual simulator telah diperbarui mereplikasi spesifikasi fisik mesin pemotong pelat riil: rangka utama <b>Biru Industri</b>, balok tekan pisau <b>Putih/Krem</b>, <b>Kisi Pelindung Jari Kuning (Finger Guard)</b> K3LH, 3 <b>Lengan Penopang Pelat</b> di bagian depan, panel kontrol kelistrikan, serta <b>Pedal Injak</b> hidrolik.
+          </p>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <span style="background:#1e3a8a; color:#93c5fd; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:600;">🛡️ Kisi Pelindung Jari Kuning</span>
+            <span style="background:#1e3a8a; color:#93c5fd; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:600;">🦾 3 Lengan Penopang Depan</span>
+            <span style="background:#1e3a8a; color:#93c5fd; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:600;">🦶 Pedal Injak Stroke</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-grid">
+        <div class="canvas-container">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; gap:6px;">
+              <button id="btnGMode2D" onclick="setGMode('2d')" style="background:#2563eb; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">✂️ Mesin & Celah 2D</button>
+              <button id="btnGModeOrbit" onclick="setGMode('orbit')" style="background:#1e293b; color:#38bdf8; border:1px solid #0284c7; padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">🌐 Mode Orbit 3D Pelat</button>
+            </div>
+            <span id="txtGOrbitTip" style="font-size:0.72rem; color:#94a3b8; display:none;">🖱️ Drag mouse untuk putar 360° | Scroll Zoom</span>
+          </div>
+          <canvas id="canvasGuillotine" width="560" height="420"></canvas>
+        </div>
+
+        <div class="sim-controls-panel">
+          <div class="control-group">
+            <div class="control-label">
+              <span>Ketebalan Pelat (t):</span>
+              <span id="valThick" class="control-val">0.6 mm</span>
+            </div>
+            <input type="range" id="inputThick" min="0.5" max="4.0" step="0.1" value="0.6" oninput="updateGuillotineSim()">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Celah Pisau (Clearance C):</span>
+              <span id="valClear" class="control-val">0.04 mm</span>
+            </div>
+            <input type="range" id="inputClear" min="0.01" max="0.40" step="0.01" value="0.04" oninput="updateGuillotineSim()">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Rasio Celah terhadap Tebal:</span>
+              <span id="valRatio" class="control-val">6.7%</span>
+            </div>
+            <div id="badgeClearance" class="status-badge status-ideal">STATUS: IDEAL (5% - 8%)</div>
+          </div>
+
+          <div id="textClearanceDesc" style="font-size:0.85rem; color:#475569; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+            Potongan sempurna: 1/3 ketebalan berupa zona mengkilap (burnished), 2/3 berupa patahan geser bersih tanpa duri (burr).
+          </div>
+
+          <button class="btn-action" onclick="runShearCycle()">⚡ Injak Pedal Potong</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- TAB 4: SIMULATOR OXY-FUEL CUTTING & DRAGLINES -->
+  <!-- ======================================================================= -->
+  <section id="tab-oxyfuel" class="tab-pane">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"><a href="MetalVerseFery.html" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:#0f172a;border:1px solid #334155;color:#38bdf8;font-size:0.75rem;font-weight:700;text-decoration:none;margin-right:6px;box-shadow:0 1px 3px rgba(0,0,0,0.2);" title="Kembali ke Dashboard Utama MetalVerse">?? Dashboard Utama</a>🔥 Simulator Oxy-Fuel Cutting &amp; Geometri Garis Seret (Draglines)</div>
+        <span class="badge-school" style="background-color:#fed7aa; color:#9a3412;">Flens Dudukan Tangkai 8 mm</span>
+      </div>
+
+      <div class="sim-grid">
+        <div class="canvas-container">
+          <canvas id="canvasOxy" width="560" height="420"></canvas>
+        </div>
+
+        <div class="sim-controls-panel">
+          <div class="control-group">
+            <div class="control-label">
+              <span>Kecepatan Potong (Speed):</span>
+              <span id="valSpeed" class="control-val">450 mm/mnt</span>
+            </div>
+            <input type="range" id="inputSpeed" min="150" max="800" step="25" value="450" oninput="updateOxySim()">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Tekanan Oksigen Potong:</span>
+              <span id="valO2" class="control-val">2.5 bar</span>
+            </div>
+            <input type="range" id="inputO2" min="1.0" max="4.5" step="0.1" value="2.5" oninput="updateOxySim()">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Kualitas Garis Seret (Drag):</span>
+              <span id="valDragLag" class="control-val">Lag: 4%</span>
+            </div>
+            <div id="badgeOxy" class="status-badge status-ideal">MUTU POTONG KELAS 1 (IDEAL)</div>
+          </div>
+
+          <div id="textOxyDesc" style="font-size:0.85rem; color:#475569; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+            Garis seret tegak lurus vertikal (&le; 5%). Dinding alur halus, tepi atas tajam persegi, dan sisi bawah bersih bebas terak lengket (dross).
+          </div>
+
+          <button class="btn-action" onclick="startOxyTorch()">🔥 Nyalakan &amp; Potong Pelat</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- TAB 5: KUIS INTERAKTIF HOTS -->
+  <!-- ======================================================================= -->
+  <section id="tab-quiz" class="tab-pane">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"><a href="MetalVerseFery.html" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:#0f172a;border:1px solid #334155;color:#38bdf8;font-size:0.75rem;font-weight:700;text-decoration:none;margin-right:6px;box-shadow:0 1px 3px rgba(0,0,0,0.2);" title="Kembali ke Dashboard Utama MetalVerse">?? Dashboard Utama</a>📝 Kuis Interaktif Penalaran Kritis (HOTS)</div>
+        <span id="quizScoreBadge" class="badge-school" style="background-color:#e0e7ff; color:#3730a3;">Skor: 0 / 100</span>
+      </div>
+
+      <div id="quizContainer">
+        <!-- Soal akan di-render secara dinamis -->
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ===========================================================================
+  // NAVIGATION TABS LOGIC
+  // ===========================================================================
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+
+    // Trigger render for canvases
+    if (tabId === 'tab-serok') drawSerok(parseInt(document.getElementById('serokStep').value));
+    if (tabId === 'tab-guillotine') drawGuillotine();
+    if (tabId === 'tab-oxyfuel') drawOxy();
+  }
+
+  function toggleFullscreen() {
+    const el = document.querySelector('.slide-box');
+    if (!document.fullscreenElement) {
+      el.requestFullscreen().catch(err => alert(`Gagal fullscreen: ${err.message}`));
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  // ===========================================================================
+  // SLIDES PRESENTATION DATA & LOGIC
+  // ===========================================================================
+  const slidesData = [
+    {
+      cat: "SLIDE 1 • COVER UTAMA",
+      title: "PEMOTONGAN LOGAM SECARA MEKANIK & TERMAL",
+      body: `
+        <div style="background:rgba(255,255,255,0.06); padding:20px; border-radius:8px; border-left:4px solid #d97706; margin-bottom:15px;">
+          <h3 style="color:#fde68a; font-size:1.2rem; margin-bottom:6px;">PROYEK FABRIKASI: PEMBUATAN SEROK SAMPAH (DUSTPAN)</h3>
+          <p style="font-size:0.95rem; color:#cbd5e1;">Konsentrasi Keahlian: Teknik Fabrikasi Logam &amp; Manufaktur | SMK Negeri 2 Depok Sleman</p>
+        </div>
+        <p>Selamat datang dalam pembelajaran berbasis <b>Deep Learning</b> (Mindful, Meaningful, &amp; Joyful Learning). Pada unit ini, Anda akan mentransformasikan lembaran pelat baja tipis menjadi produk fungsional serok sampah presisi berstandar industri.</p>
+        <div style="margin-top:15px; font-size:0.9rem; color:#94a3b8;">
+          • Pertemuan 1: Layouting Presisi, Mesin Guillotine Shearing, &amp; Gunting Pelat (7 JP)<br>
+          • Pertemuan 2: Pemotongan Pipa Tangkai &amp; Flens Dudukan Oxy-Fuel / Plasma (7 JP)
+        </div>
+      `
+    },
+    {
+      cat: "SLIDE 2 • PARADIGMA BELAJAR",
+      title: "Tiga Pilar Deep Learning & KSE",
+      body: `
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:15px; margin-top:10px;">
+          <div style="background:rgba(255,255,255,0.06); padding:14px; border-radius:8px; border-top:3px solid #38bdf8;">
+            <b style="color:#38bdf8;">1. MINDFUL LEARNING</b>
+            <p style="font-size:0.9rem; margin-top:6px;">Kesadaran penuh K3LH sebelum menyalakan mesin. Latihan hening pernapasan (STOP) untuk meredakan gugup saat menggunting pelat tajam.</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.06); padding:14px; border-radius:8px; border-top:3px solid #f59e0b;">
+            <b style="color:#f59e0b;">2. MEANINGFUL LEARNING</b>
+            <p style="font-size:0.9rem; margin-top:6px;">Memahami 'mengapa': mengapa celah pisau harus 5-8% tebal pelat, mengapa reaksi oksidasi eksotermik memotong baja tanpa melelehkan sekitarnya.</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.06); padding:14px; border-radius:8px; border-top:3px solid #22c55e;">
+            <b style="color:#22c55e;">3. JOYFUL LEARNING</b>
+            <p style="font-size:0.9rem; margin-top:6px;">Kemitraan Buddy-System: bekerja berpasangan saling menjaga, memeriksa ukuran tanpa saling menyalahkan, bangga melihat hasil serok sampah jadi.</p>
+          </div>
+        </div>
+      `
+    },
+    {
+      cat: "SLIDE 3 • KESELAMATAN BENGKEL",
+      title: "K3LH & 7 Alat Pelindung Diri Wajib",
+      body: `
+        <p>Bekerja pada pelat tipis dan api potong berpotensi luka sayat parah dan luka bakar suhu 3.000&deg;C. Wajib gunakan APD lengkap:</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; font-size:0.95rem;">
+          <div>
+            1. <b>Kacamata Potong (DIN 5) / Bening</b><br>
+            2. <b>Pelindung Wajah (Face Shield)</b> gerinda<br>
+            3. <b>Sarung Tangan Kulit/Nitril</b> pelat tipis<br>
+            4. <b>Apron Kulit Dada &amp; Lengan</b>
+          </div>
+          <div>
+            5. <b>Safety Shoes Steel Toe</b> anti-benturan<br>
+            6. <b>Masker Partikel Respirator P95</b><br>
+            7. <b>Sumbat Telinga (Ear Plug / Muff)</b><br>
+            <span style="color:#f87171;">⚠️ Dilarang menyentuh tepi pelat tanpa sarung tangan!</span>
+          </div>
+        </div>
+      `
+    },
+    {
+      cat: "SLIDE 4 • K3 GAS BERTEKANAN",
+      title: "Tanggap Darurat: Flashback vs Backfire",
+      body: `
+        <div style="background:#450a0a; border:2px solid #ef4444; border-radius:8px; padding:16px; margin-top:8px;">
+          <h4 style="color:#fca5a5; margin-bottom:6px;">🚨 PROSEDUR DARURAT FLASHBACK (NYALA BALIK API KE SELANG):</h4>
+          <p style="font-size:0.95rem; color:#fecaca;">Bila terdengar suara mendesis kencang melengking dan badan brander mendadak panas membara disertai asap pekat:</p>
+          <ol style="margin-left:20px; margin-top:8px; color:#fee2e2; font-weight:600; font-size:1rem;">
+            <li>TUTUP KATUP OKSIGEN POTONG PADA BRANDER SEKETIKA! (Memutus oksidasi)</li>
+            <li>TUTUP KATUP ASETILIN PADA BRANDER SEGERA SETELAHNYA! (Memutus bahan bakar)</li>
+            <li>TUTUP KATUP UTAMA SILINDER GAS OKSIGEN &amp; ASETILIN!</li>
+            <li>Lapor guru pembimbing dan lakukan pendinginan alat.</li>
+          </ol>
+        </div>
+      `
+    },
+    {
+      cat: "SLIDE 5 • KETELITIAN UKUR",
+      title: "Teknik Penandaan Pola Bentangan (Layouting)",
+      body: `
+        <p>Prinsip Emas: <i>"Measure Twice, Cut Once"</i>. Deviasi dimensi maksimal <b>&plusmn; 0,5 mm</b>!</p>
+        <ul style="font-size:0.95rem; margin-top:8px;">
+          <li><b>Penggores Karbida (Scriber):</b> Garis gores sangat tipis (&lt; 0,1 mm). Jangan gunakan spidol tebal yang memiliki lebar 1–2 mm.</li>
+          <li><b>Mistar Baja &amp; Mistar Siku (Try Square):</b> Verifikasi kesikuan 90&deg; pada setiap garis tegak lurus. Posisi mata tegak lurus (hindari paralaks).</li>
+          <li><b>Penitik Otomatis (Center Punch):</b> Beri titik acuan setiap interval 20 mm agar garis tetap terlihat jelas meski terkena minyak/serpihan.</li>
+          <li><b>Jangka Tusuk (Divider):</b> Melukis busur cembung bukaan depan serok sampah secara simetris.</li>
+        </ul>
+      `
+    },
+    {
+      cat: "SLIDE 6 • PEMOTONGAN MEKANIK",
+      title: "Mesin Guillotine Shearing & Celah Pisau",
+      body: `
+        <p>Prinsip pemotongan gaya geser antara pisau atas miring dan pisau bawah tetap di meja.</p>
+        <div style="background:rgba(255,255,255,0.08); padding:12px; border-radius:6px; margin:10px 0; font-size:1.1rem; color:#fde047; text-align:center;">
+          <b>Rumus Standar: C = (5% s.d. 8%) &times; t</b>
+        </div>
+        <ul style="font-size:0.95rem;">
+          <li>Untuk pelat BJLS serok sampah (t = 0,6 mm): C = 0,06 &times; 0,6 = <b>0,04 mm</b>.</li>
+          <li><b>Celah Terlalu Rapat (&lt; 4%):</b> Beban motor mesin overload, pisau cepat aus atau cuil (chipping).</li>
+          <li><b>Celah Terlalu Longgar (&gt; 10%):</b> Pelat melipat di antara celah pisau, timbul duri kasar tebal (burr), dan pelat melengkung parah.</li>
+        </ul>
+      `
+    },
+    {
+      cat: "SLIDE 7 • GAMBAR KERJA PROYEK",
+      title: "Spesifikasi Bentangan Serok Sampah",
+      body: `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:0.95rem;">
+          <div>
+            • <b>Bukaan Depan Serok:</b> Lebar 300 mm dengan busur cembung (puncak 300 mm, tepi 280 mm).<br>
+            • <b>Dinding Belakang:</b> Lebar dasar 230 mm, tinggi 80 mm (ditekuk 90&deg;).<br>
+            • <b>Dinding Samping:</b> Panjang 260 mm, tinggi belakang 80 mm meruncing ke depan.<br>
+            • <b>Lipatan Penguat (Hem):</b> Lebar 9 mm kiri, kanan, &amp; belakang (memperkaku pelat &amp; anti tajam).
+          </div>
+          <div style="background:rgba(255,255,255,0.06); padding:12px; border-radius:8px;">
+            • <b>Kupingan Keling (Tab):</b> Lebar 15 mm &times; 15 mm untuk paku keling pop rivet.<br>
+            • <b>Takikan Sudut (Notch):</b> Sudut 90&deg; agar saat ditekuk tidak saling bertubrukan (overlap).<br>
+            • <b>Garis Kontinu (Solid):</b> Batas potong.<br>
+            • <b>Garis Putus-Putus (Dashed):</b> Garis tekuk.
+          </div>
+        </div>
+      `
+    },
+    {
+      cat: "SLIDE 8 • ALUR BENGKEL",
+      title: "6 Langkah Alur Operasional Serok Sampah",
+      body: `
+        <ol style="font-size:0.95rem; margin-left:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <li><b>Potong Lembaran Awal:</b> Pelat 400 &times; 400 mm di mesin guillotine.</li>
+          <li><b>Layouting Bentangan:</b> Lukis sumbu simetris, bukaan 300 mm, dasar 230 mm, hem 9 mm.</li>
+          <li><b>Verifikasi Instruktur:</b> Cek kesikuan 90&deg; &amp; toleransi &plusmn; 0,5 mm.</li>
+          <li><b>Gunting Kontur &amp; Notch:</b> Potong lurus dengan gunting tuas &amp; kurva dengan aviation snips.</li>
+          <li><b>Deburring Tepi:</b> Kikir sudut 45&deg; keliling pelat untuk menghilangkan duri burr.</li>
+          <li><b>Penekukan &amp; Keling:</b> Tekuk hem 9 mm, tekuk dinding 80 mm, keling tab 15 mm.</li>
+        </ol>
+      `
+    },
+    {
+      cat: "SLIDE 9 • SAINS TERMAL",
+      title: "Oxy-Fuel Cutting Reaksi Oksidasi Eksotermik",
+      body: `
+        <p>Oxy-Fuel BUKAN pelelehan biasa, melainkan reaksi pembakaran besi murni dalam jet oksigen:</p>
+        <div style="background:rgba(255,255,255,0.08); padding:10px; border-radius:6px; margin:10px 0; color:#fde047; text-align:center; font-size:1.15rem; font-weight:700;">
+          3Fe + 2O<sub>2</sub> &rarr; Fe<sub>3</sub>O<sub>4</sub> + &Delta;H (-1.120 kJ/mol)
+        </div>
+        <ul style="font-size:0.95rem;">
+          <li>Baja dipanaskan hingga merah ceri (&plusmn; 900&deg;C), lalu disemprot jet O<sub>2</sub> murni (2,5 bar).</li>
+          <li>Oksida besi melebur pada 1.370&deg;C (di bawah titik lebur besi 1.538&deg;C), sehingga oksida cair ditiup jet oksigen tanpa melelehkan dinding sekitarnya.</li>
+          <li><b>Nyala Api Wajib:</b> NYALA NETRAL (kerucut bulat tumpul biru terang tanpa bulu asetilin).</li>
+        </ul>
+      `
+    },
+    {
+      cat: "SLIDE 10 • INSPEKSI MUTU",
+      title: "Morfologi Garis Seret (Draglines) & Cacat Potong",
+      body: `
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; font-size:0.9rem; margin-top:10px;">
+          <div style="background:rgba(34,197,94,0.15); border:1.5px solid #22c55e; padding:12px; border-radius:8px;">
+            <b style="color:#4ade80;">A. KONDISI IDEAL</b>
+            <p style="margin-top:6px;">Garis seret tegak lurus vertikal (&le; 5%). Dinding alur halus, tepi atas tajam, bagian bawah bebas terak (dross-free).</p>
+          </div>
+          <div style="background:rgba(245,158,11,0.15); border:1.5px solid #f59e0b; padding:12px; border-radius:8px;">
+            <b style="color:#fbbf24;">B. TERLALU CEPAT</b>
+            <p style="margin-top:6px;">Dragline tertinggal jauh melengkung (&gt; 15&deg;). Bagian bawah tidak tembus putus, terak menempel di sudut bawah.</p>
+          </div>
+          <div style="background:rgba(239,68,68,0.15); border:1.5px solid #ef4444; padding:12px; border-radius:8px;">
+            <b style="color:#f87171;">C. TERLALU LAMBAT</b>
+            <p style="margin-top:6px;">Overheating panas berlebih. Tepi atas meleleh membulat seperti lilin, alur melebar, terak bawah tebal keras.</p>
+          </div>
+        </div>
+      `
+    },
+    {
+      cat: "SLIDE 11 • TEKNOLOGI MODERN",
+      title: "Plasma Arc Cutting (PAC - Suhu 20.000°C)",
+      body: `
+        <p>Solusi pemotongan untuk material yang tidak dapat dipotong oleh gas Oxy-Fuel:</p>
+        <ul style="font-size:0.95rem; margin-top:8px;">
+          <li><b>Gas Terionisasi (Plasma):</b> Mencapai suhu busur ekstrem 15.000&deg;C s.d. 30.000&deg;C dengan semburan sonik.</li>
+          <li><b>Universalitas Logam:</b> Mampu memotong semua logam konduktif: Stainless Steel, Aluminium, Kuningan, dan Besi Tuang.</li>
+          <li><b>Kecepatan &amp; Kualitas:</b> 3–5 kali lebih cepat pada pelat tipis, zona terpengaruh panas (HAZ) sangat sempit, pelat tidak mudah melintir.</li>
+          <li><b>Media Kerja:</b> Menggunakan udara tekan bersih dari kompresor (4–6 bar) dan arus listrik inverter DC.</li>
+        </ul>
+      `
+    },
+    {
+      cat: "SLIDE 12 • REFLEKSI DIRI",
+      title: "Refleksi Metakognisi & Komitmen Mutu",
+      body: `
+        <div style="background:rgba(255,255,255,0.06); padding:16px; border-radius:8px; border-left:4px solid #f59e0b;">
+          <h4 style="color:#fef08a; margin-bottom:8px;">PERTANYAAN REFLEKSI DIRI SISWA (DEEP LEARNING):</h4>
+          <p style="font-size:0.95rem;">1. Bagaimana saya mengendalikan rasa gugup atau cemas saat pertama kali menggunting pelat tipis atau menyalakan api potong?<br>
+          2. Mengapa memahami perbedaan garis potong (solid) dan garis tekuk (dashed) sangat krusial agar pelat tidak terbuang sia-sia?<br>
+          3. Bagaimana kerjasama kemitraan (Buddy System) membantu saya memeriksa kesikuan dan ukuran sebelum memotong?</p>
+        </div>
+      `
+    }
+  ];
+
+  let currentSlide = 0;
+
+  function renderSlide() {
+    const s = slidesData[currentSlide];
+    document.getElementById('slideCat').innerText = s.cat;
+    document.getElementById('slideTitle').innerText = s.title;
+    document.getElementById('slideBody').innerHTML = s.body;
+    document.getElementById('slideNum').innerText = `Slide ${currentSlide + 1} / ${slidesData.length}`;
+    document.getElementById('slideProgress').style.width = `${((currentSlide + 1) / slidesData.length) * 100}%`;
+    
+    document.getElementById('btnPrevSlide').disabled = (currentSlide === 0);
+    document.getElementById('btnNextSlide').disabled = (currentSlide === slidesData.length - 1);
+  }
+
+  function changeSlide(direction) {
+    currentSlide += direction;
+    if (currentSlide < 0) currentSlide = 0;
+    if (currentSlide >= slidesData.length) currentSlide = slidesData.length - 1;
+    renderSlide();
+  }
+
+  // Keyboard Navigation for Slides
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('tab-slides').classList.contains('active')) {
+      if (e.key === 'ArrowRight' || e.key === ' ') changeSlide(1);
+      if (e.key === 'ArrowLeft') changeSlide(-1);
+    }
+  });
+
+  // ===========================================================================
+  // SIMULATOR 1: BENTANGAN SEROK SAMPAH (CANVAS)
+  // ===========================================================================
+  const canvasSerok = document.getElementById('canvasSerok');
+  const ctxSerok = canvasSerok.getContext('2d');
+
+  const serokStepTexts = [
+    "Tahap 0: Lembaran Awal (400 x 400 mm) dipotong siku di mesin guillotine.",
+    "Tahap 1: Pola Datar (Layouting) - Garis potong lurus & kurva bukaan depan.",
+    "Tahap 2: Pemotongan Selesai & Takikan Sudut (Notch 90°) terbentuk.",
+    "Tahap 3: Penekukan Lipatan Penguat (Hem 9 mm) kiri, kanan, & belakang.",
+    "Tahap 4: Penekukan Dinding 80 mm & Pengelingan Tab 15 mm (Produk 3D Jadi!)"
+  ];
+
+  function drawSerok(step) {
+    ctxSerok.clearRect(0, 0, canvasSerok.width, canvasSerok.height);
+    const cx = canvasSerok.width / 2;
+    const cy = canvasSerok.height / 2 + 10;
+    const scale = 0.85;
+
+    // Step 0: Blank Sheet
+    if (step === 0) {
+      ctxSerok.fillStyle = '#334155';
+      ctxSerok.fillRect(cx - 150, cy - 150, 300, 300);
+      ctxSerok.strokeStyle = '#94a3b8';
+      ctxSerok.lineWidth = 2;
+      ctxSerok.strokeRect(cx - 150, cy - 150, 300, 300);
+
+      ctxSerok.fillStyle = '#f8fafc';
+      ctxSerok.font = '14px Segoe UI';
+      ctxSerok.textAlign = 'center';
+      ctxSerok.fillText('Pelat Lembaran Awal: 400 x 400 mm', cx, cy - 20);
+      ctxSerok.fillStyle = '#cbd5e1';
+      ctxSerok.font = '12px Segoe UI';
+      ctxSerok.fillText('Tebal BJLS: 0,6 mm (Bahan Baku Serok)', cx, cy + 10);
+      return;
+    }
+
+    // Coordinates for the net (bentangan)
+    // Scale 1 mm = 0.8 px
+    const wFront = 240; // 300 mm scaled
+    const wBack = 184;  // 230 mm scaled
+    const hBody = 220;  // 280 mm scaled
+    const hBack = 64;   // 80 mm scaled
+    const hHem = 12;    // 9 mm scaled
+    const wTab = 18;    // 15 mm scaled
+
+    ctxSerok.save();
+    ctxSerok.translate(cx, cy - 30);
+
+    if (step >= 1 && step <= 3) {
+      // Draw 2D Net
+      // Floor Body
+      ctxSerok.fillStyle = '#475569';
+      ctxSerok.beginPath();
+      ctxSerok.moveTo(-wFront/2, -hBody/2);
+      ctxSerok.quadraticCurveTo(0, -hBody/2 - 20, wFront/2, -hBody/2); // curved front
+      ctxSerok.lineTo(wBack/2, hBody/2);
+      ctxSerok.lineTo(-wBack/2, hBody/2);
+      ctxSerok.closePath();
+      ctxSerok.fill();
+      ctxSerok.strokeStyle = '#38bdf8';
+      ctxSerok.lineWidth = 2;
+      ctxSerok.stroke();
+
+      // Back wall net
+      ctxSerok.fillStyle = '#334155';
+      ctxSerok.fillRect(-wBack/2, hBody/2, wBack, hBack);
+      ctxSerok.strokeRect(-wBack/2, hBody/2, wBack, hBack);
+
+      // Back hem
+      ctxSerok.fillStyle = step >= 3 ? '#1e293b' : '#64748b';
+      ctxSerok.fillRect(-wBack/2, hBody/2 + hBack, wBack, hHem);
+      ctxSerok.strokeRect(-wBack/2, hBody/2 + hBack, wBack, hHem);
+
+      // Side walls
+      // Left side wall
+      ctxSerok.fillStyle = '#334155';
+      ctxSerok.beginPath();
+      ctxSerok.moveTo(-wFront/2, -hBody/2);
+      ctxSerok.lineTo(-wFront/2 - 30, -hBody/2 + 20);
+      ctxSerok.lineTo(-wBack/2 - hBack, hBody/2);
+      ctxSerok.lineTo(-wBack/2, hBody/2);
+      ctxSerok.closePath();
+      ctxSerok.fill();
+      ctxSerok.stroke();
+
+      // Right side wall
+      ctxSerok.beginPath();
+      ctxSerok.moveTo(wFront/2, -hBody/2);
+      ctxSerok.lineTo(wFront/2 + 30, -hBody/2 + 20);
+      ctxSerok.lineTo(wBack/2 + hBack, hBody/2);
+      ctxSerok.lineTo(wBack/2, hBody/2);
+      ctxSerok.closePath();
+      ctxSerok.fill();
+      ctxSerok.stroke();
+
+      // Tabs 15 mm and Notches 90 deg
+      if (step >= 2) {
+        ctxSerok.fillStyle = '#d97706';
+        // Left tab
+        ctxSerok.fillRect(-wBack/2 - wTab, hBody/2 + 10, wTab, hBack - 20);
+        ctxSerok.strokeRect(-wBack/2 - wTab, hBody/2 + 10, wTab, hBack - 20);
+        // Right tab
+        ctxSerok.fillRect(wBack/2, hBody/2 + 10, wTab, hBack - 20);
+        ctxSerok.strokeRect(wBack/2, hBody/2 + 10, wTab, hBack - 20);
+      }
+
+      // Annotations
+      ctxSerok.fillStyle = '#fde047';
+      ctxSerok.font = '11px Segoe UI';
+      ctxSerok.textAlign = 'center';
+      ctxSerok.fillText('Bukaan Depan: 300 mm', 0, -hBody/2 - 28);
+      ctxSerok.fillText('Dasar Belakang: 230 mm', 0, hBody/2 + 35);
+      ctxSerok.fillText('Hem 9 mm', 0, hBody/2 + hBack + 22);
+
+      // Dashed fold lines
+      ctxSerok.strokeStyle = '#f59e0b';
+      ctxSerok.setLineDash([4, 4]);
+      ctxSerok.beginPath();
+      ctxSerok.moveTo(-wBack/2, hBody/2); ctxSerok.lineTo(wBack/2, hBody/2);
+      ctxSerok.moveTo(-wFront/2, -hBody/2); ctxSerok.lineTo(-wBack/2, hBody/2);
+      ctxSerok.moveTo(wFront/2, -hBody/2); ctxSerok.lineTo(wBack/2, hBody/2);
+      ctxSerok.stroke();
+      ctxSerok.setLineDash([]);
+    } else if (step === 4) {
+      // Draw 3D Isometric View of Finished Dustpan
+      ctxSerok.fillStyle = '#475569';
+      // Floor
+      ctxSerok.beginPath();
+      ctxSerok.moveTo(-110, -20);
+      ctxSerok.lineTo(110, -20);
+      ctxSerok.lineTo(80, 80);
+      ctxSerok.lineTo(-80, 80);
+      ctxSerok.closePath();
+      ctxSerok.fill();
+      ctxSerok.strokeStyle = '#94a3b8';
+      ctxSerok.lineWidth = 2;
+      ctxSerok.stroke();
+
+      // Back wall (upright 90 deg)
+      ctxSerok.fillStyle = '#334155';
+      ctxSerok.beginPath();
+      ctxSerok.moveTo(-80, 80);
+      ctxSerok.lineTo(80, 80);
+      ctxSerok.lineTo(80, 20);
+      ctxSerok.lineTo(-80, 20);
+      ctxSerok.closePath();
+      ctxSerok.fill();
+      ctxSerok.stroke();
+
+      // Left side wall
+      ctxSerok.fillStyle = '#1e293b';
+      ctxSerok.beginPath();
+      ctxSerok.moveTo(-110, -20);
+      ctxSerok.lineTo(-80, 80);
+      ctxSerok.lineTo(-80, 20);
+      ctxSerok.lineTo(-110, -10);
+      ctxSerok.closePath();
+      ctxSerok.fill();
+      ctxSerok.stroke();
+
+      // Right side wall
+      ctxSerok.beginPath();
+      ctxSerok.moveTo(110, -20);
+      ctxSerok.lineTo(80, 80);
+      ctxSerok.lineTo(80, 20);
+      ctxSerok.lineTo(110, -10);
+      ctxSerok.closePath();
+      ctxSerok.fill();
+      ctxSerok.stroke();
+
+      // Rivet points on tabs
+      ctxSerok.fillStyle = '#fbbf24';
+      ctxSerok.beginPath(); ctxSerok.arc(-75, 50, 3, 0, Math.PI*2); ctxSerok.fill();
+      ctxSerok.beginPath(); ctxSerok.arc(75, 50, 3, 0, Math.PI*2); ctxSerok.fill();
+
+      // Handle (tangkai pipa)
+      ctxSerok.strokeStyle = '#cbd5e1';
+      ctxSerok.lineWidth = 10;
+      ctxSerok.lineCap = 'round';
+      ctxSerok.beginPath();
+      ctxSerok.moveTo(0, 50);
+      ctxSerok.lineTo(0, -90);
+      ctxSerok.stroke();
+
+      // Handle Flange Bracket
+      ctxSerok.fillStyle = '#d97706';
+      ctxSerok.fillRect(-16, 40, 32, 20);
+
+      ctxSerok.fillStyle = '#4ade80';
+      ctxSerok.font = 'bold 13px Segoe UI';
+      ctxSerok.textAlign = 'center';
+      ctxSerok.fillText('PRODUK 3D SEROK SAMPAH JADI', 0, 120);
+    }
+    ctxSerok.restore();
+  }
+
+  function updateSerokSim() {
+    const step = parseInt(document.getElementById('serokStep').value);
+    document.getElementById('stepLabel').innerText = `Tahap ${step}`;
+    document.getElementById('stepExplanation').innerHTML = `<b>Tahap ${step}:</b><br>${serokStepTexts[step]}`;
+    drawSerok(step);
+  }
+
+  function animateSerokFolding() {
+    let s = 0;
+    const interval = setInterval(() => {
+      document.getElementById('serokStep').value = s;
+      updateSerokSim();
+      s++;
+      if (s > 4) clearInterval(interval);
+    }, 900);
+  }
+
+  // ===========================================================================
+  // SIMULATOR 2: GUILLOTINE BLADE CLEARANCE & 3D ORBIT (CANVAS)
+  // ===========================================================================
+  const canvasG = document.getElementById('canvasGuillotine');
+  const ctxG = canvasG.getContext('2d');
+  let bladeY = 120;
+  let isShearing = false;
+  let gViewMode = '2d'; // '2d' | 'orbit'
+  let gOrbit = { yaw: -0.65, pitch: 0.42, zoom: 1.1, isDragging: false, lastX: 0, lastY: 0 };
+
+  function setGMode(mode) {
+    gViewMode = mode;
+    const b2d = document.getElementById('btnGMode2D');
+    const bOrb = document.getElementById('btnGModeOrbit');
+    const tip = document.getElementById('txtGOrbitTip');
+    if (mode === '2d') {
+      if (b2d) { b2d.style.background = '#2563eb'; b2d.style.color = '#fff'; }
+      if (bOrb) { bOrb.style.background = '#1e293b'; bOrb.style.color = '#38bdf8'; }
+      if (tip) tip.style.display = 'none';
+      canvasG.style.cursor = 'default';
+    } else {
+      if (bOrb) { bOrb.style.background = '#2563eb'; bOrb.style.color = '#fff'; }
+      if (b2d) { b2d.style.background = '#1e293b'; b2d.style.color = '#38bdf8'; }
+      if (tip) tip.style.display = 'inline-block';
+      canvasG.style.cursor = 'grab';
+    }
+    drawGuillotine();
+  }
+
+  canvasG.addEventListener('mousedown', (e) => {
+    if (gViewMode !== 'orbit') return;
+    gOrbit.isDragging = true;
+    gOrbit.lastX = e.clientX;
+    gOrbit.lastY = e.clientY;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!gOrbit.isDragging || gViewMode !== 'orbit') return;
+    const dx = e.clientX - gOrbit.lastX;
+    const dy = e.clientY - gOrbit.lastY;
+    gOrbit.lastX = e.clientX;
+    gOrbit.lastY = e.clientY;
+    gOrbit.yaw += dx * 0.01;
+    gOrbit.pitch = Math.max(-1.4, Math.min(1.4, gOrbit.pitch + dy * 0.01));
+    drawGuillotine();
+  });
+
+  window.addEventListener('mouseup', () => {
+    gOrbit.isDragging = false;
+  });
+
+  canvasG.addEventListener('wheel', (e) => {
+    if (gViewMode !== 'orbit') return;
+    e.preventDefault();
+    gOrbit.zoom = Math.max(0.5, Math.min(3.0, gOrbit.zoom - (e.deltaY > 0 ? 0.1 : -0.1)));
+    drawGuillotine();
+  }, { passive: false });
+
+  function drawGuillotine() {
+    ctxG.clearRect(0, 0, canvasG.width, canvasG.height);
+
+    const thick = parseFloat(document.getElementById('inputThick').value);
+    const clear = parseFloat(document.getElementById('inputClear').value);
+    const ratio = (clear / thick) * 100;
+
+    if (gViewMode === 'orbit') {
+      // --- 3D ORBIT VIEW OF SHEARED PLATE & BURR PROFILE ---
+      const cx = canvasG.width / 2;
+      const cy = canvasG.height / 2;
+
+      // Dark studio background
+      const bg = ctxG.createRadialGradient(cx, cy, 30, cx, cy, canvasG.width / 1.5);
+      bg.addColorStop(0, '#0f172a');
+      bg.addColorStop(1, '#020617');
+      ctxG.fillStyle = bg;
+      ctxG.fillRect(0, 0, canvasG.width, canvasG.height);
+
+      function proj(x, y, z) {
+        const cosY = Math.cos(gOrbit.yaw), sinY = Math.sin(gOrbit.yaw);
+        const x1 = x * cosY + z * sinY;
+        const z1 = -x * sinY + z * cosY;
+
+        const cosX = Math.cos(gOrbit.pitch), sinX = Math.sin(gOrbit.pitch);
+        const y2 = y * cosX - z1 * sinX;
+        const z2 = y * sinX + z1 * cosX;
+
+        const fov = 400, dist = 350;
+        const z3 = z2 + dist;
+        if (z3 <= 10) return null;
+        const s = (fov / z3) * gOrbit.zoom;
+        return { x: cx + x1 * s, y: cy - y2 * s, z: z2 };
+      }
+
+      // 3D Grid Floor
+      ctxG.strokeStyle = 'rgba(37, 99, 235, 0.2)';
+      ctxG.lineWidth = 1;
+      for (let i = -4; i <= 4; i++) {
+        const p1 = proj(i * 40, -40, -160), p2 = proj(i * 40, -40, 160);
+        if (p1 && p2) { ctxG.beginPath(); ctxG.moveTo(p1.x, p1.y); ctxG.lineTo(p2.x, p2.y); ctxG.stroke(); }
+        const q1 = proj(-160, -40, i * 40), q2 = proj(160, -40, i * 40);
+        if (q1 && q2) { ctxG.beginPath(); ctxG.moveTo(q1.x, q1.y); ctxG.lineTo(q2.x, q2.y); ctxG.stroke(); }
+      }
+
+      // Workpiece 3D Box (t = thickness, W = 140, L = 180)
+      const W = 130, L = 180, T = Math.max(4, thick * 10);
+      const v = [
+        proj(-W/2, 0, -L/2), proj(W/2, 0, -L/2), proj(W/2, T, -L/2), proj(-W/2, T, -L/2),
+        proj(-W/2, 0, L/2), proj(W/2, 0, L/2), proj(W/2, T, L/2), proj(-W/2, T, L/2)
+      ];
+
+      if (v.every(pt => pt !== null)) {
+        // Faces
+        const fList = [
+          { pts: [v[3], v[2], v[6], v[7]], col: '#cbd5e1', norm: [0, 1, 0], lbl: `Pelat BJLS (t=${thick}mm)` }, // Top
+          { pts: [v[0], v[4], v[5], v[1]], col: '#334155', norm: [0, -1, 0] }, // Bottom
+          { pts: [v[1], v[5], v[6], v[2]], col: ratio >= 5 && ratio <= 8.5 ? '#38bdf8' : '#eab308', norm: [1, 0, 0], isCut: true }, // Sheared Cut Edge!
+          { pts: [v[0], v[3], v[7], v[4]], col: '#64748b', norm: [-1, 0, 0] }, // Left
+          { pts: [v[0], v[1], v[2], v[3]], col: '#94a3b8', norm: [0, 0, -1] }, // Front
+          { pts: [v[4], v[7], v[6], v[5]], col: '#94a3b8', norm: [0, 0, 1] }   // Back
+        ];
+
+        fList.forEach(f => {
+          f.z = (f.pts[0].z + f.pts[1].z + f.pts[2].z + f.pts[3].z) / 4;
+        });
+        fList.sort((a, b) => a.z - b.z);
+
+        fList.forEach(f => {
+          ctxG.beginPath();
+          ctxG.moveTo(f.pts[0].x, f.pts[0].y);
+          ctxG.lineTo(f.pts[1].x, f.pts[1].y);
+          ctxG.lineTo(f.pts[2].x, f.pts[2].y);
+          ctxG.lineTo(f.pts[3].x, f.pts[3].y);
+          ctxG.closePath();
+          ctxG.fillStyle = f.col;
+          ctxG.fill();
+          ctxG.strokeStyle = f.isCut ? '#06b6d4' : 'rgba(15,23,42,0.6)';
+          ctxG.lineWidth = f.isCut ? 2.5 : 1;
+          ctxG.stroke();
+
+          if (f.lbl) {
+            const mx = (f.pts[0].x + f.pts[1].x + f.pts[2].x + f.pts[3].x) / 4;
+            const my = (f.pts[0].y + f.pts[1].y + f.pts[2].y + f.pts[3].y) / 4;
+            ctxG.fillStyle = '#0f172a';
+            ctxG.font = 'bold 10px monospace';
+            ctxG.textAlign = 'center';
+            ctxG.fillText(f.lbl, mx, my);
+          }
+        });
+      }
+
+      // HUD text
+      ctxG.fillStyle = '#ffffff';
+      ctxG.font = 'bold 11px monospace';
+      ctxG.fillText(`INSPEKSI 3D ORBIT HASIL POTONGAN`, 25, 30);
+      ctxG.fillStyle = '#38bdf8';
+      ctxG.fillText(`Tebal (t): ${thick.toFixed(1)} mm | Celah (C): ${clear.toFixed(2)} mm (${ratio.toFixed(1)}%)`, 25, 50);
+      ctxG.fillStyle = ratio >= 5 && ratio <= 8.5 ? '#34d399' : '#f87171';
+      ctxG.fillText(`Status Sisi Sayatan: ${ratio >= 5 && ratio <= 8.5 ? 'IDEAL (Bebas Burr & Siku)' : (ratio < 5 ? 'RAPAT (Retak Cuil)' : 'LONGGAR (Timbul Duri Burr)')}`, 25, 70);
+      return;
+    }
+
+    const scaleThick = thick * 30;
+    const scaleClear = clear * 120;
+
+    // --- Machine Housing Background (Industrial Blue Structure) ---
+    // Upper frame gantry
+    ctxG.fillStyle = '#1e3a8a';
+    ctxG.fillRect(20, 15, 520, 50);
+    ctxG.fillStyle = '#2563eb';
+    ctxG.fillRect(20, 15, 520, 8);
+    ctxG.fillStyle = '#93c5fd';
+    ctxG.font = 'bold 11px monospace';
+    ctxG.fillText('MESIN GUILLOTINE SHEARING HIDROLIK (QC12Y)', 35, 45);
+
+    // Left Column (Industrial Blue)
+    ctxG.fillStyle = '#1d4ed8';
+    ctxG.fillRect(20, 65, 60, 310);
+    ctxG.fillStyle = '#1e40af';
+    ctxG.fillRect(20, 65, 8, 310);
+
+    // Right Column (Industrial Blue)
+    ctxG.fillStyle = '#1d4ed8';
+    ctxG.fillRect(480, 65, 60, 310);
+    ctxG.fillStyle = '#1e40af';
+    ctxG.fillRect(532, 65, 8, 310);
+
+    // Control Box on Left Column
+    ctxG.fillStyle = '#e2e8f0';
+    ctxG.fillRect(30, 130, 42, 70);
+    ctxG.strokeStyle = '#94a3b8';
+    ctxG.lineWidth = 2;
+    ctxG.strokeRect(30, 130, 42, 70);
+    // Emergency stop mushroom button
+    ctxG.fillStyle = '#dc2626';
+    ctxG.beginPath();
+    ctxG.arc(51, 155, 10, 0, Math.PI * 2);
+    ctxG.fill();
+    ctxG.fillStyle = '#fef08a';
+    ctxG.beginPath();
+    ctxG.arc(51, 155, 4, 0, Math.PI * 2);
+    ctxG.fill();
+    // Indicator lights
+    ctxG.fillStyle = '#22c55e';
+    ctxG.fillRect(40, 178, 6, 6);
+    ctxG.fillStyle = '#f59e0b';
+    ctxG.fillRect(54, 178, 6, 6);
+
+    // Bed Table (Industrial Blue & Ground Steel Surface)
+    ctxG.fillStyle = '#1e3a8a';
+    ctxG.fillRect(80, 260, 400, 75);
+    ctxG.fillStyle = '#64748b';
+    ctxG.fillRect(80, 250, 400, 10);
+    // 3 Front Sheet Support Arms (Lengan Penopang Depan)
+    ctxG.fillStyle = '#334155';
+    ctxG.fillRect(130, 270, 35, 55);
+    ctxG.fillRect(260, 270, 35, 55);
+    ctxG.fillRect(390, 270, 35, 55);
+    ctxG.fillStyle = '#94a3b8';
+    ctxG.fillRect(128, 268, 39, 6);
+    ctxG.fillRect(258, 268, 39, 6);
+    ctxG.fillRect(388, 268, 39, 6);
+
+    // Lower Machine Skirt & Feet
+    ctxG.fillStyle = '#172554';
+    ctxG.fillRect(20, 335, 520, 40);
+    // Floor pedestals
+    ctxG.fillStyle = '#0f172a';
+    ctxG.fillRect(15, 375, 75, 15);
+    ctxG.fillRect(470, 375, 75, 15);
+
+    // Center Foot Pedal Switch (Pedal Injak)
+    ctxG.fillStyle = '#475569';
+    ctxG.fillRect(278, 335, 4, 45); // stalk
+    ctxG.fillStyle = '#eab308'; // yellow pedal shroud
+    ctxG.fillRect(265, 380, 30, 16);
+    ctxG.fillStyle = '#0f172a';
+    ctxG.fillRect(270, 383, 20, 10);
+
+    // Stationary Lower Blade
+    ctxG.fillStyle = '#0284c7';
+    ctxG.fillRect(250, 250, 230, 40);
+    ctxG.fillStyle = '#e0f2fe';
+    ctxG.font = '10px Segoe UI';
+    ctxG.fillText('Pisau Bawah Tetap', 260, 275);
+
+    // Metal Sheet (Pelat Baja)
+    ctxG.fillStyle = '#cbd5e1';
+    ctxG.fillRect(100, 250 - scaleThick, 260, scaleThick);
+    ctxG.strokeStyle = '#38bdf8';
+    ctxG.lineWidth = 1;
+    ctxG.strokeRect(100, 250 - scaleThick, 260, scaleThick);
+
+    // Moving Upper Blade & White Ram Beam (Cream/White Ram matching screenshot)
+    const upperBladeX = 250 - scaleClear;
+    // White ram faceplate
+    ctxG.fillStyle = '#f1f5f9';
+    ctxG.strokeStyle = '#94a3b8';
+    ctxG.lineWidth = 1.5;
+    ctxG.beginPath();
+    ctxG.moveTo(upperBladeX - 160, bladeY - 55);
+    ctxG.lineTo(upperBladeX, bladeY - 15);
+    ctxG.lineTo(upperBladeX, bladeY - 95);
+    ctxG.lineTo(upperBladeX - 160, bladeY - 95);
+    ctxG.closePath();
+    ctxG.fill();
+    ctxG.stroke();
+
+    // Dual blue cylinder pivot brackets on ram
+    ctxG.fillStyle = '#1d4ed8';
+    ctxG.fillRect(upperBladeX - 150, bladeY - 90, 18, 28);
+    ctxG.fillRect(upperBladeX - 30, bladeY - 80, 18, 28);
+    ctxG.fillStyle = '#cbd5e1';
+    ctxG.beginPath();
+    ctxG.arc(upperBladeX - 141, bladeY - 76, 4, 0, Math.PI * 2);
+    ctxG.arc(upperBladeX - 21, bladeY - 66, 4, 0, Math.PI * 2);
+    ctxG.fill();
+
+    // Steel blade tip
+    ctxG.fillStyle = '#64748b';
+    ctxG.beginPath();
+    ctxG.moveTo(upperBladeX - 160, bladeY - 55);
+    ctxG.lineTo(upperBladeX, bladeY - 15);
+    ctxG.lineTo(upperBladeX, bladeY);
+    ctxG.lineTo(upperBladeX - 160, bladeY - 40);
+    ctxG.closePath();
+    ctxG.fill();
+
+    ctxG.fillStyle = '#0f172a';
+    ctxG.font = 'bold 10px Segoe UI';
+    ctxG.fillText('Balok Ram & Pisau Atas', upperBladeX - 135, bladeY - 35);
+
+    // Yellow Safety Finger Guard (Kisi Pelindung Jari Kuning)
+    ctxG.fillStyle = '#eab308';
+    ctxG.fillRect(80, 205, 160, 30);
+    ctxG.strokeStyle = '#ca8a04';
+    ctxG.lineWidth = 1.5;
+    ctxG.strokeRect(80, 205, 160, 30);
+    // Vertical grill slots
+    ctxG.fillStyle = '#0f172a';
+    for (let slotX = 90; slotX < 235; slotX += 14) {
+      ctxG.fillRect(slotX, 210, 6, 20);
+    }
+    // Hold-down clamp foot
+    ctxG.fillStyle = '#d97706';
+    ctxG.fillRect(135, 235, 50, (250 - scaleThick) - 235 > 0 ? (250 - scaleThick) - 235 : 0);
+    ctxG.fillStyle = '#fff';
+    ctxG.font = 'bold 9px Segoe UI';
+    ctxG.fillText('KISI PELINDUNG JARI', 105, 200);
+
+    // Clearance Indicator
+    ctxG.strokeStyle = '#ef4444';
+    ctxG.lineWidth = 2;
+    ctxG.beginPath();
+    ctxG.moveTo(250, 230);
+    ctxG.lineTo(250, 270);
+    ctxG.stroke();
+
+    // Text Dimension Notes & Overlay
+    ctxG.fillStyle = '#ffffff';
+    ctxG.font = 'bold 11px monospace';
+    ctxG.fillText(`Tebal Pelat (t) = ${thick.toFixed(1)} mm`, 290, 85);
+    ctxG.fillText(`Celah Pisau (C) = ${clear.toFixed(2)} mm`, 290, 105);
+    ctxG.fillText(`Rasio Celah     = ${((clear/thick)*100).toFixed(1)}%`, 290, 125);
+  }
+
+  function updateGuillotineSim() {
+    const thick = parseFloat(document.getElementById('inputThick').value);
+    const clear = parseFloat(document.getElementById('inputClear').value);
+    const ratio = (clear / thick) * 100;
+
+    document.getElementById('valThick').innerText = `${thick.toFixed(1)} mm`;
+    document.getElementById('valClear').innerText = `${clear.toFixed(2)} mm`;
+    document.getElementById('valRatio').innerText = `${ratio.toFixed(1)}%`;
+
+    const badge = document.getElementById('badgeClearance');
+    const desc = document.getElementById('textClearanceDesc');
+
+    if (ratio >= 5 && ratio <= 8.5) {
+      badge.className = 'status-badge status-ideal';
+      badge.innerText = `STATUS: IDEAL (${ratio.toFixed(1)}%)`;
+      desc.innerHTML = `<b>Pemotongan Sempurna:</b> 30% kedalaman berupa burnished zone mengkilap, 70% patahan geser seragam tanpa burr tajam. Pisau potong awet.`;
+    } else if (ratio < 5) {
+      badge.className = 'status-badge status-danger';
+      badge.innerText = `STATUS: TERLALU RAPAT (${ratio.toFixed(1)}%)`;
+      desc.innerHTML = `<b style="color:#b91c1c;">BAHAYA:</b> Friksi logam ekstrem antara pisau! Motor mesin overload, timbul patahan geser ganda (secondary shear), mata pisau rawan retak cuil (chipping).`;
+    } else {
+      badge.className = 'status-badge status-warn';
+      badge.innerText = `STATUS: TERLALU LONGGAR (${ratio.toFixed(1)}%)`;
+      desc.innerHTML = `<b style="color:#a16207;">CACAT:</b> Pelat melipat ke dalam celah pisau! Timbul duri kasar tebal (heavy burr), tepi melengkung/bowing, pelat tersangkut.`;
+    }
+
+    drawGuillotine();
+  }
+
+  function runShearCycle() {
+    if (isShearing) return;
+    isShearing = true;
+    let pos = 140;
+    const targetY = 270;
+
+    const down = setInterval(() => {
+      pos += 8;
+      bladeY = pos;
+      drawGuillotine();
+      if (pos >= targetY) {
+        clearInterval(down);
+        setTimeout(() => {
+          const up = setInterval(() => {
+            pos -= 8;
+            bladeY = pos;
+            drawGuillotine();
+            if (pos <= 140) {
+              clearInterval(up);
+              isShearing = false;
+            }
+          }, 30);
+        }, 200);
+      }
+    }, 30);
+  }
+
+  // ===========================================================================
+  // SIMULATOR 3: OXY-FUEL DRAGLINES (CANVAS)
+  // ===========================================================================
+  const canvasO = document.getElementById('canvasOxy');
+  const ctxO = canvasO.getContext('2d');
+  let torchX = 80;
+  let isCutting = false;
+
+  function drawOxy() {
+    ctxO.clearRect(0, 0, canvasO.width, canvasO.height);
+
+    const speed = parseInt(document.getElementById('inputSpeed').value);
+    const o2 = parseFloat(document.getElementById('inputO2').value);
+
+    // Steel Plate (Pelat Flens 8 mm)
+    const plateY = 220;
+    const plateH = 80;
+    ctxO.fillStyle = '#475569';
+    ctxO.fillRect(40, plateY, 480, plateH);
+    ctxO.strokeStyle = '#64748b';
+    ctxO.strokeRect(40, plateY, 480, plateH);
+
+    ctxO.fillStyle = '#e2e8f0';
+    ctxO.font = '11px Segoe UI';
+    ctxO.fillText('Pelat Flens Baja Karbon Tebal: 8,0 mm', 50, plateY + 45);
+
+    // Kerf Slot Cut behind torch
+    if (torchX > 80) {
+      ctxO.fillStyle = '#0f172a';
+      ctxO.fillRect(80, plateY, torchX - 80, plateH);
+
+      // Draglines representation
+      // Normal: dragLag px
+      // speed 450 -> lag 10 px
+      // speed 700 -> lag 50 px
+      const lag = (speed / 450) * 14 * (3.0 / o2);
+
+      ctxO.strokeStyle = '#38bdf8';
+      ctxO.lineWidth = 2;
+      for (let x = 90; x < torchX - 10; x += 22) {
+        ctxO.beginPath();
+        ctxO.moveTo(x, plateY);
+        ctxO.quadraticCurveTo(x - lag/3, plateY + plateH/2, x - lag, plateY + plateH);
+        ctxO.stroke();
+      }
+    }
+
+    // Torch Body & Nozzle
+    ctxO.fillStyle = '#ca8a04';
+    ctxO.fillRect(torchX - 10, plateY - 110, 20, 60);
+    // Nozzle tip
+    ctxO.fillStyle = '#e2e8f0';
+    ctxO.beginPath();
+    ctxO.moveTo(torchX - 12, plateY - 50);
+    ctxO.lineTo(torchX + 12, plateY - 50);
+    ctxO.lineTo(torchX + 5, plateY - 20);
+    ctxO.lineTo(torchX - 5, plateY - 20);
+    ctxO.closePath();
+    ctxO.fill();
+
+    // Flame & Jet
+    if (isCutting) {
+      // Preheat flame
+      ctxO.fillStyle = 'rgba(56, 189, 248, 0.8)';
+      ctxO.beginPath();
+      ctxO.moveTo(torchX - 6, plateY - 20);
+      ctxO.lineTo(torchX + 6, plateY - 20);
+      ctxO.lineTo(torchX, plateY - 5);
+      ctxO.closePath();
+      ctxO.fill();
+
+      // Cutting Jet
+      ctxO.strokeStyle = '#ffffff';
+      ctxO.lineWidth = 3;
+      ctxO.beginPath();
+      ctxO.moveTo(torchX, plateY - 20);
+      ctxO.lineTo(torchX, plateY + plateH + 30);
+      ctxO.stroke();
+
+      // Sparks (bunga api) at bottom
+      ctxO.fillStyle = '#f59e0b';
+      for (let i = 0; i < 8; i++) {
+        const sx = torchX + (Math.random() - 0.5) * 30;
+        const sy = plateY + plateH + 10 + Math.random() * 30;
+        ctxO.fillRect(sx, sy, 3, 3);
+      }
+    }
+  }
+
+  function updateOxySim() {
+    const speed = parseInt(document.getElementById('inputSpeed').value);
+    const o2 = parseFloat(document.getElementById('inputO2').value);
+
+    document.getElementById('valSpeed').innerText = `${speed} mm/mnt`;
+    document.getElementById('valO2').innerText = `${o2.toFixed(1)} bar`;
+
+    const lagRatio = ((speed / 450) * (2.5 / o2) * 4).toFixed(1);
+    document.getElementById('valDragLag').innerText = `Lag: ${lagRatio}%`;
+
+    const badge = document.getElementById('badgeOxy');
+    const desc = document.getElementById('textOxyDesc');
+
+    if (speed >= 380 && speed <= 520 && o2 >= 2.2 && o2 <= 3.0) {
+      badge.className = 'status-badge status-ideal';
+      badge.innerText = `MUTU POTONG KELAS 1 (IDEAL)`;
+      desc.innerHTML = `<b>Kondisi Sempurna:</b> Draglines tegak lurus vertikal (&le; 5%). Dinding potongan halus, tepi atas persegi tajam, terak bawah lepas bersih sekali ketuk.`;
+    } else if (speed > 520 || o2 < 2.0) {
+      badge.className = 'status-badge status-warn';
+      badge.innerText = `KECEPATAN TERLALU TINGGI`;
+      desc.innerHTML = `<b style="color:#a16207;">CACAT DRAGLINE LAG:</b> Garis seret melengkung tajam ke belakang (> 15%). Di sisi dasar pelat sering tidak tembus putus dan terak membeku lengket.`;
+    } else {
+      badge.className = 'status-badge status-danger';
+      badge.innerText = `KECEPATAN TERLALU LAMBAT / OVERHEATING`;
+      desc.innerHTML = `<b style="color:#b91c1c;">CACAT PELELEHAN:</b> Panas berlebih menumpuk! Tepi atas meleleh membulat seperti lilin, alur potong melebar, terak bawah sangat tebal dan keras.`;
+    }
+
+    drawOxy();
+  }
+
+  function startOxyTorch() {
+    if (isCutting) return;
+    isCutting = true;
+    torchX = 80;
+
+    const interval = setInterval(() => {
+      torchX += 5;
+      drawOxy();
+      if (torchX >= 460) {
+        clearInterval(interval);
+        setTimeout(() => {
+          isCutting = false;
+          torchX = 80;
+          drawOxy();
+        }, 1200);
+      }
+    }, 40);
+  }
+
+  // ===========================================================================
+  // QUIZ DATA & LOGIC
+  // ===========================================================================
+  const quizData = [
+    {
+      q: "1. Pada gambar bentangan serok sampah, terdapat lipatan selebar 9 mm pada dinding samping dan belakang. Apa fungsi utama lipatan 9 mm tersebut?",
+      options: [
+        "Menambah berat serok sampah agar tidak tertiup angin",
+        "Menghilangkan ketajaman tepi bekas potongan dan meningkatkan kekakuan lentur dinding serok",
+        "Memberi tempat untuk memasang kabel pembumian",
+        "Memudahkan pengecatan agar cat tidak menetes"
+      ],
+      ans: 1,
+      exp: "Lipatan single hem selebar 9 mm melipat duri tajam ke arah dalam agar aman bagi tangan pengguna sekaligus meningkatkan modulus penampang sehingga dinding pelat tipis 0,6 mm menjadi kaku."
+    },
+    {
+      q: "2. Mengapa pertemuan dinding samping dan kupingan tab 15 mm harus ditakik (notch) dengan sudut 90 derajat?",
+      options: [
+        "Agar pelat terlihat lebih modern",
+        "Mencegah tumpang tindih material (overlap) yang membuat pelat mengganjal/robek saat ditekuk 90°",
+        "Mempercepat pendinginan pelat setelah pengelasan",
+        "Mengurangi kebisingan suara gunting"
+      ],
+      ans: 1,
+      exp: "Takikan 90° membebaskan ruang tekukan sudut sehingga dinding samping dan dinding belakang dapat bertemu tegak lurus secara rapat tanpa berbenturan."
+    },
+    {
+      q: "3. Untuk memotong kurva cembung bukaan depan serok sampah selebar 300 mm dari pelat BJLS 0,6 mm, alat potong manakah yang paling ideal?",
+      options: [
+        "Gunting tuas meja (bench shear)",
+        "Gunting kombinasi / Aviation snips lengkung (kiri/kanan)",
+        "Gergaji besi manual (hacksaw)",
+        "Brander potong oxy-fuel"
+      ],
+      ans: 1,
+      exp: "Aviation snips memiliki bilah pendek beradius yang dirancang khusus memotong kontur lengkung tanpa membuat pelat tipis melintir."
+    },
+    {
+      q: "4. Bila terdengar suara desisan melengking tinggi dari dalam pipa brander dan gagang mendadak panas membara (Flashback), urutan tindakan pertama adalah...",
+      options: [
+        "Menyiram brander ke dalam air dingin",
+        "Segera menutup katup oksigen potong pada brander untuk memutus suplai oksidator",
+        "Membuka katup asetilin selebar mungkin",
+        "Menekan tuas oksigen potong sedalam-dalamnya"
+      ],
+      ans: 1,
+      exp: "Tindakan nomor 1 mutlak adalah mematikan katup oksigen potong untuk menghentikan reaksi pembakaran di dalam tabung brander seketika."
+    },
+    {
+      q: "5. Nilai celah pisau (blade clearance) ideal pada mesin guillotine shearing adalah...",
+      options: [
+        "1% s.d. 2% dari tebal pelat",
+        "5% s.d. 8% dari tebal pelat",
+        "15% s.d. 20% dari tebal pelat",
+        "Selalu tetap 1 mm untuk semua ketebalan"
+      ],
+      ans: 1,
+      exp: "Standar industri menetapkan celah pisau guillotine sebesar 5% - 8% dari tebal pelat guna menjamin gaya geser optimal tanpa overload mesin atau burr tebal."
+    }
+  ];
+
+  let quizScores = new Array(quizData.length).fill(0);
+
+  function renderQuiz() {
+    const container = document.getElementById('quizContainer');
+    container.innerHTML = '';
+
+    quizData.forEach((qItem, qIdx) => {
+      const qDiv = document.createElement('div');
+      qDiv.style.marginBottom = '28px';
+      qDiv.style.borderBottom = '1px solid #e2e8f0';
+      qDiv.style.paddingBottom = '20px';
+
+      let optionsHtml = '';
+      qItem.options.forEach((opt, oIdx) => {
+        optionsHtml += `<button class="quiz-opt" onclick="checkAnswer(${qIdx}, ${oIdx})">${String.fromCharCode(65 + oIdx)}. ${opt}</button>`;
+      });
+
+      qDiv.innerHTML = `
+        <div class="quiz-q">${qItem.q}</div>
+        <div class="quiz-options" id="opt-container-${qIdx}">${optionsHtml}</div>
+        <div class="quiz-feedback" id="feedback-${qIdx}"></div>
+      `;
+      container.appendChild(qDiv);
+    });
+  }
+
+  function checkAnswer(qIdx, selectedOpt) {
+    const qItem = quizData[qIdx];
+    const container = document.getElementById(`opt-container-${qIdx}`);
+    const btns = container.querySelectorAll('.quiz-opt');
+    const feedback = document.getElementById(`feedback-${qIdx}`);
+
+    btns.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === qItem.ans) {
+        btn.classList.add('correct');
+      } else if (idx === selectedOpt) {
+        btn.classList.add('wrong');
+      }
+    });
+
+    feedback.style.display = 'block';
+    if (selectedOpt === qItem.ans) {
+      quizScores[qIdx] = 20;
+      feedback.style.backgroundColor = '#dcfce7';
+      feedback.style.color = '#15803d';
+      feedback.innerHTML = `<b>Jawaban Benar! (+20 Poin)</b><br>${qItem.exp}`;
+    } else {
+      quizScores[qIdx] = 0;
+      feedback.style.backgroundColor = '#fee2e2';
+      feedback.style.color = '#b91c1c';
+      feedback.innerHTML = `<b>Jawaban Kurang Tepat! (0 Poin)</b><br>Kunci Jawaban: <b>${String.fromCharCode(65 + qItem.ans)}</b>.<br>${qItem.exp}`;
+    }
+
+    const total = quizScores.reduce((a, b) => a + b, 0);
+    document.getElementById('quizScoreBadge').innerText = `Skor: ${total} / 100`;
+  }
+
+  // ===========================================================================
+  // INITIALIZATION ON LOAD
+  // ===========================================================================
+  window.addEventListener('DOMContentLoaded', () => {
+    renderSlide();
+    drawSerok(0);
+    drawGuillotine();
+    drawOxy();
+    renderQuiz();
+  });
+</script>
+
+</body>
+</html>
