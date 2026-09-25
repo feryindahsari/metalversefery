@@ -223,11 +223,11 @@
       transform: translateY(-1px);
     }
 
-    /* Button color overrides for contrast */
-    button[class*="bg-blue-"], button[class*="bg-emerald-"], button[class*="bg-cyan-"],
-    button[class*="bg-purple-"], button[class*="bg-red-"], button[class*="bg-amber-"],
-    a[class*="bg-blue-"], a[class*="bg-emerald-"], a[class*="bg-cyan-"],
-    a[class*="bg-purple-"], a[class*="bg-red-"], a[class*="bg-amber-"],
+    /* Button color overrides for contrast (exclude pastel table action buttons) */
+    button[class*="bg-blue-"]:not(.matrik-action-btn), button[class*="bg-emerald-"]:not(.matrik-action-btn), button[class*="bg-cyan-"]:not(.matrik-action-btn),
+    button[class*="bg-purple-"]:not(.matrik-action-btn), button[class*="bg-red-"]:not(.matrik-action-btn), button[class*="bg-amber-"]:not(.matrik-action-btn),
+    a[class*="bg-blue-"]:not(.matrik-action-btn), a[class*="bg-emerald-"]:not(.matrik-action-btn), a[class*="bg-cyan-"]:not(.matrik-action-btn),
+    a[class*="bg-purple-"]:not(.matrik-action-btn), a[class*="bg-red-"]:not(.matrik-action-btn), a[class*="bg-amber-"]:not(.matrik-action-btn),
     .btn-clay-terracotta, .btn-clay-sage, .nav-tab.active {
       color: #FFFFFF !important;
     }
@@ -317,17 +317,104 @@
       border-color: #EA734F !important;
       outline: none !important;
     }
-      /* Matrikulasi & RPP Custom Badges */
+    /* Matrikulasi & RPP Custom Badges */
     .matrik-action-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.375rem;
-      padding: 0.375rem 0.625rem;
+      gap: 0.45rem;
+      padding: 0.4rem 0.75rem;
       border-radius: 0.75rem;
-      font-size: 11px;
-      font-weight: 700;
-      transition: all 0.15s ease-in-out;
+      font-size: 11.5px;
+      font-weight: 800;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+    .matrik-action-btn:hover {
+      transform: translateY(-1.5px) scale(1.02);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+    .matrik-action-btn i {
+      font-size: 12px;
+    }
+
+    /* Specific High-Contrast Color Variants for Matrik Labs & Action Buttons */
+    .matrik-action-btn.bg-cyan-50, .matrik-action-btn[class*="text-cyan-"] {
+      background-color: #E0F7FA !important;
+      color: #006064 !important;
+      border: 1.5px solid #00ACC1 !important;
+    }
+    .matrik-action-btn.bg-cyan-50:hover, .matrik-action-btn[class*="text-cyan-"]:hover {
+      background-color: #00838F !important;
+      color: #FFFFFF !important;
+      border-color: #006064 !important;
+    }
+
+    .matrik-action-btn.bg-amber-50, .matrik-action-btn[class*="text-amber-"] {
+      background-color: #FEF3C7 !important;
+      color: #92400E !important;
+      border: 1.5px solid #F59E0B !important;
+    }
+    .matrik-action-btn.bg-amber-50:hover, .matrik-action-btn[class*="text-amber-"]:hover {
+      background-color: #D97706 !important;
+      color: #FFFFFF !important;
+      border-color: #B45309 !important;
+    }
+
+    .matrik-action-btn.bg-red-50, .matrik-action-btn[class*="text-red-"] {
+      background-color: #FEE2E2 !important;
+      color: #991B1B !important;
+      border: 1.5px solid #F87171 !important;
+    }
+    .matrik-action-btn.bg-red-50:hover, .matrik-action-btn[class*="text-red-"]:hover {
+      background-color: #DC2626 !important;
+      color: #FFFFFF !important;
+      border-color: #991B1B !important;
+    }
+
+    .matrik-action-btn.bg-blue-50, .matrik-action-btn[class*="text-blue-"] {
+      background-color: #DBEAFE !important;
+      color: #1E40AF !important;
+      border: 1.5px solid #60A5FA !important;
+    }
+    .matrik-action-btn.bg-blue-50:hover, .matrik-action-btn[class*="text-blue-"]:hover {
+      background-color: #2563EB !important;
+      color: #FFFFFF !important;
+      border-color: #1E40AF !important;
+    }
+
+    .matrik-action-btn.bg-purple-50, .matrik-action-btn[class*="text-purple-"] {
+      background-color: #F3E8FF !important;
+      color: #6B21A8 !important;
+      border: 1.5px solid #C084FC !important;
+    }
+    .matrik-action-btn.bg-purple-50:hover, .matrik-action-btn[class*="text-purple-"]:hover {
+      background-color: #7E22CE !important;
+      color: #FFFFFF !important;
+      border-color: #581C87 !important;
+    }
+
+    .matrik-action-btn.bg-emerald-50, .matrik-action-btn[class*="text-emerald-"] {
+      background-color: #D1FAE5 !important;
+      color: #065F46 !important;
+      border: 1.5px solid #34D399 !important;
+    }
+    .matrik-action-btn.bg-emerald-50:hover, .matrik-action-btn[class*="text-emerald-"]:hover {
+      background-color: #059669 !important;
+      color: #FFFFFF !important;
+      border-color: #047857 !important;
+    }
+
+    .matrik-action-btn.bg-orange-50, .matrik-action-btn[class*="text-orange-"] {
+      background-color: #FFEDD5 !important;
+      color: #9A3412 !important;
+      border: 1.5px solid #FB923C !important;
+    }
+    .matrik-action-btn.bg-orange-50:hover, .matrik-action-btn[class*="text-orange-"]:hover {
+      background-color: #EA580C !important;
+      color: #FFFFFF !important;
+      border-color: #C2410C !important;
     }
     .badge-deep-mindful {
       display: inline-block;
