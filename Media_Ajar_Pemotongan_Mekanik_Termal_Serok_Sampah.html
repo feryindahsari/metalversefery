@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -634,6 +634,22 @@
 
       <div id="quizContainer">
         <!-- Soal akan di-render secara dinamis -->
+      </div>
+
+      <!-- Action Panel & Link to Full Bahan Ajar Quiz -->
+      <div style="margin-top:25px;padding:18px;border-radius:12px;background:#f8fafc;border:1.5px solid #cbd5e1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h4 style="margin:0 0 4px 0;color:#0f172a;font-size:1rem;">Pengumpulan Nilai &amp; Integrasi Spreadsheet</h4>
+          <p style="margin:0;font-size:0.85rem;color:#64748b;">Simpan hasil kuis ke Google Spreadsheet atau buka lembar evaluasi lengkap (termasuk 2 Studi Kasus &amp; 4 Jurnal Refleksi Diri).</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="Bahan_Ajar_Pemotongan_Mekanik_Termal.html#quiz-interaktif" target="_blank" style="padding:10px 18px;border-radius:10px;background:#ea580c;color:#fff;text-decoration:none;font-weight:700;font-size:0.85rem;display:inline-flex;align-items:center;gap:6px;">
+            <span>Lembar Evaluasi Lengkap + Uraian &rarr;</span>
+          </a>
+          <button id="btn-sync-media-quiz" onclick="syncMediaQuizToSheets()" style="padding:10px 18px;border-radius:10px;background:#10b981;color:#fff;border:none;font-weight:700;font-size:0.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+            <span>Kirim Nilai ke Spreadsheet</span>
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -1746,6 +1762,85 @@
 
     const total = quizScores.reduce((a, b) => a + b, 0);
     document.getElementById('quizScoreBadge').innerText = `Skor: ${total} / 100`;
+  }
+
+  // ===========================================================================
+  // SINKRONISASI GOOGLE SPREADSHEET
+  // ===========================================================================
+  async function syncMediaQuizToSheets() {
+    const total = quizScores.reduce((a, b) => a + b, 0);
+    let user = { name: 'Siswa TPFL', noAbsen: '-', kelas: 'XI TPFL', asalSekolah: 'SMKN 2 Depok Sleman' };
+    
+    try {
+      const rawUser = localStorage.getItem('metalverse_user_session');
+      if (rawUser) user = JSON.parse(rawUser);
+    } catch(e) {}
+
+    const btn = document.getElementById('btn-sync-media-quiz');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '<span>Mengirim...</span>';
+    btn.disabled = true;
+
+    const now = new Date();
+    const timestamp = now.toLocaleDateString('id-ID', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+
+    const payload = {
+      timestamp: timestamp,
+      noAbsen: user.noAbsen || '-',
+      nama: user.name || 'Siswa TPFL',
+      kelas: user.kelas || 'XI TPFL',
+      asalSekolah: user.asalSekolah || 'SMKN 2 Depok Sleman',
+      role: user.role || 'student',
+      kategori: 'Kuis Media Ajar: Pemotongan Serok Sampah',
+      rincianTugas: `Kuis Interaktif HOTS Serok Sampah (Skor: ${total}/100)`,
+      skor: total,
+      xp: Math.round(total * 1.5),
+      status: total >= 75 ? 'Kompeten (Tuntas Kuis)' : 'Perlu Remedial',
+      catatan: 'Dikerjakan via slide interaktif Media Ajar Serok Sampah'
+    };
+
+    const sheetsUrl = localStorage.getItem('metalverse_sheets_url');
+    let isCloud = false;
+
+    if (sheetsUrl && sheetsUrl.startsWith('http')) {
+      try {
+        await fetch(sheetsUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        isCloud = true;
+      } catch(err) {
+        console.warn('Sync error:', err);
+      }
+    }
+
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'METALVERSE_QUIZ_COMPLETED',
+          chapTitle: 'Kuis Media Ajar: Pemotongan Serok Sampah',
+          total: quizData.length,
+          correct: total / 20,
+          score: total,
+          payload: payload
+        }, '*');
+      }
+    } catch(e) {}
+
+    btn.innerHTML = '<span>✅ Nilai Tersimpan!</span>';
+    btn.style.background = '#059669';
+    alert(isCloud ? `✅ Berhasil! Skor Anda (${total}/100) telah disinkronkan ke Google Spreadsheet Guru.` : `ℹ️ Skor Anda (${total}/100) tersimpan di sesi lokal. Hubungkan Spreadsheet di menu header jika ingin merekap ke cloud.`);
+
+    setTimeout(() => {
+      btn.innerHTML = oldText;
+      btn.style.background = '#10b981';
+      btn.disabled = false;
+    }, 3500);
   }
 
   // ===========================================================================

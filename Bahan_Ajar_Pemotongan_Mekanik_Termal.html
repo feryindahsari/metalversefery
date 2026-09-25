@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bahan Ajar - Pemotongan Logam Mekanik dan Termal (Proyek Serok Sampah)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4;
+    margin: 2.5cm 2cm 2.5cm 2cm;
+    mso-header-margin: 1cm;
+    mso-footer-margin: 1cm;
+  }
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.5;
+    color: #24292e;
+    background-color: #ffffff;
+  }
+  
+  /* COVER PAGE */
+  .cover-container {
+    text-align: center;
+    page-break-after: always;
+    padding-top: 35px;
+    padding-bottom: 35px;
+  }
+  .cover-badge {
+    display: inline-block;
+    background-color: #1a365d;
+    color: #ffffff;
+    font-size: 11pt;
+    font-weight: bold;
+    padding: 6px 18px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .cover-title {
+    font-size: 26pt;
+    font-weight: 800;
+    color: #0d233a;
+    line-height: 1.2;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+  }
+  .cover-subtitle {
+    font-size: 15pt;
+    font-weight: 600;
+    color: #2b6cb0;
+    line-height: 1.3;
+    margin: 0 0 15px 0;
+  }
+  .cover-project {
+    display: inline-block;
+    background-color: #ebf8ff;
+    border: 1.5px solid #3182ce;
+    color: #2b6cb0;
+    font-size: 12pt;
+    font-weight: bold;
+    padding: 8px 24px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  .cover-framework {
+    font-size: 10.5pt;
+    font-style: italic;
+    color: #4a5568;
+    margin-bottom: 25px;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 8px 0;
+  }
+  .cover-meta-table {
+    width: 85%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  .cover-meta-table td {
+    padding: 6px 12px;
+    font-size: 10.5pt;
+    border-bottom: 1px solid #edf2f7;
+  }
+  .cover-meta-table td.label {
+    font-weight: bold;
+    color: #2d3748;
+    width: 35%;
+    background-color: #f7fafc;
+  }
+  .cover-meta-table td.val {
+    color: #1a202c;
+  }
+  .cover-footer {
+    margin-top: 40px;
+    font-size: 11pt;
+    font-weight: bold;
+    color: #2b6cb0;
+    line-height: 1.4;
+  }
+
+  /* HEADINGS */
+  h1 {
+    font-size: 17pt;
+    font-weight: bold;
+    color: #1a365d;
+    border-bottom: 2.5px solid #2b6cb0;
+    padding-bottom: 6px;
+    margin-top: 35px;
+    margin-bottom: 15px;
+    page-break-after: avoid;
+    text-transform: uppercase;
+  }
+  h2 {
+    font-size: 13.5pt;
+    font-weight: bold;
+    color: #2b6cb0;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    border-left: 4px solid #3182ce;
+    padding-left: 10px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #2d3748;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+  }
+  h4 {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #4a5568;
+    margin-top: 12px;
+    margin-bottom: 6px;
+  }
+
+  /* PARAGRAPHS & LISTS */
+  p {
+    margin: 0 0 10px 0;
+    text-align: justify;
+  }
+  ul, ol {
+    margin: 0 0 12px 25px;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 5px;
+    text-align: justify;
+  }
+
+  /* TABLES */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 15px 0 20px 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+  }
+  th {
+    background-color: #1a365d;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid #1a365d;
+  }
+  td {
+    border: 1px solid #cbd5e0;
+    padding: 7px 10px;
+    vertical-align: top;
+  }
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+
+  /* CALLOUT BOXES */
+  .callout-info {
+    background-color: #ebf8ff;
+    border-left: 4.5px solid #3182ce;
+    padding: 12px 16px;
+    margin: 15px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .callout-warn {
+    background-color: #fffaf0;
+    border-left: 4.5px solid #dd6b20;
+    padding: 12px 16px;
+    margin: 15px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .callout-danger {
+    background-color: #fff5f5;
+    border-left: 4.5px solid #e53e3e;
+    padding: 12px 16px;
+    margin: 15px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .callout-success {
+    background-color: #f0fff4;
+    border-left: 4.5px solid #38a169;
+    padding: 12px 16px;
+    margin: 15px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .callout-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 11pt;
+  }
+
+  /* CODE / DIAGRAM PRE */
+  pre {
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #4a5568;
+    padding: 12px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9.5pt;
+    line-height: 1.35;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 14px 0;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  /* TOP ACTION BANNER (SCREEN ONLY) */
+  .top-action-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f8fafc;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    margin: -2.5cm -2cm 25px -2cm;
+  }
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .top-bar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-nav-home {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .btn-nav-home:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+  .btn-jump-quiz {
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
+  }
+  .btn-jump-quiz:hover {
+    filter: brightness(1.1);
+  }
+  .sheets-live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+  .sheets-live-pill.online {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+  .sheets-live-pill.offline {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fcd34d;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+  }
+
+  /* INTERACTIVE QUIZ & ASSESSMENT SYSTEM */
+  .interactive-quiz-container {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1.5px solid #e2e8f0;
+    padding: 24px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    margin: 30px 0;
+  }
+  .student-identity-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+    border: 1.5px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 25px;
+  }
+  .student-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .form-group-student label {
+    display: block;
+    font-size: 10pt;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 4px;
+  }
+  .form-group-student input, .form-group-student select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #cbd5e1;
+    font-family: inherit;
+    font-size: 10pt;
+    background: #ffffff;
+    color: #0f172a;
+    transition: all 0.2s ease;
+  }
+  .form-group-student input:focus, .form-group-student select:focus {
+    outline: none;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  }
+  
+  /* QUESTION CARDS */
+  .q-card {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 22px;
+    transition: all 0.2s ease;
+  }
+  .q-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+  }
+  .q-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .q-badge {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-size: 9pt;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .q-score-tag {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .q-text {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+  
+  /* OPTION BUTTONS */
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .opt-choice-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 10.5pt;
+    color: #334155;
+    line-height: 1.45;
+    transition: all 0.15s ease;
+  }
+  .opt-choice-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+  .opt-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 800;
+    font-size: 9.5pt;
+    shrink: 0;
+    transition: all 0.15s;
+  }
+  .opt-choice-btn.selected {
+    background: #fff7ed;
+    border-color: #ea580c;
+    color: #9a3412;
+  }
+  .opt-choice-btn.selected .opt-letter {
+    background: #ea580c;
+    color: #ffffff;
+  }
+  .opt-choice-btn.correct {
+    background: #f0fdf4 !important;
+    border-color: #22c55e !important;
+    color: #15803d !important;
+  }
+  .opt-choice-btn.correct .opt-letter {
+    background: #22c55e !important;
+    color: #ffffff !important;
+  }
+  .opt-choice-btn.wrong {
+    background: #fef2f2 !important;
+    border-color: #ef4444 !important;
+    color: #b91c1c !important;
+  }
+  .opt-choice-btn.wrong .opt-letter {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+  }
+
+  /* FEEDBACK BOX */
+  .feedback-box {
+    margin-top: 14px;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 10pt;
+    line-height: 1.5;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .feedback-box.show {
+    display: block;
+  }
+  .feedback-box.correct {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+  }
+  .feedback-box.wrong {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+  }
+
+  /* ESSAY & CASE STUDY STYLES */
+  .essay-card {
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+  .essay-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .essay-context {
+    font-size: 10pt;
+    color: #475569;
+    background: #ffffff;
+    border-left: 3px solid #0284c7;
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  .essay-input-area {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #cbd5e1;
+    font-family: inherit;
+    font-size: 10pt;
+    line-height: 1.5;
+    color: #0f172a;
+    background: #ffffff;
+    resize: vertical;
+    min-height: 90px;
+    transition: all 0.2s ease;
+    margin-top: 6px;
+  }
+  .essay-input-area:focus {
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+  }
+  .rubric-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 9pt;
+    color: #64748b;
+    margin-top: 5px;
+  }
+
+  /* SUBMISSION CONTROL PANEL */
+  .submit-control-panel {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-top: 30px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+  }
+  .submit-control-panel h3 {
+    color: #ffffff;
+    margin-top: 0;
+  }
+  .btn-submit-sheets {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 12pt;
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    transition: all 0.2s ease;
+  }
+  .btn-submit-sheets:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+  .btn-print-report {
+    background: rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: 700;
+    font-size: 11pt;
+    padding: 12px 22px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .btn-print-report:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* MODAL NOTIFICATION */
+  .toast-banner {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #0f172a;
+    color: #ffffff;
+    padding: 14px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border-left: 4px solid #10b981;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    gap: 12px;
+    font-size: 10.5pt;
+    max-width: 420px;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* PRINT TWEAKS */
+  @media print {
+    .top-action-bar, .submit-control-panel, .toast-banner, .btn-print-report, #btn-eval-pg {
+      display: none !important;
+    }
+    .top-action-bar {
+      margin: 0 !important;
+    }
+    .interactive-quiz-container {
+      box-shadow: none !important;
+      border: 1px solid #cbd5e1 !important;
+      padding: 0 !important;
+    }
+    .feedback-box {
+      display: block !important;
+    }
+    .essay-input-area {
+      border: 1px solid #94a3b8 !important;
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP STICKY BAR -->
+<div class="top-action-bar">
+  <div class="top-bar-left">
+    <a href="index.html" class="top-bar-btn btn-nav-home" title="Kembali ke Dashboard Utama MetalVerse">
+      <i class="fa-solid fa-house"></i>
+      <span>Dashboard MetalVerse</span>
+    </a>
+    <a href="#quiz-interaktif" class="top-bar-btn btn-jump-quiz">
+      <i class="fa-solid fa-list-check"></i>
+      <span>Mulai Kuis Interaktif</span>
+    </a>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div id="sheets-indicator-pill" class="sheets-live-pill online">
+      <i class="fa-solid fa-cloud-arrow-up"></i>
+      <span id="sheets-indicator-text">Sinkronisasi Spreadsheet: Siap</span>
+    </div>
+  </div>
+</div>
+
+<!-- COVER -->
+<div class="cover-container">
+  <div class="cover-badge">Bahan Ajar &amp; Panduan Praktik Siswa</div>
+  <div class="cover-title">TEKNIK FABRIKASI LOGAM</div>
+  <div class="cover-subtitle">Pemotongan Logam secara Mekanik dan Termal</div>
+  <div class="cover-project">PROYEK FABRIKASI: PEMBUATAN SEROK SAMPAH (DUSTPAN)</div>
+  <div class="cover-framework">Pendekatan <b>Deep Learning</b> (Mindful, Meaningful, &amp; Joyful) terintegrasi <b>Pembelajaran Sosial Emosional (PSE)</b></div>
+
+  <table class="cover-meta-table">
+    <tr><td class="label">Satuan Pendidikan</td><td class="val">SMK Negeri 2 Depok Sleman</td></tr>
+    <tr><td class="label">Bidang Keahlian</td><td class="val">Teknologi Manufaktur dan Rekayasa</td></tr>
+    <tr><td class="label">Program Keahlian</td><td class="val">Teknik Pengelasan dan Fabrikasi Logam</td></tr>
+    <tr><td class="label">Konsentrasi Keahlian</td><td class="val">Teknik Fabrikasi Logam dan Manufaktur</td></tr>
+    <tr><td class="label">Mata Pelajaran</td><td class="val">Fabrikasi Logam</td></tr>
+    <tr><td class="label">Fase / Kelas / Semester</td><td class="val">Fase F / Kelas XI / Semester Ganjil</td></tr>
+    <tr><td class="label">Elemen / Topik</td><td class="val">Teknik Fabrikasi Logam / Pemotongan Mekanik &amp; Termal</td></tr>
+    <tr><td class="label">Alokasi Waktu</td><td class="val">2 Pertemuan (14 JP @ 40 Menit = 560 Menit)</td></tr>
+    <tr><td class="label">Tahun Ajaran</td><td class="val">2026/2027</td></tr>
+  </table>
+
+  <div class="cover-footer">
+    PEMERINTAH DAERAH DAERAH ISTIMEWA YOGYAKARTA<br>
+    DINAS PENDIDIKAN, PEMUDA, DAN OLAHRAGA<br>
+    <b>SMK NEGERI 2 DEPOK SLEMAN</b><br>
+    2026
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- BAGIAN I -->
+<h1>BAGIAN I: PENDAHULUAN &amp; PETUNJUK PENGGUNAAN</h1>
+
+<h2>A. Rasional &amp; Pilar Deep Learning</h2>
+<p>
+Pembelajaran kejuruan teknik fabrikasi logam pada Fase F berorientasi pada penguasaan kompetensi nyata yang aplikatif. Melalui proyek pembuatan <b>Serok Sampah (Dustpan)</b>, peserta didik mengintegrasikan penguasaan sains teknik, keterampilan motorik presisi melukis bentangan, pemotongan mekanik (gunting tangan, gunting tuas, dan mesin <i>guillotine</i>), pemotongan termal (pada flens dudukan tangkai), serta manajemen keselamatan bengkel. Modul ini berlandaskan kerangka kerja <b>Deep Learning (Pembelajaran Mendalam)</b>:
+</p>
+
+<div class="callout-info">
+  <div class="callout-title" style="color: #2b6cb0;">1. Mindful Learning (Belajar Berkesadaran)</div>
+  <p>Melatih peserta didik untuk fokus penuh dan peka sensorik di bengkel. Sebelum menginjak pedal guillotine atau menggunting pelat seng yang tipis tajam, peserta didik diajak menerapkan teknik STOP (<i>Stop, Take a breath, Observe, Proceed</i>) guna meredakan kegugupan dan meningkatkan ketelitian visual saat menarik garis gores presisi (toleransi &plusmn; 0,5 mm).</p>
+</div>
+
+<div class="callout-info">
+  <div class="callout-title" style="color: #2b6cb0;">2. Meaningful Learning (Belajar Bermakna)</div>
+  <p>Memahami logika di balik desain geometri bentangan serok sampah: mengapa lipatan penguat (<i>hem</i>) 9 mm mampu membuat dinding pelat tipis menjadi kaku dan tidak lemas, mengapa sudut pertemuan harus ditakik (<i>notch</i>) 90&deg; agar tidak tumpang tindih saat ditekuk, serta bagaimana reaksi kimia oksidasi eksotermik memotong baja flens tangkai dengan rapi.</p>
+</div>
+
+<div class="callout-info">
+  <div class="callout-title" style="color: #2b6cb0;">3. Joyful Learning (Belajar Menggembirakan)</div>
+  <p>Membangun kolaborasi saling mendukung dalam sistem <i>Buddy System</i>. Peserta didik saling memeriksa ukuran gambar kerja rekannya secara suportif dan merayakan kepuasan batin saat lembaran pelat datar berhasil dipotong, ditekuk, dan dirakit menjadi serok sampah fungsional berkualitas tinggi.</p>
+</div>
+
+<h2>B. Integrasi Kompetensi Sosial Emosional (PSE - CASEL)</h2>
+<ul>
+  <li><b>Kesadaran Diri (Self-Awareness):</b> Memahami batas kemampuan motorik diri saat menggunakan perkakas tajam berkecepatan tinggi dan api gas bersuhu 3.000&deg;C.</li>
+  <li><b>Manajemen Diri (Self-Management):</b> Bersabar dan teliti saat melukis garis lengkung bukaan depan dan takikan kupingan tab 15 mm.</li>
+  <li><b>Kesadaran Sosial (Social Awareness):</b> Mengarahkan arah potongan dan serpihan gram agar tidak membahayakan rekan kerja di dekatnya.</li>
+  <li><b>Keterampilan Berelasi (Relationship Skills):</b> Berkomunikasi secara taktis saat berbagi peran (juru ukur dan juru potong) dalam kemitraan sebaya.</li>
+  <li><b>Pengambilan Keputusan Bertanggung Jawab (Responsible Decision-Making):</b> Wajib mengenakan sarung tangan kulit pelindung sayatan pelat tipis dan mematuhi SOP K3LH mesin potong.</li>
+</ul>
+
+<h2>C. Capaian Pembelajaran, Tujuan, &amp; KKTP</h2>
+<div class="callout-success">
+  <div class="callout-title" style="color: #276749;">Capaian Pembelajaran (Fase F - Fabrikasi Logam)</div>
+  <p>Pada akhir Fase F, peserta didik memiliki kemampuan melakukan pemotongan secara mekanik mencakup menandai batas pemotongan, memotong menggunakan mesin gunting (<i>shearing</i>), gerinda potong abrasif, dan pemotongan termal (<i>oxy-fuel cutting</i> dan <i>plasma arc cutting</i>) sesuai dengan gambar kerja, standar operasional prosedur (SOP), dan persyaratan keselamatan kerja industri.</p>
+</div>
+
+<h3>Kriteria Ketercapaian Tujuan Pembelajaran (KKTP):</h3>
+<ul>
+  <li>Mampu membaca dan melukis pola bentangan serok sampah (bukaan depan 300 mm, badan 280 mm, dinding belakang 80 mm, dasar 230 mm, lipatan 9 mm, dan tab 15 mm) dengan toleransi &le; &plusmn; 0,5 mm.</li>
+  <li>Mampu mengoperasikan mesin guillotine untuk memotong bahan baku lembaran awal 400 &times; 400 mm secara siku.</li>
+  <li>Mampu memotong kontur lurus, miring, kurva bukaan, dan takikan sudut 90&deg; menggunakan gunting pelat tuas dan gunting tangan kombinasi (aviation snips).</li>
+  <li>Mampu melakukan penumpulan tepi tajam (<i>deburring</i>) menggunakan kikir pelat halus pada seluruh keliling tepi potong.</li>
+  <li>Mampu memotong pipa/strip tangkai dan pelat flens dudukan menggunakan pemotongan termal oxy-fuel / plasma dengan dragline vertikal.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- BAGIAN II -->
+<h1>BAGIAN II: KESELAMATAN &amp; KESEHATAN KERJA (K3LH) BENGKEL FABRIKASI</h1>
+
+<h2>A. Matriks Potensi Bahaya dan Pengendaliannya</h2>
+<table>
+  <tr>
+    <th style="width: 20%;">Kategori Bahaya</th>
+    <th style="width: 25%;">Sumber Bahaya</th>
+    <th style="width: 25%;">Potensi Risiko</th>
+    <th style="width: 30%;">Tindakan Pengendalian (SOP)</th>
+  </tr>
+  <tr>
+    <td><b>Mekanik - Tepi Pelat Tipis</b></td>
+    <td>Tepian pelat BJLS 0,6 mm tajam bekas potongan</td>
+    <td>Luka sayat robek pada jari dan telapak tangan</td>
+    <td>Wajib memakai sarung tangan kulit/katun berlapis nitril; segera lakukan <i>deburring</i> dengan kikir halus.</td>
+  </tr>
+  <tr>
+    <td><b>Mekanik - Mesin Guillotine</b></td>
+    <td>Bilah pisau atas turun &amp; klem <i>hold-down</i></td>
+    <td>Jari terjepit atau teramputasi</td>
+    <td>Jaga posisi tangan di luar batas aman (<i>finger guard</i>); pedal hanya diinjak oleh operator pemegang pelat.</td>
+  </tr>
+  <tr>
+    <td><b>Mekanik - Gerinda Potong</b></td>
+    <td>Piringan batu abrasif berputar 4.400 RPM</td>
+    <td>Roda pecah melesat mengenai wajah/tubuh</td>
+    <td>Pemeriksaan <i>Ring Test</i>; penutup pengaman wajib terpasang; wajib kenakan pelindung wajah (<i>face shield</i>).</td>
+  </tr>
+  <tr>
+    <td><b>Termal - Api Oxy-Fuel</b></td>
+    <td>Suhu api 3.160&deg;C &amp; semburan terak cair</td>
+    <td>Luka bakar tingkat lanjut; kebakaran bengkel</td>
+    <td>Area 10 m bebas bahan mudah terbakar; gunakan apron kulit pelindung dada dan sarung tangan las kulit panjang.</td>
+  </tr>
+  <tr>
+    <td><b>Radiasi Optik</b></td>
+    <td>Pancaran inframerah, ultraviolet, &amp; silau</td>
+    <td>Kerusakan retina &amp; kornea (<i>arc eye</i>)</td>
+    <td>Gunakan kacamata pelindung las/potong filter Shade DIN 5 (OFC) atau Shade 9 - 10 (PAC).</td>
+  </tr>
+  <tr>
+    <td><b>Gas Bertekanan</b></td>
+    <td>Kebocoran gas Asetilin (C<sub>2</sub>H<sub>2</sub>) &amp; O<sub>2</sub></td>
+    <td>Ledakan dahsyat; sesak napas</td>
+    <td>Rantai silinder tegak; tes kebocoran dengan air sabun; pasang <i>flashback arrestor</i> ganda.</td>
+  </tr>
+</table>
+
+<h2>B. Prosedur Darurat: Backfire &amp; Flashback</h2>
+<div class="callout-danger">
+  <div class="callout-title" style="color: #c53030;">TANGGAP DARURAT NYALA API BALIK (FLASHBACK)</div>
+  <p>Bila terdengar suara mendesis melengking keras dari dalam brander dan gagang brander mendadak panas membara disertai asap pekat, lakukan urutan penyelamatan seketika berikut:</p>
+  <ol>
+    <li><b>TUTUP KATUP OKSIGEN POTONG PADA BRANDER DENGAN CEPAT!</b> (Memutus suplai oksidator).</li>
+    <li><b>TUTUP KATUP ASETILIN PADA BRANDER SEGERA SETELAHNYA!</b> (Memutus suplai bahan bakar).</li>
+    <li><b>TUTUP KATUP UTAMA SILINDER OKSIGEN DAN ASETILIN PADA TABUNG!</b></li>
+    <li>Lapor instruktur dan periksa selang serta arrestor sebelum dinyalakan kembali.</li>
+  </ol>
+</div>
+
+<div class="page-break"></div>
+
+<!-- BAGIAN III & IV -->
+<h1>BAGIAN III &amp; IV: TEKNOLOGI PEMOTONGAN MEKANIK &amp; TERMAL</h1>
+
+<h2>A. Sains Pemotongan Gaya Geser &amp; Celah Pisau (Blade Clearance)</h2>
+<p>
+Pemotongan pelat pada mesin guillotine terjadi melalui aksi gaya geser linear antara pisau atas miring dan pisau bawah tetap. Nilai celah pisau (<i>Blade Clearance</i>, <i>C</i>) wajib diatur proporsional terhadap tebal pelat:
+</p>
+<div class="callout-info">
+  <div class="callout-title" style="color: #2b6cb0;">Rumus Standar Celah Pisau:</div>
+  <p style="font-size: 13pt; text-align: center; font-weight: bold; color: #1a365d;">
+    C = (5% s.d. 8%) &times; t
+  </p>
+  <p>Untuk pelat serok sampah (tebal t = 0,6 mm): C = 0,06 &times; 0,6 mm = <b>0,036 &approx; 0,04 mm</b>.<br>
+  Bila celah terlalu longgar (&gt; 10%), pelat seng tipis akan melipat ke dalam celah pisau dan menimbulkan duri logam (<i>burr</i>) yang tebal dan melengkungkan pelat.</p>
+</div>
+
+<h2>B. Sains Reaksi Oksidasi Pemotongan Termal (Oxy-Fuel Cutting)</h2>
+<p>
+Pemotongan oxy-fuel pada flens dudukan tangkai tebal (8 mm) adalah reaksi kimia pembakaran besi eksotermik:
+</p>
+<div class="callout-info">
+  <div class="callout-title" style="color: #2b6cb0;">Reaksi Kimia Pembakaran Besi:</div>
+  <p style="font-size: 13pt; text-align: center; font-weight: bold; color: #1a365d;">
+    3Fe + 2O<sub>2</sub> &rarr; Fe<sub>3</sub>O<sub>4</sub> + &Delta;H (-1.120 kJ/mol)
+  </p>
+  <p>Baja karbon dipanaskan awal hingga suhu nyala (&plusmn; 900&deg;C / merah ceri), lalu disemprot jet oksigen murni (2,5 bar). Besi terbakar menghasilkan kalor yang mencairkan oksida besi (Fe<sub>3</sub>O<sub>4</sub>, lebur pada 1.370&deg;C). Oksida cair ini ditiup keluar oleh jet oksigen potong menembus pelat menghasilkan alur potong halus dengan garis seret (<i>dragline</i>) vertikal.</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- BAGIAN V: JOBSHEET PROYEK SEROK SAMPAH -->
+<h1>BAGIAN V: JOBSHEET &amp; PANDUAN PRAKTIK PROYEK SEROK SAMPAH</h1>
+
+<h2>JOBSHEET UTAMA: PEMBUATAN BADAN SEROK SAMPAH DARI PELAT LOGAM</h2>
+<p>
+<b>Satuan Pendidikan:</b> SMK Negeri 2 Depok Sleman | <b>Fase / Kelas:</b> F / XI<br>
+<b>Mata Pelajaran:</b> Fabrikasi Logam | <b>Alokasi Waktu:</b> 7 JP (Pertemuan 1)<br>
+<b>Bahan Baku:</b> Pelat Baja Lapis Seng (BJLS) / Mild Steel tebal 0,5 – 0,8 mm ukuran 400 &times; 400 mm.<br>
+<b>Toleransi Dimensi:</b> &plusmn; 0,5 mm | <b>Toleransi Kesikuan:</b> 90&deg; &plusmn; 0,5&deg;
+</p>
+
+<h3>A. Gambar Kerja Teknik Bentangan Badan Serok Sampah</h3>
+<p>
+Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pola pada pelat:
+</p>
+
+<div style="text-align: center; margin: 15px 0;">
+  <img src="C:\Users\ThinkPad\Downloads\rpp smaw\serok_sampah_drawing.jpeg" style="max-width: 480px; width: 95%; height: auto; border: 1.5px solid #a0aec0; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Gambar Kerja Bentangan Serok Sampah">
+  <br>
+  <i style="font-size: 10pt; color: #4a5568; font-weight: bold; margin-top: 6px; display: inline-block;">Gambar 5.1 Gambar Kerja Bentangan Badan Serok Sampah (Ukuran dalam mm)</i>
+</div>
+
+<h3>B. Spesifikasi Geometri &amp; Analisis Garis Gambar</h3>
+<table style="font-size: 9.5pt;">
+  <tr>
+    <th style="width: 25%;">Elemen Geometri</th>
+    <th style="width: 20%;">Ukuran Nominal</th>
+    <th style="width: 55%;">Fungsi Teknis &amp; Prosedur Pemotongan</th>
+  </tr>
+  <tr>
+    <td><b>Bukaan Depan Serok</b></td>
+    <td>300 mm</td>
+    <td>Lebar efektif mulut serok sampah untuk menampung sampah dan debu.</td>
+  </tr>
+  <tr>
+    <td><b>Panjang Badan Utama</b></td>
+    <td>280 mm s.d. 300 mm</td>
+    <td>280 mm pada sudut samping, dan 300 mm pada puncak kurva cembung bukaan depan.</td>
+  </tr>
+  <tr>
+    <td><b>Kurva Bibir Depan</b></td>
+    <td>Busur Cembung</td>
+    <td>Dipoles tipis dan dipotong melengkung dengan gunting kombinasi (aviation snips).</td>
+  </tr>
+  <tr>
+    <td><b>Tinggi Dinding Belakang</b></td>
+    <td>80 mm</td>
+    <td>Dinding penahan tumpukan sampah sisi belakang. Ditekuk tegak 90&deg;.</td>
+  </tr>
+  <tr>
+    <td><b>Lebar Dasar Belakang</b></td>
+    <td>230 mm</td>
+    <td>Lebar bidang bawah sisi belakang serok sampah.</td>
+  </tr>
+  <tr>
+    <td><b>Dinding Samping</b></td>
+    <td>Panjang 260 mm, Tinggi 80 mm</td>
+    <td>Dinding samping kiri dan kanan yang meruncing rendah ke arah bukaan depan.</td>
+  </tr>
+  <tr>
+    <td><b>Lipatan Penguat (Hem)</b></td>
+    <td>9 mm (Kiri, Kanan, Belakang)</td>
+    <td>Dilipat rapat (single hem) ke arah luar/dalam untuk memperkaku pelat dan meniadakan tepi tajam.</td>
+  </tr>
+  <tr>
+    <td><b>Kupingan Sambungan (Tab)</b></td>
+    <td>15 mm &times; 15 mm</td>
+    <td>Bidang tumpuan sambungan paku keling (&phi; 3,2 mm) saat dinding samping dan belakang disatukan.</td>
+  </tr>
+  <tr>
+    <td><b>Sudut Takikan (Notch)</b></td>
+    <td>90&deg;</td>
+    <td>Takikan miring 90&deg; agar saat ditekuk kedua dinding tidak bertabrakan (<i>overlap</i>).</td>
+  </tr>
+  <tr>
+    <td><b>Garis Potong (Solid)</b></td>
+    <td>Garis Kontinu Tebal</td>
+    <td>Jalur yang wajib dipotong menggunakan gunting tuas / gunting tangan.</td>
+  </tr>
+  <tr>
+    <td><b>Garis Tekuk (Dashed)</b></td>
+    <td>Garis Putus-Putus</td>
+    <td>Sumbu penekukan pelat menggunakan mesin tekuk pelat / landasan paron.</td>
+  </tr>
+</table>
+
+<h3>C. Langkah Kerja Operasional Pemotongan &amp; Perakitan</h3>
+<ol>
+  <li>Kenakan seluruh APD bengkel (sarung tangan pelindung, kacamata, dan apron kerja).</li>
+  <li>Ambil bahan pelat BJLS 0,6 mm, potong ukuran segi empat awal 400 &times; 400 mm menggunakan mesin <i>guillotine shearing</i>.</li>
+  <li>Bersihkan permukaan pelat dari minyak pelumas dan kotoran debu.</li>
+  <li>Tarik garis sumbu tengah simetris (<i>centerline</i>) pada pelat menggunakan mistar baja dan penggores karbida.</li>
+  <li>Lukis garis dasar dinding belakang selebar 230 mm, lalu lukis dinding belakang setinggi 80 mm dan lipatan hem 9 mm.</li>
+  <li>Dari garis dasar tekukan belakang, ukur panjang badan 280 mm ke depan dan lukis garis lebar bukaan depan 300 mm.</li>
+  <li>Lukis busur lengkung bukaan depan setinggi 300 mm pada sumbu tengah menggunakan jangka tusuk.</li>
+  <li>Lukis kedua dinding samping sepanjang 260 mm dengan tinggi 80 mm pada bagian belakang serta lipatan hem 9 mm.</li>
+  <li>Lukis kupingan lipat sambungan sudut selebar 15 mm dan takikan sudut (<i>notch</i>) 90&deg;.</li>
+  <li>Beri tanda titik pandu menggunakan penitik otomatis pada setiap titik temu garis tekuk dan sudut potong.</li>
+  <li>Mintakan verifikasi dan persetujuan instruktur bengkel terhadap hasil lukisan pola bentangan sebelum dipotong.</li>
+  <li>Lakukan pemotongan kontur luar lurus menggunakan gunting tuas meja atau gunting tangan lurus.</li>
+  <li>Lakukan pemotongan kontur lengkung bukaan depan menggunakan gunting kombinasi (aviation snips lengkung).</li>
+  <li>Potong takikan sudut 90&deg; dan kupingan tab 15 mm secara presisi tanpa melebihi titik batas tekukan.</li>
+  <li>Lakukan <i>deburring</i> pada seluruh keliling tepi luar pelat menggunakan kikir pelat halus sudut 45&deg; hingga bebas dari duri tajam logam.</li>
+  <li>Lanjutkan ke proses penekukan lipatan hem 9 mm, penekukan dinding tegak 80 mm, serta pengelingan tab 15 mm dengan paku keling pop rivet &phi; 3,2 mm.</li>
+</ol>
+
+<div class="page-break"></div>
+
+<!-- JOBSHEET PENDUKUNG & QC SHEET -->
+<h2>JOBSHEET PENDUKUNG: PEMOTONGAN TANGKAI &amp; DUDUKAN FLENS PENGUAT</h2>
+<p>
+<b>Alokasi Waktu:</b> 7 JP (Pertemuan 2) | <b>Materi:</b> Pemotongan Mekanik &amp; Termal Komponen Dudukan Tangkai<br>
+<b>Komponen:</b> Tangkai pipa baja &phi; 3/4" panjang 700 mm (dipotong dengan mesin gerinda potong <i>chop saw</i>) dan Pelat flens penguat tebal 8 mm ukuran 80 &times; 60 mm (dipotong menggunakan <i>Oxy-Fuel Cutting</i> / <i>Plasma Arc Cutting</i>).
+</p>
+
+<h2>LEMBAR KONTROL MUTU DIMENSI &amp; KESIKUAN (QUALITY CONTROL SHEET)</h2>
+<p>
+<b>Nama Siswa / Pasangan (Buddy):</b> .................................................. / ..................................................<br>
+<b>Kelas / No. Presensi:</b> XI Fabrikasi ...... / ...... &amp; ...... | <b>Tanggal Praktik:</b> .................................
+</p>
+
+<table>
+  <tr>
+    <th style="width: 5%;">No</th>
+    <th style="width: 30%;">Parameter Pengukuran</th>
+    <th style="width: 20%;">Standar Gambar</th>
+    <th style="width: 15%;">Hasil Ukur (mm)</th>
+    <th style="width: 15%;">Deviasi (mm)</th>
+    <th style="width: 15%;">Status QC</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Lebar Bukaan Depan Serok</td>
+    <td>300,0 &plusmn; 0,5 mm</td>
+    <td>........... mm</td>
+    <td>........... mm</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>Panjang Tengah Badan Serok</td>
+    <td>300,0 &plusmn; 0,5 mm</td>
+    <td>........... mm</td>
+    <td>........... mm</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>Panjang Sudut Samping Serok</td>
+    <td>280,0 &plusmn; 0,5 mm</td>
+    <td>........... mm</td>
+    <td>........... mm</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>Lebar Dasar Belakang Serok</td>
+    <td>230,0 &plusmn; 0,5 mm</td>
+    <td>........... mm</td>
+    <td>........... mm</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>Tinggi Dinding Belakang &amp; Samping</td>
+    <td>80,0 &plusmn; 0,5 mm</td>
+    <td>........... mm</td>
+    <td>........... mm</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>Lebar Lipatan Tepi (Hem)</td>
+    <td>9,0 &plusmn; 0,5 mm</td>
+    <td>........... mm</td>
+    <td>........... mm</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td>Lebar Kupingan Tab Keling</td>
+    <td>15,0 &plusmn; 0,5 mm</td>
+    <td>........... mm</td>
+    <td>........... mm</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td>Kesikuan Sudut Takikan (Notch)</td>
+    <td>90&deg; &plusmn; 0,5&deg;</td>
+    <td>........... derajat</td>
+    <td>........... derajat</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+  <tr>
+    <td>9</td>
+    <td>Kerapian Tepi (Bebas Burr)</td>
+    <td>Tumpul &amp; rata halus</td>
+    <td>Halus / Tajam</td>
+    <td>-</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+  <tr>
+    <td>10</td>
+    <td>Potongan Plat Flens Dudukan (Termal)</td>
+    <td>Bebas dross &amp; dragline lurus</td>
+    <td>Rata / Terak</td>
+    <td>-</td>
+    <td>[ &nbsp; ] OK &nbsp; [ &nbsp; ] REJECT</td>
+  </tr>
+</table>
+
+<div class="page-break"></div>
+
+<div id="quiz-interaktif"></div>
+<!-- EVALUASI & REFLEKSI INTERAKTIF -->
+<h1>BAGIAN VI: EVALUASI, METAKOGNISI, &amp; ASESMEN MUTU</h1>
+
+<p style="font-size: 11pt; color: #475569; margin-bottom: 20px;">
+  Kerjakan kuis pilihan ganda HOTS, analisis studi kasus industri, dan jurnal refleksi di bawah ini. Jawaban dan skor Anda akan <b>langsung tersinkronisasi otomatis ke Google Spreadsheet Guru Pengampu</b> sesuai nomor presensi Anda.
+</p>
+
+<!-- KOTAK IDENTITAS SISWA -->
+<div class="student-identity-card">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <h3 style="margin:0;font-size:12pt;color:#1e293b;display:flex;align-items:center;gap:8px;">
+      <i class="fa-solid fa-id-card text-amber-600"></i>
+      <span>Identitas Peserta Didik (Sinkron Sesi MetalVerse)</span>
+    </h3>
+    <span style="font-size:9pt;font-weight:700;color:#0284c7;background:#e0f2fe;padding:3px 10px;border-radius:9999px;">
+      <i class="fa-solid fa-bolt"></i> Auto-Sync Profil
+    </span>
+  </div>
+
+  <div class="student-grid">
+    <div class="form-group-student">
+      <label for="stu_name">Nama Lengkap Siswa *</label>
+      <input type="text" id="stu_name" placeholder="Contoh: Muhammad Rizky Pratama" required>
+    </div>
+    <div class="form-group-student">
+      <label for="stu_absen">Nomor Presensi (Absen) *</label>
+      <input type="number" id="stu_absen" min="1" max="50" placeholder="Contoh: 18" required>
+    </div>
+    <div class="form-group-student">
+      <label for="stu_kelas">Kelas &amp; Program Keahlian *</label>
+      <input type="text" id="stu_kelas" value="XI TPFL 1" placeholder="XI TPFL 1 / XI TPFL 2">
+    </div>
+    <div class="form-group-student">
+      <label for="stu_school">Satuan Pendidikan</label>
+      <input type="text" id="stu_school" value="SMK Negeri 2 Depok Sleman">
+    </div>
+  </div>
+
+  <!-- Pengaturan URL Google Spreadsheet -->
+  <div style="margin-top:14px;padding-top:12px;border-top:1px dashed #cbd5e1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div style="font-size:9.5pt;color:#475569;display:flex;align-items:center;gap:6px;">
+      <i class="fa-solid fa-table text-emerald-600"></i>
+      <span>URL Google Spreadsheet:</span>
+      <span id="sheet-url-status-badge" style="font-size:8.5pt;font-weight:700;padding:2px 8px;border-radius:6px;background:#dcfce7;color:#166534;">Terhubung Sesi Utama</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex:1;max-width:480px;min-width:260px;">
+      <input type="text" id="stu_sheet_url" placeholder="https://script.google.com/macros/s/.../exec" style="padding:5px 10px;font-size:8.5pt;font-family:monospace;width:100%;border-radius:6px;border:1px solid #cbd5e1;">
+      <button type="button" onclick="saveCustomSheetUrl()" style="padding:5px 10px;border-radius:6px;background:#0f172a;color:#fff;border:none;font-size:8.5pt;font-weight:bold;cursor:pointer;white-space:nowrap;">Simpan URL</button>
+    </div>
+  </div>
+</div>
+
+<div class="interactive-quiz-container">
+
+  <!-- A. PILIHAN GANDA HOTS -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #e2e8f0;">
+    <div>
+      <h2 style="margin:0;border:none;padding:0;color:#1a365d;font-size:14pt;">A. Soal Tes Formatif HOTS Interaktif (5 Butir Soal)</h2>
+      <p style="margin:4px 0 0 0;font-size:10pt;color:#64748b;">Pilihlah satu jawaban yang paling tepat. Tiap jawaban benar bernilai 20 poin (Total 100 poin).</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="pg-progress-text" style="font-size:10pt;font-weight:700;color:#64748b;background:#f1f5f9;padding:6px 12px;border-radius:8px;">
+        0 / 5 Soal Terjawab
+      </div>
+      <div id="pg-score-badge" style="font-size:11pt;font-weight:800;color:#ffffff;background:#0f172a;padding:6px 16px;border-radius:8px;">
+        Skor PG: 0 / 100
+      </div>
+    </div>
+  </div>
+
+  <!-- SOAL 1 -->
+  <div class="q-card" id="q-card-0">
+    <div class="q-header">
+      <span class="q-badge">Soal 1 &bull; Analisis Pola Bentangan</span>
+      <span class="q-score-tag">Bobot 20 Poin</span>
+    </div>
+    <div class="q-text">
+      Pada gambar kerja bentangan serok sampah, terdapat garis putus-putus selebar 9 mm di sepanjang tepi dinding samping dan dinding belakang. Tujuan teknis utama dibuatnya lipatan selebar 9 mm tersebut adalah...
+    </div>
+    <div class="options-list" id="opts-q-0">
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(0, 0)">
+        <span class="opt-letter">A</span>
+        <span>Menambah berat serok sampah agar tidak mudah terbawa angin saat dipakai di luar ruangan.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(0, 1)">
+        <span class="opt-letter">B</span>
+        <span>Menghilangkan ketajaman tepi pelat potong yang membahayakan pengguna serta meningkatkan modulus kekakuan lentur dinding serok (<i>stiffening hem</i>).</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(0, 2)">
+        <span class="opt-letter">C</span>
+        <span>Memberikan ruang untuk pemasangan isolasi listrik anti-statis.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(0, 3)">
+        <span class="opt-letter">D</span>
+        <span>Memudahkan proses pengecatan dasar agar cat tidak menetes ke lantai bengkel.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(0, 4)">
+        <span class="opt-letter">E</span>
+        <span>Menghemat penggunaan bahan pelat lembaran di bengkel fabrikasi.</span>
+      </button>
+    </div>
+    <div class="feedback-box" id="feedback-q-0"></div>
+  </div>
+
+  <!-- SOAL 2 -->
+  <div class="q-card" id="q-card-1">
+    <div class="q-header">
+      <span class="q-badge">Soal 2 &bull; Teknik Takikan Notching</span>
+      <span class="q-score-tag">Bobot 20 Poin</span>
+    </div>
+    <div class="q-text">
+      Mengapa pada pertemuan sudut antara dinding belakang dan kupingan tab 15 mm harus dibuat takikan miring (<i>notch</i>) bersudut 90&deg; dan tidak boleh dibiarkan lurus persegi?
+    </div>
+    <div class="options-list" id="opts-q-1">
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(1, 0)">
+        <span class="opt-letter">A</span>
+        <span>Agar pelat terlihat lebih artistik, aerodinamis, dan bernilai jual tinggi.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(1, 1)">
+        <span class="opt-letter">B</span>
+        <span>Untuk mencegah terjadinya tumpang tindih material (<i>overlap interference</i>) yang menyebabkan pelat robek atau mengganjal saat ditekuk tegak 90&deg;.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(1, 2)">
+        <span class="opt-letter">C</span>
+        <span>Agar gas asetilin dapat mengalir lancar saat proses pengelasan sambungan.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(1, 3)">
+        <span class="opt-letter">D</span>
+        <span>Mempercepat laju korosi alami pada pelat lapis seng (BJLS).</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(1, 4)">
+        <span class="opt-letter">E</span>
+        <span>Mengurangi kebisingan desibel suara mesin saat memotong lembaran pelat.</span>
+      </button>
+    </div>
+    <div class="feedback-box" id="feedback-q-1"></div>
+  </div>
+
+  <!-- SOAL 3 -->
+  <div class="q-card" id="q-card-2">
+    <div class="q-header">
+      <span class="q-badge">Soal 3 &bull; Pemilihan Alat Potong Sesuai Geometri</span>
+      <span class="q-score-tag">Bobot 20 Poin</span>
+    </div>
+    <div class="q-text">
+      Untuk memotong garis lengkung cembung (<i>convex arc</i>) pada bukaan depan serok sampah dengan bukaan 300 mm dari pelat BJLS 0,6 mm, alat potong tangan manakah yang paling tepat dan menghasilkan tepi potong yang paling rapi?
+    </div>
+    <div class="options-list" id="opts-q-2">
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(2, 0)">
+        <span class="opt-letter">A</span>
+        <span>Gunting pelat tuas meja (<i>bench lever shear</i>).</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(2, 1)">
+        <span class="opt-letter">B</span>
+        <span>Gergaji besi manual (<i>hacksaw</i> 24 TPI).</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(2, 2)">
+        <span class="opt-letter">C</span>
+        <span>Gunting kombinasi / <i>Aviation snips</i> lengkung kiri/kanan.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(2, 3)">
+        <span class="opt-letter">D</span>
+        <span>Mesin gerinda potong abrasif (<i>chop saw</i>).</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(2, 4)">
+        <span class="opt-letter">E</span>
+        <span>Brander pemotong <i>oxy-fuel cutting</i> dengan nosel nomor 2.</span>
+      </button>
+    </div>
+    <div class="feedback-box" id="feedback-q-2"></div>
+  </div>
+
+  <!-- SOAL 4 -->
+  <div class="q-card" id="q-card-3">
+    <div class="q-header">
+      <span class="q-badge">Soal 4 &bull; Sains Oksidasi Termal (Oxy-Fuel)</span>
+      <span class="q-score-tag">Bobot 20 Poin</span>
+    </div>
+    <div class="q-text">
+      Saat memotong pelat tebal 8 mm untuk flens dudukan tangkai serok menggunakan <i>Oxy-Fuel Cutting</i>, juru potong melihat jejak garis seret (<i>dragline</i>) melengkung tajam ke belakang dengan deviasi seret horizontal &Delta;x = 2,5 mm (&gt; 30%). Tindakan perbaikan yang tepat adalah...
+    </div>
+    <div class="options-list" id="opts-q-3">
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(3, 0)">
+        <span class="opt-letter">A</span>
+        <span>Menurunkan kecepatan gerak potong brander dan menaikkan sedikit tekanan oksigen potong agar tembus sempurna.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(3, 1)">
+        <span class="opt-letter">B</span>
+        <span>Mengganti bahan benda kerja menjadi pelat paduan aluminium.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(3, 2)">
+        <span class="opt-letter">C</span>
+        <span>Mempercepat gerakan dorong tangan dua kali lipat lebih laju.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(3, 3)">
+        <span class="opt-letter">D</span>
+        <span>Mengubah nyala api pemanas menjadi nyala karburasi berjelaga hitam pekat.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(3, 4)">
+        <span class="opt-letter">E</span>
+        <span>Menutup rapat tuas katup oksigen pemotong saat brander berjalan.</span>
+      </button>
+    </div>
+    <div class="feedback-box" id="feedback-q-3"></div>
+  </div>
+
+  <!-- SOAL 5 -->
+  <div class="q-card" id="q-card-4">
+    <div class="q-header">
+      <span class="q-badge">Soal 5 &bull; K3LH Tanggap Darurat Flashback</span>
+      <span class="q-score-tag">Bobot 20 Poin</span>
+    </div>
+    <div class="q-text">
+      Jika saat memotong pelat dudukan terdengar suara mendesis melengking keras dari dalam pipa brander dan gagang brander terasa memanas mendadak disertai keluarnya asap hitam pekat, tindakan nomor 1 yang wajib diambil seketika adalah...
+    </div>
+    <div class="options-list" id="opts-q-4">
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(4, 0)">
+        <span class="opt-letter">A</span>
+        <span>Membuka katup gas asetilin selebar-lebarnya.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(4, 1)">
+        <span class="opt-letter">B</span>
+        <span>Segera menutup katup oksigen potong pada brander untuk menghentikan pasokan oksidator reaksi pembakaran di dalam pipa.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(4, 2)">
+        <span class="opt-letter">C</span>
+        <span>Menyiramkan air sabun busa ke kepala nosel potong.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(4, 3)">
+        <span class="opt-letter">D</span>
+        <span>Melemparkan brander menyala ke lantai bengkel.</span>
+      </button>
+      <button type="button" class="opt-choice-btn" onclick="selectQuizOpt(4, 4)">
+        <span class="opt-letter">E</span>
+        <span>Meniup ujung nosel dengan selang kompresor udara.</span>
+      </button>
+    </div>
+    <div class="feedback-box" id="feedback-q-4"></div>
+  </div>
+
+  <!-- TOMBOL EVALUASI KUIS PG -->
+  <div style="text-align:center;margin:25px 0;">
+    <button type="button" id="btn-eval-pg" onclick="evaluateQuizPG(true)" style="background:linear-gradient(135deg, #ea580c 0%, #c2410c 100%);color:#fff;font-weight:700;font-size:11pt;padding:12px 26px;border-radius:12px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(234,88,12,0.3);transition:all 0.2s;">
+      <i class="fa-solid fa-square-check"></i>
+      <span>Periksa Jawaban Pilihan Ganda &amp; Tampilkan Pembahasan</span>
+    </button>
+  </div>
+
+  <!-- B. STUDI KASUS URAIAN PEMECAHAN MASALAH INDUSTRI -->
+  <div style="margin-top:35px;padding-top:20px;border-top:2px solid #e2e8f0;">
+    <h2 style="margin:0 0 6px 0;border:none;padding:0;color:#1a365d;font-size:14pt;">B. Studi Kasus Pemecahan Masalah Industri (Uraian Analisis)</h2>
+    <p style="margin:0 0 16px 0;font-size:10pt;color:#64748b;">Bacalah setiap kasus kegagalan manufaktur di bawah ini, lalu ketik analisis mendalam dan solusi rekayasa Anda pada kolom yang disediakan.</p>
+
+    <!-- KASUS 1 -->
+    <div class="essay-card">
+      <div class="essay-title">
+        <span style="background:#0284c7;color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9pt;">1</span>
+        <span>Kasus Industri 1: Cacat Sudut Serok Sampah Tidak Menutup Rapat</span>
+      </div>
+      <div class="essay-context">
+        <strong>Deskripsi Kasus:</strong> Di sebuah bengkel produksi alat kebersihan berbahan pelat logam, 20 unit badan serok sampah setelah ditekuk menghasilkan celah terbuka menganga sebesar 3 mm di sudut pertemuan antara dinding samping dan belakang. Akibatnya, debu halus bocor keluar dari celah sudut saat serok digunakan.
+      </div>
+      
+      <div style="margin-bottom:14px;">
+        <label style="font-weight:700;font-size:10pt;color:#1e293b;">1.1 Berdasarkan analisis gambar bentangan, kesalahan penandaan dimensi apa (apakah lebar tab 15 mm, sudut takikan 90&deg;, atau posisi garis tekuk) yang memicu terjadinya celah menganga tersebut? Jelaskan alasannya!</label>
+        <textarea id="essay_case1_q1" class="essay-input-area" placeholder="Tuliskan analisis teknis Anda di sini (misal: analisis sudut notch, pergeseran garis tekuk, dll)..."></textarea>
+        <div class="rubric-hint">
+          <i class="fa-solid fa-lightbulb text-amber-500"></i>
+          <span>Rubrik: Ketepatan mengidentifikasi sudut takik miring &ge; 90&deg; dan kelonggaran radius tekuk pelat.</span>
+        </div>
+      </div>
+
+      <div>
+        <label style="font-weight:700;font-size:10pt;color:#1e293b;">1.2 Bagaimana cara mengoreksi pola bentangan agar kedua bidang dinding bertemu tepat rapat dan dapat dikeling sempurna tanpa kebocoran?</label>
+        <textarea id="essay_case1_q2" class="essay-input-area" placeholder="Tuliskan prosedur koreksi pola bentangan dan langkah verifikasi penggoresan ulang..."></textarea>
+        <div class="rubric-hint">
+          <i class="fa-solid fa-lightbulb text-amber-500"></i>
+          <span>Rubrik: Prosedur penyesuaian sudut 90&deg;, pemotongan notch presisi, dan alignment tab keling 15 mm.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KASUS 2 -->
+    <div class="essay-card">
+      <div class="essay-title">
+        <span style="background:#0284c7;color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9pt;">2</span>
+        <span>Kasus Industri 2: Pelat Serok Bergelombang Akibat Deformasi Gunting Tumpul</span>
+      </div>
+      <div class="essay-context">
+        <strong>Deskripsi Kasus:</strong> Saat memotong lembaran pelat BJLS 0,6 mm sepanjang garis lurus 260 mm menggunakan gunting tangan lurus konvensional, tepi pelat tampak melintir bergelombang (<i>twisting</i>) dan robek di beberapa titik.
+      </div>
+      
+      <div style="margin-bottom:14px;">
+        <label style="font-weight:700;font-size:10pt;color:#1e293b;">2.1 Mengapa bilah gunting yang longgar atau tumpul dapat memicu efek pelat melintir (twisting) dan terlipat ke samping?</label>
+        <textarea id="essay_case2_q1" class="essay-input-area" placeholder="Jelaskan mekanisme deformasi geser (shearing action), celah pisau berlebih, dan gaya tekuk transversal..."></textarea>
+        <div class="rubric-hint">
+          <i class="fa-solid fa-lightbulb text-amber-500"></i>
+          <span>Rubrik: Penjelasan gaya geser vs tekuk transversal ketika celah clearance gunting melonggar.</span>
+        </div>
+      </div>
+
+      <div>
+        <label style="font-weight:700;font-size:10pt;color:#1e293b;">2.2 Jelaskan teknik pemotongan gunting tangan yang benar (termasuk bukaan bilah pisau tidak boleh digunting sampai mentok di ujung) untuk menghasilkan potongan lurus tanpa kerutan!</label>
+        <textarea id="essay_case2_q2" class="essay-input-area" placeholder="Tuliskan teknik bukaan 3/4 panjang pisau, sudut pemotongan 90&deg; tegak lurus, dan arah dorong kontinu..."></textarea>
+        <div class="rubric-hint">
+          <i class="fa-solid fa-lightbulb text-amber-500"></i>
+          <span>Rubrik: Standar SOP menggunting 3/4 panjang mata pisau agar ujung runcing tidak melubangi pelat.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C. JURNAL REFLEKSI METAKOGNISI -->
+  <div style="margin-top:35px;padding-top:20px;border-top:2px solid #e2e8f0;">
+    <h2 style="margin:0 0 6px 0;border:none;padding:0;color:#1a365d;font-size:14pt;">C. Jurnal Refleksi Metakognisi &amp; Regulasi Emosi (Deep Learning &amp; PSE)</h2>
+    <p style="margin:0 0 16px 0;font-size:10pt;color:#64748b;">Refleksikan proses belajar dan pengalaman praktik Anda secara jujur untuk menguatkan kesadaran diri (Mindful), pemahaman bermakna (Meaningful), dan kegembiraan belajar (Joyful).</p>
+
+    <div class="student-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="essay-card">
+        <label style="font-weight:700;font-size:10pt;color:#1e293b;display:block;margin-bottom:6px;">
+          <i class="fa-solid fa-spa text-emerald-600 mr-1"></i>
+          1. Kesadaran Diri &amp; Mindfulness (Regulasi Emosi):
+        </label>
+        <p style="font-size:9.5pt;color:#64748b;margin:0 0 8px 0;">Tantangan emosi apa yang paling saya rasakan saat melukis garis pola bentangan serok sampah yang rumit (kurva cembung &amp; notch)? Bagaimana latihan hening pernapasan membantu saya lebih sabar &amp; fokus?</p>
+        <textarea id="ref_mindful" class="essay-input-area" placeholder="Refleksi emosi, ketenangan pikiran, dan fokus kerja saya..."></textarea>
+      </div>
+
+      <div class="essay-card">
+        <label style="font-weight:700;font-size:10pt;color:#1e293b;display:block;margin-bottom:6px;">
+          <i class="fa-solid fa-brain text-purple-600 mr-1"></i>
+          2. Meaningful Learning (Pemahaman Teknik):
+        </label>
+        <p style="font-size:9.5pt;color:#64748b;margin:0 0 8px 0;">Mengapa memahami fungsi garis putus-putus (garis tekuk) vs garis penuh (garis potong) sangat krusial agar bahan pelat tidak terbuang sia-sia?</p>
+        <textarea id="ref_meaningful" class="essay-input-area" placeholder="Pemahaman mendasar saya tentang simbol gambar teknik dan efisiensi material..."></textarea>
+      </div>
+
+      <div class="essay-card">
+        <label style="font-weight:700;font-size:10pt;color:#1e293b;display:block;margin-bottom:6px;">
+          <i class="fa-solid fa-people-arrows text-cyan-600 mr-1"></i>
+          3. Kerjasama Kemitraan (Buddy System):
+        </label>
+        <p style="font-size:9.5pt;color:#64748b;margin:0 0 8px 0;">Bagaimana peran saya dan rekan pasangan saat saling memeriksa ukuran sebelum menggunting? Apakah kami berhasil menerapkan prinsip "Ukur dua kali, potong satu kali"?</p>
+        <textarea id="ref_buddy" class="essay-input-area" placeholder="Refleksi kerjasama tim, komunikasi sejawat, dan budaya saling memvalidasi..."></textarea>
+      </div>
+
+      <div class="essay-card">
+        <label style="font-weight:700;font-size:10pt;color:#1e293b;display:block;margin-bottom:6px;">
+          <i class="fa-solid fa-face-smile text-amber-500 mr-1"></i>
+          4. Kebanggaan Hasil Karya (Joyful Learning):
+        </label>
+        <p style="font-size:9.5pt;color:#64748b;margin:0 0 8px 0;">Bagaimana perasaan saya setelah melihat bentangan pelat berhasil dirakit menjadi badan serok sampah yang kokoh, rapi, dan fungsional?</p>
+        <textarea id="ref_joyful" class="essay-input-area" placeholder="Rasa kepuasan, apresiasi karya sendiri, dan motivasi menuju materi berikutnya..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- D. RUBRIK ASESMEN KINERJA PRODUK (STANDAR BENGKEL) -->
+  <div style="margin-top:35px;padding-top:20px;border-top:2px solid #e2e8f0;">
+    <h2 style="margin:0 0 6px 0;border:none;padding:0;color:#1a365d;font-size:14pt;">D. Rubrik Asesmen Kinerja Produk &amp; Sikap Kerja (Skor Total Maksimal = 100)</h2>
+    <p style="margin:0 0 14px 0;font-size:10pt;color:#64748b;">Standar acuan penilaian mutu produk fabrikasi serok sampah di bengkel sekolah:</p>
+    
+    <table>
+      <tr>
+        <th style="width:25%;">Komponen Penilaian</th>
+        <th style="width:30%;">Kriteria Sangat Baik (Skor 4)</th>
+        <th style="width:30%;">Kriteria Perlu Bimbingan (Skor 1)</th>
+        <th style="width:15%;">Bobot</th>
+      </tr>
+      <tr>
+        <td><b>1. Akurasi Dimensi Pola Bentangan</b></td>
+        <td>Deviasi ukuran &le; &plusmn; 0,5 mm dari gambar kerja.</td>
+        <td>Deviasi ukuran &gt; &plusmn; 1,5 mm melampaui toleransi.</td>
+        <td><b>25%</b></td>
+      </tr>
+      <tr>
+        <td><b>2. Kerapian Takikan Sudut (Notch 90&deg; &amp; Tab 15 mm)</b></td>
+        <td>Sudut takik tepat 90&deg; &plusmn; 0,5&deg;, tidak sobek pada sudut dalam.</td>
+        <td>Sudut takik meleset miring, pelat sobek di ujung tekuk.</td>
+        <td><b>20%</b></td>
+      </tr>
+      <tr>
+        <td><b>3. Kualitas Tepi Potong &amp; Deburring</b></td>
+        <td>Seluruh tepi bebas burr, tidak tajam, lipatan hem 9 mm lurus rapi.</td>
+        <td>Tepi pelat bergerigi tajam dan melintir bergelombang.</td>
+        <td><b>15%</b></td>
+      </tr>
+      <tr>
+        <td><b>4. Pemotongan Termal Plat Flens Dudukan</b></td>
+        <td>Dragline vertikal (&le; 5%), terak lepas bersih sekali ketuk.</td>
+        <td>Potongan tidak tembus, tepi meleleh membulat, terak tebal.</td>
+        <td><b>20%</b></td>
+      </tr>
+      <tr>
+        <td><b>5. Kepatuhan K3LH &amp; Budaya Kerja 5S</b></td>
+        <td>Disiplin penuh APD sarung tangan &amp; kacamata, area bersih rapi.</td>
+        <td>Mengabaikan APD, bergurau di bengkel, alat berserakan.</td>
+        <td><b>20%</b></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- PANEL AKSI PENGIRIMAN DATA KE GOOGLE SPREADSHEET -->
+  <div class="submit-control-panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px;">
+      <div>
+        <h3 style="display:flex;align-items:center;gap:10px;font-size:14pt;margin-bottom:6px;">
+          <i class="fa-solid fa-paper-plane text-emerald-400"></i>
+          <span>Pengumpulan Asesmen &amp; Sinkronisasi Nilai</span>
+        </h3>
+        <p style="margin:0;font-size:10.5pt;color:#94a3b8;max-width:540px;">
+          Tekan tombol di samping untuk merekam skor pilihan ganda, teks analisis kasus, dan jurnal refleksi langsung ke <b>Google Spreadsheet Guru</b> dan riwayat portofolio digital Anda.
+        </p>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <button type="button" class="btn-print-report" onclick="window.print()">
+          <i class="fa-solid fa-print"></i>
+          <span>Cetak / Simpan PDF</span>
+        </button>
+
+        <button type="button" class="btn-submit-sheets" id="btn-submit-action" onclick="submitFullAssessment()">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Kirim ke Google Spreadsheet</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Status Console -->
+    <div id="sync-console-log" style="display:none;margin-top:16px;padding:12px 16px;border-radius:10px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);font-family:monospace;font-size:9.5pt;">
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST FLOATING BANNER -->
+<div id="toast-banner" class="toast-banner">
+  <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400" style="font-size:18pt;"></i>
+  <div>
+    <div id="toast-title" style="font-weight:700;">Berhasil Disinkronkan</div>
+    <div id="toast-desc" style="font-size:9.5pt;color:#cbd5e1;">Jawaban siswa tersimpan ke Google Spreadsheet.</div>
+  </div>
+</div>
+
+<!-- =========================================================================== -->
+<!-- JAVASCRIPT: LOGIKA KUIS INTERAKTIF & SINKRONISASI GOOGLE SPREADSHEET       -->
+<!-- =========================================================================== -->
+<script>
+  // KUNCI JAWABAN & PEMBAHASAN LENGKAP 5 SOAL HOTS
+  const QUIZ_ANSWER_KEYS = [
+    {
+      ans: 1, // B
+      letter: 'B',
+      exp: 'Lipatan tepi tunggal (single hem) selebar 9 mm pada pekerjaan fabrikasi pelat tipis berfungsi ganda: melipat sisi tepi tajam bekas guntingan ke dalam agar tidak melukai tangan pengguna, serta membentuk profil lipatan yang meningkatkan momen inersia penampang sehingga dinding serok menjadi kaku dan tidak lemas.'
+    },
+    {
+      ans: 1, // B
+      letter: 'B',
+      exp: 'Pada penekukan dua bidang yang saling tegak lurus (dinding samping dan belakang), sudut pertemuan harus ditakik (notching) sebesar 90°. Jika tidak ditakik, kelebihan material akan saling bertubrukan saat ditekuk, menyebabkan sudut menjadi menggembung, bergelombang, dan tidak dapat membentuk sudut siku yang rapat.'
+    },
+    {
+      ans: 2, // C
+      letter: 'C',
+      exp: 'Gunting tuas meja hanya dirancang untuk potongan lurus. Memotong kurva pada pelat tipis paling ideal menggunakan gunting kombinasi (aviation snips lengkung) karena bilah pisaunya pendek melengkung sehingga mampu bermanuver mengikuti kontur radius tanpa membuat pelat terpelintir.'
+    },
+    {
+      ans: 0, // A
+      letter: 'A',
+      exp: 'Garis seret yang tertinggal jauh ke belakang (deviasi > 30%) menandakan kecepatan pemotongan terlalu tinggi sehingga reaksi pembakaran oksigen belum tuntas menembus tebal pelat bagian bawah saat brander sudah bergerak maju. Menurunkan kecepatan potong dan memastikan tekanan oksigen potong sesuai tabel nozzle akan menghasilkan garis seret vertikal lurus (<= 5%).'
+    },
+    {
+      ans: 1, // B
+      letter: 'B',
+      exp: 'Peristiwa tersebut adalah Flashback (nyala api balik). Mematikan katup oksigen potong terlebih dahulu akan memutus pasokan oksidator bertekanan tinggi yang menyuplai pembakaran di dalam pipa brander, sehingga api dalam pipa padam dan tabung terlindungi dari bahaya ledakan.'
+    }
+  ];
+
+  let studentAnswers = [null, null, null, null, null];
+  let isQuizEvaluated = false;
+
+  // Inisialisasi Halaman
+  document.addEventListener('DOMContentLoaded', () => {
+    loadStudentSession();
+    loadSavedQuizState();
+    updateAnsweredProgress();
+  });
+
+  // 1. Membaca Sesi Siswa & URL Spreadsheet dari LocalStorage MetalVerse
+  function loadStudentSession() {
+    try {
+      // Ambil profil login dari dashboard MetalVerse jika tersedia
+      const rawUser = localStorage.getItem('metalverse_user_session');
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        if (u.name) document.getElementById('stu_name').value = u.name;
+        if (u.noAbsen) document.getElementById('stu_absen').value = u.noAbsen;
+        if (u.kelas) document.getElementById('stu_kelas').value = u.kelas;
+        if (u.asalSekolah) document.getElementById('stu_school').value = u.asalSekolah;
+      }
+
+      // Ambil URL Google Spreadsheet yang sudah diset di header dashboard
+      const sheetsUrl = localStorage.getItem('metalverse_sheets_url');
+      const urlInput = document.getElementById('stu_sheet_url');
+      const pill = document.getElementById('sheets-indicator-pill');
+      const pillText = document.getElementById('sheets-indicator-text');
+      const badge = document.getElementById('sheet-url-status-badge');
+
+      if (sheetsUrl && sheetsUrl.startsWith('http')) {
+        urlInput.value = sheetsUrl;
+        pill.className = 'sheets-live-pill online';
+        pillText.innerHTML = '<i class="fa-solid fa-circle-check"></i> Spreadsheet Terkoneksi';
+        badge.innerText = 'Terhubung Sesi Utama';
+        badge.style.background = '#dcfce7';
+        badge.style.color = '#166534';
+      } else {
+        pill.className = 'sheets-live-pill offline';
+        pillText.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Spreadsheet Belum Disetel';
+        badge.innerText = 'Belum Terhubung';
+        badge.style.background = '#fef3c7';
+        badge.style.color = '#92400e';
+      }
+    } catch (e) {
+      console.warn('Gagal memuat sesi siswa:', e);
+    }
+  }
+
+  function saveCustomSheetUrl() {
+    const val = document.getElementById('stu_sheet_url').value.trim();
+    if (val && val.startsWith('http')) {
+      localStorage.setItem('metalverse_sheets_url', val);
+      loadStudentSession();
+      showToastBanner('URL Tersimpan', 'Google Spreadsheet Web App siap digunakan untuk sinkronisasi nilai.');
+    } else {
+      alert('Harap masukkan URL Web App Google Apps Script yang valid (diawali https://script.google.com/...)');
+    }
+  }
+
+  // 2. Interaksi Pemilihan Opsi Soal Pilihan Ganda
+  function selectQuizOpt(qIdx, optIdx) {
+    studentAnswers[qIdx] = optIdx;
+    
+    // Update visual tombol opsi
+    const container = document.getElementById(`opts-q-${qIdx}`);
+    const btns = container.querySelectorAll('.opt-choice-btn');
+    btns.forEach((btn, idx) => {
+      if (idx === optIdx) {
+        btn.classList.add('selected');
+      } else {
+        btn.classList.remove('selected');
+      }
+    });
+
+    // Simpan progres ke LocalStorage
+    saveQuizProgress();
+    updateAnsweredProgress();
+
+    // Jika sudah pernah dievaluasi, langsung re-evaluasi butir soal ini
+    if (isQuizEvaluated) {
+      evaluateQuizPG(false);
+    }
+  }
+
+  function updateAnsweredProgress() {
+    const answeredCount = studentAnswers.filter(a => a !== null).length;
+    const progText = document.getElementById('pg-progress-text');
+    if (progText) {
+      progText.innerText = `${answeredCount} / 5 Soal Terjawab`;
+      progText.style.color = answeredCount === 5 ? '#166534' : '#64748b';
+      progText.style.background = answeredCount === 5 ? '#dcfce7' : '#f1f5f9';
+    }
+  }
+
+  // 3. Evaluasi Skor Pilihan Ganda & Tampilkan Pembahasan
+  function evaluateQuizPG(showAlert = true) {
+    let score = 0;
+    let correctCount = 0;
+
+    for (let i = 0; i < 5; i++) {
+      const selected = studentAnswers[i];
+      const correctAns = QUIZ_ANSWER_KEYS[i].ans;
+      const card = document.getElementById(`q-card-${i}`);
+      const fbBox = document.getElementById(`feedback-q-${i}`);
+      const btns = card.querySelectorAll('.opt-choice-btn');
+
+      // Reset styles
+      btns.forEach((btn, idx) => {
+        btn.classList.remove('correct', 'wrong');
+        if (selected !== null) {
+          if (idx === correctAns) {
+            btn.classList.add('correct');
+          } else if (idx === selected) {
+            btn.classList.add('wrong');
+          }
+        }
+      });
+
+      if (selected !== null) {
+        fbBox.classList.add('show');
+        if (selected === correctAns) {
+          score += 20;
+          correctCount++;
+          fbBox.className = 'feedback-box show correct';
+          fbBox.innerHTML = `
+            <strong><i class="fa-solid fa-circle-check"></i> Jawaban Anda Benar! (+20 Poin)</strong><br>
+            <span>${QUIZ_ANSWER_KEYS[i].exp}</span>
+          `;
+        } else {
+          fbBox.className = 'feedback-box show wrong';
+          fbBox.innerHTML = `
+            <strong><i class="fa-solid fa-circle-xmark"></i> Jawaban Kurang Tepat! (0 Poin)</strong><br>
+            <span>Kunci Jawaban yang Benar: <b>Pilihan ${QUIZ_ANSWER_KEYS[i].letter}</b>.<br>${QUIZ_ANSWER_KEYS[i].exp}</span>
+          `;
+        }
+      }
+    }
+
+    isQuizEvaluated = true;
+    const badge = document.getElementById('pg-score-badge');
+    badge.innerText = `Skor PG: ${score} / 100`;
+    badge.style.background = score >= 75 ? '#15803d' : (score >= 40 ? '#b45309' : '#b91c1c');
+
+    if (showAlert) {
+      showToastBanner(`Evaluasi Kuis Selesai!`, `Skor Pilihan Ganda Anda: ${score}/100 (${correctCount}/5 Soal Benar).`);
+    }
+
+    return { score, correctCount };
+  }
+
+  // 4. Menyimpan Progres Jawaban Lokal
+  function saveQuizProgress() {
+    const data = {
+      answers: studentAnswers,
+      case1_1: document.getElementById('essay_case1_q1')?.value || '',
+      case1_2: document.getElementById('essay_case1_q2')?.value || '',
+      case2_1: document.getElementById('essay_case2_q1')?.value || '',
+      case2_2: document.getElementById('essay_case2_q2')?.value || '',
+      ref_mindful: document.getElementById('ref_mindful')?.value || '',
+      ref_meaningful: document.getElementById('ref_meaningful')?.value || '',
+      ref_buddy: document.getElementById('ref_buddy')?.value || '',
+      ref_joyful: document.getElementById('ref_joyful')?.value || '',
+    };
+    try {
+      localStorage.setItem('metalverse_bahan_ajar_progress', JSON.stringify(data));
+    } catch (e) {}
+  }
+
+  function loadSavedQuizState() {
+    try {
+      const raw = localStorage.getItem('metalverse_bahan_ajar_progress');
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (Array.isArray(data.answers)) {
+        studentAnswers = data.answers;
+        studentAnswers.forEach((ans, qIdx) => {
+          if (ans !== null) {
+            const container = document.getElementById(`opts-q-${qIdx}`);
+            const btns = container?.querySelectorAll('.opt-choice-btn');
+            if (btns && btns[ans]) btns[ans].classList.add('selected');
+          }
+        });
+      }
+      if (data.case1_1) document.getElementById('essay_case1_q1').value = data.case1_1;
+      if (data.case1_2) document.getElementById('essay_case1_q2').value = data.case1_2;
+      if (data.case2_1) document.getElementById('essay_case2_q1').value = data.case2_1;
+      if (data.case2_2) document.getElementById('essay_case2_q2').value = data.case2_2;
+      if (data.ref_mindful) document.getElementById('ref_mindful').value = data.ref_mindful;
+      if (data.ref_meaningful) document.getElementById('ref_meaningful').value = data.ref_meaningful;
+      if (data.ref_buddy) document.getElementById('ref_buddy').value = data.ref_buddy;
+      if (data.ref_joyful) document.getElementById('ref_joyful').value = data.ref_joyful;
+    } catch(e) {}
+  }
+
+  // 5. PENGIRIMAN UTAMA KE GOOGLE SPREADSHEET
+  async function submitFullAssessment() {
+    const nama = document.getElementById('stu_name').value.trim();
+    const noAbsen = document.getElementById('stu_absen').value.trim();
+    const kelas = document.getElementById('stu_kelas').value.trim();
+    const sekolah = document.getElementById('stu_school').value.trim();
+
+    if (!nama) {
+      alert('Harap lengkapi Nama Lengkap Anda terlebih dahulu pada kotak identitas!');
+      document.getElementById('stu_name').focus();
+      return;
+    }
+    if (!noAbsen) {
+      alert('Harap isi Nomor Presensi (Absen) Anda!');
+      document.getElementById('stu_absen').focus();
+      return;
+    }
+
+    // Jalankan evaluasi PG otomatis jika belum
+    const { score: pgScore, correctCount } = evaluateQuizPG(false);
+
+    // Kumpulkan jawaban uraian & refleksi
+    const c1_1 = document.getElementById('essay_case1_q1').value.trim();
+    const c1_2 = document.getElementById('essay_case1_q2').value.trim();
+    const c2_1 = document.getElementById('essay_case2_q1').value.trim();
+    const c2_2 = document.getElementById('essay_case2_q2').value.trim();
+    const r_mind = document.getElementById('ref_mindful').value.trim();
+    const r_mean = document.getElementById('ref_meaningful').value.trim();
+    const r_bud = document.getElementById('ref_buddy').value.trim();
+    const r_joy = document.getElementById('ref_joyful').value.trim();
+
+    // Hitung kelengkapan uraian
+    const essayCount = [c1_1, c1_2, c2_1, c2_2].filter(t => t.length > 5).length;
+    const refCount = [r_mind, r_mean, r_bud, r_joy].filter(t => t.length > 5).length;
+
+    // Tombol animasi loading
+    const btn = document.getElementById('btn-submit-action');
+    const oldBtnText = btn.innerHTML;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Mengirim ke Spreadsheet...</span>`;
+    btn.disabled = true;
+
+    const consoleLog = document.getElementById('sync-console-log');
+    consoleLog.style.display = 'block';
+    consoleLog.innerHTML = `<span style="color:#38bdf8;">[SINKRONISASI]</span> Menyiapkan payload data siswa (${nama}, Absen ${noAbsen})...`;
+
+    const now = new Date();
+    const timestamp = now.toLocaleDateString('id-ID', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+
+    const payload = {
+      timestamp: timestamp,
+      noAbsen: noAbsen,
+      nama: nama,
+      kelas: kelas || 'XI TPFL',
+      asalSekolah: sekolah || 'SMK Negeri 2 Depok Sleman',
+      role: 'student',
+      kategori: 'Kuis & Uraian: Pemotongan Mekanik & Termal',
+      rincianTugas: `Kuis PG: ${pgScore}/100 (${correctCount}/5 Benar). Uraian Kasus: ${essayCount}/4 terisi. Refleksi: ${refCount}/4 terisi.`,
+      skor: pgScore,
+      xp: Math.round(pgScore * 1.5) + (essayCount * 10) + (refCount * 5),
+      status: pgScore >= 75 ? 'Kompeten (Tuntas Modul)' : 'Perlu Penguatan',
+      catatan: `[Kasus 1.1]: ${c1_1.substring(0, 120)} | [Kasus 2.1]: ${c2_1.substring(0, 120)} | [Refleksi]: ${r_mind.substring(0, 100)}`
+    };
+
+    // Ambil URL Google Sheets
+    let sheetsUrl = document.getElementById('stu_sheet_url').value.trim();
+    if (!sheetsUrl) {
+      sheetsUrl = localStorage.getItem('metalverse_sheets_url') || '';
+    }
+
+    let isSentToCloud = false;
+
+    if (sheetsUrl && sheetsUrl.startsWith('http')) {
+      try {
+        consoleLog.innerHTML += `<br><span style="color:#e2e8f0;">[MENGHUBUNGI CLOUD]</span> Mengirimkan HTTP POST ke Google Apps Script Web App...</span>`;
+        await fetch(sheetsUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        isSentToCloud = true;
+        consoleLog.innerHTML += `<br><span style="color:#4ade80;">[SUKSES]</span> Data berhasil diterima oleh server Google Apps Script!</span>`;
+      } catch (err) {
+        console.error('Spreadsheet sync error:', err);
+        consoleLog.innerHTML += `<br><span style="color:#f87171;">[PERINGATAN]</span> Gagal sinkron jaringan: ${err.message}. Data tetap disimpan di memori portofolio lokal.</span>`;
+      }
+    } else {
+      consoleLog.innerHTML += `<br><span style="color:#facc15;">[LOKAL]</span> URL Google Apps Script belum disetel. Data direkam ke riwayat sesi lokal browser.</span>`;
+    }
+
+    // Kirim pesan postMessage ke parent MetalVerse jika dibuka di dalam tab/iframe/opener
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'METALVERSE_QUIZ_COMPLETED',
+          chapTitle: 'Bahan Ajar: Pemotongan Mekanik & Termal (Serok Sampah)',
+          total: 5,
+          correct: correctCount,
+          score: pgScore,
+          payload: payload
+        }, '*');
+      }
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage({
+          type: 'METALVERSE_QUIZ_COMPLETED',
+          chapTitle: 'Bahan Ajar: Pemotongan Mekanik & Termal (Serok Sampah)',
+          total: 5,
+          correct: correctCount,
+          score: pgScore,
+          payload: payload
+        }, '*');
+      }
+    } catch(e) {}
+
+    // Simpan riwayat submission lokal
+    try {
+      localStorage.setItem('metalverse_bahan_ajar_last_submission', JSON.stringify(payload));
+    } catch(e) {}
+
+    // Reset tombol
+    btn.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>Tersimpan &amp; Terkirim!</span>`;
+    btn.style.background = '#15803d';
+    setTimeout(() => {
+      btn.innerHTML = oldBtnText;
+      btn.style.background = '';
+      btn.disabled = false;
+    }, 4000);
+
+    // Tampilkan banner notifikasi
+    if (isSentToCloud) {
+      showToastBanner('Sinkronisasi Sukses! 📊', `Absen ${noAbsen} (${nama}): Skor PG ${pgScore}/100 dan jawaban uraian berhasil masuk ke Google Spreadsheet.`);
+    } else {
+      showToastBanner('Tersimpan di Sesi Lokal', `Data tersimpan rapi. Hubungkan URL Google Apps Script untuk merekap ke Cloud.`);
+    }
+  }
+
+  // Notifikasi Toast
+  function showToastBanner(title, desc) {
+    const toast = document.getElementById('toast-banner');
+    document.getElementById('toast-title').innerText = title;
+    document.getElementById('toast-desc').innerText = desc;
+    toast.style.display = 'flex';
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 5000);
+  }
+</script>
+</body>
+</html>

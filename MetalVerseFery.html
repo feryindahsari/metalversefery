@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -2874,10 +2874,15 @@
               </div>
 
               <!-- Action Trigger Row -->
-              <div class="flex items-center gap-3 pt-3">
-                <button onclick="showPdfModal()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 transition flex items-center gap-2">
+              <div class="flex items-center gap-3 pt-3 flex-wrap">
+                <a href="./Bahan_Ajar_Pemotongan_Mekanik_Termal.html#quiz-interaktif" target="_blank" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-xs shadow-lg shadow-orange-500/25 transition flex items-center gap-2">
+                  <i class="fa-solid fa-list-check"></i>
+                  <span>Kuis Interaktif &amp; Sinkron Spreadsheet</span>
+                </a>
+
+                <button onclick="showPdfModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 transition flex items-center gap-2">
                   <i class="fa-regular fa-eye"></i>
-                  <span>Buka PDF di Reader Aplikasi</span>
+                  <span>Buka PDF Reader</span>
                 </button>
 
                 <a href="./assets/Materi_Pemotongan_Mekanik_test.pdf" download="Materi_Pemotongan_Mekanik_test.pdf" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition flex items-center gap-2">
@@ -3780,6 +3785,40 @@
                 <i class="fa-solid fa-book-open text-[#EA734F]"></i>
                 <span>Baca Materi Bab</span>
               </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Asesmen Pemotongan Mekanik & Termal Card -->
+        <div class="p-5 sm:p-6 rounded-3xl bg-white border-2 border-amber-200 shadow-clay-card">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white flex items-center justify-center font-bold text-xl shadow-md shrink-0">
+                <i class="fa-solid fa-scissors"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800 border border-amber-300">Modul Fabrikasi &amp; K3</span>
+                  <span class="text-xs text-[#7A6B64] font-mono font-semibold">5 Soal HOTS &bull; 2 Kasus Industri &bull; 4 Refleksi</span>
+                </div>
+                <h3 class="font-heading font-extrabold text-base sm:text-lg text-[#2B221E] mt-1">
+                  Kuis Interaktif: Teknik Pemotongan Logam secara Mekanik &amp; Termal
+                </h3>
+                <p class="text-xs text-[#4F433E]">
+                  Evaluasi pemotongan mekanik (guillotine &amp; notching), pemotongan termal (oxy-fuel &amp; flashback), analisis kasus kegagalan sudut serok sampah, dan jurnal metakognisi Deep Learning terintegrasi Google Spreadsheet.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 flex-wrap">
+              <a href="./Bahan_Ajar_Pemotongan_Mekanik_Termal.html#quiz-interaktif" target="_blank" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-md transition flex items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Mulai Kuis &amp; Uraian Interaktif</span>
+              </a>
+              <a href="./Media_Ajar_Pemotongan_Mekanik_Termal_Serok_Sampah.html" target="_blank" class="px-4 py-2.5 rounded-xl bg-[#FAF5EE] hover:bg-[#EFE8DF] text-[#4F433E] font-semibold text-xs border border-[#E6DCD1] transition flex items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-display text-amber-600"></i>
+                <span>Media Ajar Serok</span>
+              </a>
             </div>
           </div>
         </div>
@@ -4867,12 +4906,12 @@
       if (e.data && e.data.type === 'METALVERSE_QUIZ_COMPLETED') {
         const q = e.data;
         sendStudentTaskToSpreadsheet({
-          category: `Kuis Buku Digital: ${q.chapTitle || ('Bab ' + q.chapId)}`,
-          task: `Mengerjakan ${q.total} Soal AKM/HOTS (Benar: ${q.correct}/${q.total})`,
-          score: q.score,
-          xp: Math.round(q.score * 1.5),
-          status: q.score >= 75 ? 'Kompeten (Tuntas Kuis)' : 'Perlu Remedial',
-          notes: `Evaluasi mandiri ${q.chapTitle}`
+          category: q.payload?.kategori || `Kuis: ${q.chapTitle || ('Bab ' + q.chapId)}`,
+          task: q.payload?.rincianTugas || `Mengerjakan ${q.total} Soal AKM/HOTS (Benar: ${q.correct}/${q.total})`,
+          score: q.score !== undefined ? q.score : (q.payload?.skor || 0),
+          xp: q.payload?.xp || Math.round(q.score * 1.5),
+          status: q.payload?.status || (q.score >= 75 ? 'Kompeten (Tuntas Kuis)' : 'Perlu Remedial'),
+          notes: q.payload?.catatan || `Evaluasi mandiri ${q.chapTitle}`
         });
       }
     });
