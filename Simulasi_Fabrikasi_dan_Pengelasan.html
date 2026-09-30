@@ -9671,6 +9671,9 @@
             }
 
             modal.classList.add('active');
+            try {
+                setTimeout(function() { syncLabScoreToSheets(true); }, 700);
+            } catch(e) {}
         }
 
         function closePrintReportModal() {
@@ -9684,7 +9687,7 @@
 
         const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxfZJ7pdx4BcJ9JjNkkX_KeQzz4ieFH65Xwz5DPMEYID41gYfgfzKoZr3U2Yg06_sM11Q/exec';
 
-        async function syncLabScoreToSheets() {
+        async function syncLabScoreToSheets(isSilent = false) {
             const btn = document.getElementById('btnSyncSimSheets');
             const oldHtml = btn ? btn.innerHTML : '';
             if (btn) {
@@ -9820,7 +9823,12 @@
                 }, 4000);
             }
 
-            alert(`âœ… BERHASIL TERSINKRON!\n\nNama: ${nama}\nNo. Absen: ${noAbsen}\nPraktik: ${processName}\nNilai: ${rawScore}/100 (${verdict})\n\nNilai Anda telah otomatis tercatat ke Google Spreadsheet Guru!`);
+            if (!isSilent) {
+                alert(`âœ… BERHASIL TERSINKRON!\n\nNama: ${nama}\nNo. Absen: ${noAbsen}\nPraktik: ${processName}\nNilai: ${rawScore}/100 (${verdict})\n\nNilai Anda telah otomatis tercatat ke Google Spreadsheet Guru!`);
+            } else {
+                const tip = document.getElementById('syncStatusTip');
+                if (tip) tip.innerText = `âœ… Tersinkron otomatis ke Spreadsheet (${rawScore}/100)`;
+            }
         }
 
         function updateHistoryTables() {
