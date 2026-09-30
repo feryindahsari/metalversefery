@@ -30,7 +30,15 @@
 
 function doPost(e) {
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
+    // Hubungkan langsung ke spreadsheet resmi Bu Fery
+    var TARGET_SPREADSHEET_ID = "13VeZKXkum2BdIfBe4dkkjKoP_M5VP7siv793mHOe9Zs";
+    var sheet = null;
+    try {
+      sheet = SpreadsheetApp.openById(TARGET_SPREADSHEET_ID);
+    } catch (openErr) {
+      sheet = SpreadsheetApp.getActiveSpreadsheet();
+    }
+
     if (!sheet) {
       return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: 'Spreadsheet aktif tidak ditemukan' }))
         .setMimeType(ContentService.MimeType.JSON);
@@ -182,8 +190,18 @@ function doPost(e) {
 }
 
 function doGet(e) {
+  var TARGET_SPREADSHEET_ID = "13VeZKXkum2BdIfBe4dkkjKoP_M5VP7siv793mHOe9Zs";
+  var sheetTitle = "Default";
+  try {
+    var targetSheet = SpreadsheetApp.openById(TARGET_SPREADSHEET_ID);
+    sheetTitle = targetSheet.getName() + " [ID: " + TARGET_SPREADSHEET_ID + "]";
+  } catch(err) {
+    var act = SpreadsheetApp.getActiveSpreadsheet();
+    if (act) sheetTitle = act.getName();
+  }
   return ContentService.createTextOutput(
     "✅ WEBHOOK METALVERSEFERY AKTIF!\n\n" +
+    "Target Spreadsheet: " + sheetTitle + "\n" +
     "Endpoint ini siap menerima kiriman data nilai simulasi & tugas siswa dari MetalVerseFery.id.\n" +
     "Gunakan metode POST dari aplikasi MetalVerseFery untuk menyimpan data otomatis."
   ).setMimeType(ContentService.MimeType.TEXT);
