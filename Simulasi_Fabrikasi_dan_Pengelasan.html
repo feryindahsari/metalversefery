@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -9708,6 +9708,7 @@
             let kelas = inpKelas ? inpKelas.value.trim() : 'XI TPFL';
 
             if (!nama || nama === 'Peserta Didik (Siswa)') {
+                if (isSilent) return;
                 const promptName = prompt('Masukkan Nama Lengkap Anda:', nama !== 'Peserta Didik (Siswa)' ? nama : '');
                 if (promptName) {
                     nama = promptName.trim();
@@ -9716,6 +9717,7 @@
             }
 
             if (!noAbsen || noAbsen === '-' || noAbsen === '00') {
+                if (isSilent) return;
                 const promptAbsen = prompt('Masukkan Nomor Presensi / Absen Anda (Contoh: 05):', '01');
                 if (promptAbsen) {
                     noAbsen = promptAbsen.trim();
