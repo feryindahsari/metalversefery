@@ -429,6 +429,18 @@
         <button onclick="adjustFontSize(1)" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[#EFE8DF] text-[#7A6B64] hover:text-[#2B221E] font-bold cursor-pointer" title="Besarkan Font">A+</button>
       </div>
 
+      <!-- User Session Pill & Switch Student -->
+      <div id="book-student-pill" class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#FAF5EE] border border-[#E6DCD1] text-xs shadow-xs">
+        <span class="text-[#EA734F] text-sm"><i class="fa-solid fa-circle-user"></i></span>
+        <div class="flex flex-col text-left leading-tight">
+          <span id="book-student-name" class="font-extrabold text-[#2B221E] text-[11px] truncate max-w-[130px]">Peserta Didik</span>
+          <span id="book-student-detail" class="text-[9px] text-[#7A6B64] font-mono">Presensi: 01 | XI TPFL</span>
+        </div>
+        <button onclick="promptSwitchStudentBook()" class="ml-1 text-[10px] font-bold text-[#0284C7] hover:underline cursor-pointer" title="Ganti Identitas / Siswa Baru">
+          Ganti
+        </button>
+      </div>
+
       <!-- Back to Lab Button -->
       <a href="MetalVerseFery.html" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#568A7D] to-[#40685E] hover:from-[#40685E] hover:to-[#33534B] text-white font-bold text-xs shadow-md transition flex items-center gap-1.5" title="Kembali ke Labs MetalVerse">
         <i class="fa-solid fa-arrow-left"></i>
@@ -566,6 +578,9 @@
     let currentFontSize = 16; // base font size in px
     let studentAnswers = {}; // { 'bab-1': { 1: 'B', 2: 'D' ... }, 'bab-2': ... }
     let quizSubmitted = {}; // { 'bab-1': true / false }
+    let studentEssayAnswers = {}; // { 'bab-1': { 1: "Jawaban no 1...", 2: "..." }, ... }
+    let essayScores = {}; // { 'bab-1': { score: 90, filledCount: 6, total: 6, gradedAt: "..." } }
+    let currentAssessmentTab = {}; // { 'bab-1': 'all' | 'pg' | 'essay' }
 
     // Audio SFX synthesis using Web Audio API
     let audioCtx = null;
@@ -640,6 +655,12 @@
         const savedSub = localStorage.getItem('metalverse_buku_submitted');
         if (savedSub) quizSubmitted = JSON.parse(savedSub);
 
+        const savedEssay = localStorage.getItem('metalverse_buku_essay_answers');
+        if (savedEssay) studentEssayAnswers = JSON.parse(savedEssay);
+
+        const savedEssayScores = localStorage.getItem('metalverse_buku_essay_scores');
+        if (savedEssayScores) essayScores = JSON.parse(savedEssayScores);
+
         const savedChap = localStorage.getItem('metalverse_buku_last_chapter');
         if (savedChap !== null) currentChapterIndex = parseInt(savedChap, 10) || 0;
 
@@ -659,6 +680,8 @@
       try {
         localStorage.setItem('metalverse_buku_answers', JSON.stringify(studentAnswers));
         localStorage.setItem('metalverse_buku_submitted', JSON.stringify(quizSubmitted));
+        localStorage.setItem('metalverse_buku_essay_answers', JSON.stringify(studentEssayAnswers));
+        localStorage.setItem('metalverse_buku_essay_scores', JSON.stringify(essayScores));
         localStorage.setItem('metalverse_buku_last_chapter', currentChapterIndex.toString());
       } catch (e) {
         console.warn('Could not save to localStorage:', e);
@@ -903,9 +926,45 @@
           if (block.type === 'h1') {
             html += `<h3 class="text-xl sm:text-2xl font-heading font-bold text-[#2B221E] mt-8 mb-4 border-l-4 border-[#EA734F] pl-3">${block.text}</h3>`;
           } else if (block.type === 'h2') {
-            html += `<h4 class="text-lg sm:text-xl font-heading font-bold text-[#EA734F] mt-6 mb-3">${block.text}</h4>`;
+            if (/asesmen\s*(esai|kasus)/i.test(block.text)) {
+              html += `
+                <div class="my-6 p-4 rounded-2xl bg-gradient-to-r from-[#FAF5EE] to-[#FCE6DD] border-2 border-[#EA734F]/40 flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <h4 class="font-heading font-extrabold text-[#2B221E] text-base flex items-center gap-2">
+                      <i class="fa-solid fa-pen-nib text-[#EA734F]"></i>
+                      <span>${block.text}</span>
+                    </h4>
+                    <p class="text-xs text-[#7A6B64] mt-0.5">Soal uraian studi kasus analitis dapat Anda kerjakan langsung pada lembar interaktif di bagian bawah.</p>
+                  </div>
+                  <button onclick="scrollToEssay('${chap.id}')" class="px-4 py-2 rounded-xl bg-[#EA734F] hover:bg-[#D95D39] text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Kerjakan Essay &darr;</span>
+                  </button>
+                </div>
+              `;
+            } else {
+              html += `<h4 class="text-lg sm:text-xl font-heading font-bold text-[#EA734F] mt-6 mb-3">${block.text}</h4>`;
+            }
           } else if (block.type === 'h3') {
-            html += `<h5 class="text-base sm:text-lg font-heading font-semibold text-[#D97706] mt-4 mb-2">${block.text}</h5>`;
+            if (/asesmen\s*sumatif/i.test(block.text)) {
+              html += `
+                <div class="my-6 p-4 rounded-2xl bg-gradient-to-r from-[#FAF5EE] to-[#DCEBE4] border-2 border-[#568A7D]/40 flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <h4 class="font-heading font-extrabold text-[#2B221E] text-base flex items-center gap-2">
+                      <i class="fa-solid fa-graduation-cap text-[#568A7D]"></i>
+                      <span>${block.text}</span>
+                    </h4>
+                    <p class="text-xs text-[#7A6B64] mt-0.5">Soal uraian berjenjang Taksonomi Bloom (C1-C6) dapat Anda ketik langsung dan dinilai pada lembar kerja di bawah.</p>
+                  </div>
+                  <button onclick="scrollToEssay('${chap.id}')" class="px-4 py-2 rounded-xl bg-[#568A7D] hover:bg-[#40685E] text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Kerjakan Essay &darr;</span>
+                  </button>
+                </div>
+              `;
+            } else {
+              html += `<h5 class="text-base sm:text-lg font-heading font-semibold text-[#D97706] mt-4 mb-2">${block.text}</h5>`;
+            }
           } else if (block.type === 'p') {
             // Check for formula or note
             if (block.text.includes('=') && (block.text.includes('C =') || block.text.includes('BA =') || block.text.includes('HI ='))) {
@@ -922,6 +981,11 @@
               html += `<p class="leading-relaxed mb-4 text-justify text-[#382D28]">${block.text}</p>`;
             }
           } else if (block.type === 'bullet') {
+            // Cek apakah butir soal essay (Soal C1..C6 atau Studi Kasus)
+            if (/^Soal\s+C\d/i.test(block.text) || /^\d+\.\s*(Studi Kasus|Analisis|Mitigasi)/i.test(block.text)) {
+              // Dilewati di teks materi biasa karena otomatis dirender pada Lembar Pengerjaan Essay Interaktif di bawah
+              return;
+            }
             html += `
               <div class="flex items-start gap-2.5 my-2 pl-2">
                 <span class="w-2 h-2 rounded-full bg-[#EA734F] mt-2 shrink-0"></span>
@@ -971,11 +1035,58 @@
         html += `</div>`;
       }
 
-      // ================= INTERACTIVE QUIZ SECTION =================
+      // ================= INTERACTIVE ASSESSMENT SECTION (PG + ESSAY) =================
       const quizzes = chap.quizzes || [];
-      if (quizzes.length > 0) {
+      const essays = getChapterEssayQuestions(chap);
+      const tabMode = currentAssessmentTab[chap.id] || 'all';
+
+      html += `
+        <div id="assessment-container-${chap.id}" class="mt-14 pt-8 border-t-2 border-[#E6DCD1] space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-white border-2 border-[#E6DCD1] shadow-clay-card">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap mb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#FCE6DD] text-[#EA734F] border border-[#FDBA74]">
+                  <i class="fa-solid fa-award mr-1"></i>Asesmen Bab Terintegrasi
+                </span>
+                <span class="text-xs text-[#7A6B64] font-mono font-semibold">${chap.numberStr}</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-heading font-extrabold text-[#2B221E]">
+                Evaluasi Pembelajaran: ${chap.title}
+              </h3>
+              <p class="text-xs text-[#7A6B64] mt-0.5">
+                Pilihan Ganda (${quizzes.length} Soal) &amp; Soal Uraian / Essay HOTS (${essays.length} Soal Berjenjang). Hasil dapat langsung dikirim ke Google Spreadsheet Guru.
+              </p>
+            </div>
+
+            <!-- Tab Switcher (Semua / PG / Essay) -->
+            <div class="flex items-center bg-[#FAF5EE] p-1 rounded-2xl border border-[#E6DCD1] text-xs shrink-0 self-start sm:self-center">
+              <button onclick="setAssessmentTab('${chap.id}', 'all')" class="px-3 py-1.5 rounded-xl font-bold transition ${tabMode === 'all' ? 'bg-[#EA734F] text-white shadow-xs' : 'text-[#7A6B64] hover:text-[#2B221E]'} cursor-pointer">
+                ðŸ“‘ Semua (PG + Essay)
+              </button>
+              <button onclick="setAssessmentTab('${chap.id}', 'pg')" class="px-3 py-1.5 rounded-xl font-bold transition ${tabMode === 'pg' ? 'bg-[#EA734F] text-white shadow-xs' : 'text-[#7A6B64] hover:text-[#2B221E]'} cursor-pointer">
+                ðŸ“ Pilihan Ganda (${quizzes.length})
+              </button>
+              <button onclick="setAssessmentTab('${chap.id}', 'essay')" class="px-3 py-1.5 rounded-xl font-bold transition ${tabMode === 'essay' ? 'bg-[#568A7D] text-white shadow-xs' : 'text-[#7A6B64] hover:text-[#2B221E]'} cursor-pointer">
+                âœï¸ Uraian / Essay (${essays.length})
+              </button>
+            </div>
+          </div>
+      `;
+
+      // 1. Pilihan Ganda Section
+      if (quizzes.length > 0 && (tabMode === 'all' || tabMode === 'pg')) {
         html += renderQuizSection(chap.id, chap.numberStr, quizzes);
       }
+
+      // 2. Essay / Uraian Section
+      if (essays.length > 0 && (tabMode === 'all' || tabMode === 'essay')) {
+        html += renderEssaySection(chap.id, chap.numberStr, essays);
+      }
+
+      // 3. Combined Score Card & Direct Google Sheets Sync
+      html += renderCombinedScoreCard(chap.id, chap.numberStr, quizzes, essays);
+
+      html += `</div>`; // Close assessment container
 
       // Rubric Section if present
       if (chap.rubric) {
@@ -1845,7 +1956,956 @@
       alert(`✅ Berhasil! Nilai ${chapId.toUpperCase()} (${scoreData.score}/100) telah disinkronkan ke Google Spreadsheet Guru!`);
     }
 
-    function jumpToQuiz() {
+
+    /* ================= ESSAY ASSESSMENT & GOOGLE SPREADSHEET ENGINE ================= */
+    
+    // Rubrik & Panduan Aspek Penilaian per Bab & Nomor Soal
+    function getRubricHintForQuestion(chapId, code, qNum) {
+      const hints = {
+        'bab-1': {
+          'C1': 'Sebutkan standar nomor kegelapan DIN Shade untuk arus 100-200A (standar AWS D1.1 & OSHA merekomendasikan DIN Shade 10 s.d. 12).',
+          'C2': 'Jelaskan proteksi termal & spatter tebal pada sarung tangan kulit split untuk SMAW/GMAW vs ketipisan dan fleksibilitas kulit kambing untuk feeding kawat GTAW.',
+          'C3': 'Uraikan 4 langkah urut teknik PASS: Pull (cabut pin), Aim (arahkan corong ke dasar api), Squeeze (tekan tuas pemadam), Sweep (sapukan mendatar merata).',
+          'C4': 'Analisislah inhalasi uap seng (ZnO) dari lapisan galvanis yang memicu demam uap logam (metal fume fever), dan pentingnya respirator partikulat half-mask P95/P100.',
+          'C5': 'Evaluasilah kemampuan LEV fleksibel menangkap uap langsung di zona breathing juru las (efisiensi 90%+) dibanding exhaust fan dinding yang membiarkan asap terhirup dahulu.',
+          'C6': 'Rancang alur SOP darurat: 1. Evakuasi area & padamkan sumber api, 2. Tutup valve silinder bila aman, 3. Ventilasi silang, 4. Uji kebocoran air sabun, 5. Laporkan ke safety officer.'
+        },
+        'bab-2': {
+          'C1': 'Uraikan perbedaan sudut penitik garis (30° untuk menghasilkan alur gores tajam panduan mata lukis) vs penitik pusat (90° untuk tumpuan awal mata bor agar tidak meleset).',
+          'C2': 'Jelaskan bahwa garis miring pada proyeksi ortogonal mengalami perpendekan (foreshortening), sehingga panjang sebenarnya (true length) harus dicari lewat putaran atau segitiga siku-siku.',
+          'C3': 'Gunakan rumus sudut bukaan sektor kerucut: θ = (D / 2R) × 360° = (160 / 480) × 360° = 120°.',
+          'C4': 'Analisislah bahwa pembagian keliling yang tidak simetris menghasilkan kurva potongan bergelombang tidak rata, sambungan siku tidak 90°, dan penampang berubah menjadi lonjong.',
+          'C5': 'Bandingkan sudut 38° (melebihi toleransi WPS 30°±2,5°) dan root gap 4,5 mm (melebihi standar 2-3 mm). Rekomendasikan pengerindaan ulang sudut bevel dan penyesuaian gap sebelum las ikat.',
+          'C6': 'Rancang langkah bentangan garis sejajar: bagi keliling lingkaran pipa 100 mm menjadi 12 bagian sama besar (π×D = 314 mm), proyeksikan garis potong sudut 90°, dan hubungkan kurva bukaan.'
+        },
+        'bab-3': {
+          'C1': 'Sebutkan persentase celah pisau (clearance) 5% - 8% dari ketebalan pelat baja karbon lunak.',
+          'C2': 'Jelaskan bahwa sudut miring (rake angle 1°-2°) membuat pemotongan berlangsung bertahap (shearing action progresif) seperti gunting kertas, mengurangi beban gaya potong mesin secara drastis.',
+          'C3': 'Hitung celah bebas pisau untuk pelat 5,0 mm: C = 6% s.d. 8% × 5,0 mm = 0,30 s.d. 0,40 mm. Gunakan feeler gauge untuk menyetel kerataan celah pisau atas dan bawah.',
+          'C4': 'Analisislah bahwa pemotongan strip sempit memicu gaya tekan lateral asimetris dan puntiran (twisting). Mitigasi: kurangi rake angle, pasang penjepit (holddown) lebih rapat, atau gunakan pelat penopang.',
+          'C5': 'Identifikasi pisau tumpul atau celah terlalu longgar yang menyebabkan pelat terlipat dan menghasilkan sirip tajam (burr). Tindakan: balik/asah pisau dan kalibrasi celah pisau.',
+          'C6': 'Susun SOP perawatan: Lockout/Tagout (LOTO), bersihkan meja dari gram, balik sisi pisau (4 mata potong), kencangkan baut pengikat dengan kunci momen, dan lumasi rel pemandu.'
+        },
+        'bab-4': {
+          'C1': 'Sebutkan kemurnian minimum gas oksigen potong adalah 99,5%. Penurunan kemurnian 1% dapat menurunkan kecepatan potong hingga 25% dan memperbanyak terak.',
+          'C2': 'Jelaskan aliran gas berkecepatan tinggi yang melewati busur listrik elektroda hafnium dan nozzle tembaga menyempit, sehingga gas terionisasi menjadi plasma bersuhu >20.000°C.',
+          'C3': 'Tentukan parameter pelat baja 10 mm: Oksigen potong 2,5 - 3,5 bar, gas pemanas awal 1,5 - 2,0 bar, gas asetilen 0,3 - 0,5 bar. Jarak brander ke benda kerja 3 - 5 mm.',
+          'C4': 'Analisislah penyebab dross bawah: kecepatan potong terlalu tinggi (aliran gas tertinggal) atau terlalu lambat (overheating), serta arus plasma/tekanan gas yang belum seimbang.',
+          'C5': 'Evaluasilah plasma cutting lebih unggul pada stainless steel karena oksida kromium (Cr2O3) bertitik lebur tinggi (2.265°C) tidak dapat dipotong dengan oxy-fuel yang mengandalkan pembakaran besi.',
+          'C6': 'Rancang SOP back gouging alur U: gunakan elektroda karbon busur udara (CAC-A), setel arus 250-350A DCEP, hembusan kompresor 5-7 bar, gerus akar las hingga logam sehat, lalu gerinda halus.'
+        },
+        'bab-5': {
+          'C1': 'Jelaskan sumbu netral (neutral axis) terletak pada kedalaman k-factor × tebal pelat (sekitar 0,33t hingga 0,50t dari sisi dalam tekukan) di mana tidak ada tegangan tarik maupun tekan.',
+          'C2': 'Uraikan bahwa mesin pengerol 3 rol memiliki jarak bebas antara rol bawah dan atas sehingga ujung pelat sepanjang jarak antar rol tidak dapat melengkung jika tidak ditekuk awal (pre-bending).',
+          'C3': 'Hitung Bending Allowance (BA): BA = (π / 180) × A × (R + K × t) = (3,1416 / 180) × 90 × (3,0 + 0,40 × 2,0) = 1,5708 × 3,8 = 5,97 mm.',
+          'C4': 'Analisislah bahwa arah tekukan sejajar dengan arah serat pengerolan (rolling grain) rawan retak getas di sisi tarik. Tekukan harus diupayakan tegak lurus arah serat pengerolan.',
+          'C5': 'Bandingkan celah 0,5 mm (terlalu longgar) dengan celah ideal 0,05 - 0,15 mm. Celah 0,5 mm menghilangkan gaya hisap kapilaritas sehingga perak tidak mengisi rongga sambungan pipa.',
+          'C6': 'Rancang urutan tekuk hat channel: 1. Tekuk flensa luar pertama, 2. Tekuk flensa luar kedua, 3. Tekuk dinding badan dalam pertama, 4. Tekuk dinding badan dalam kedua agar tidak menabrak punch.'
+        },
+        'bab-6': {
+          'C1': 'Sebutkan tekanan kerja maksimum aman asetilen bebas adalah 1,0 bar (15 psi) untuk mencegah disosiasi eksplosif hidrokarbon.',
+          'C2': 'Jelaskan bahwa kerucut dalam nyala menghasilkan gas CO dan H2 yang merupakan agen pereduksi kuat, melindungi kawah las dari kontaminasi oksigen dan nitrogen atmosfer.',
+          'C3': 'Uraikan teknik las maju (forehand): kawat las mendahului brander las, sudut kemiringan torch 60°-70° mengarah ke alur yang belum dilas, sangat cocok untuk pelat tipis 1,5 mm.',
+          'C4': 'Jelaskan nyala oksidasi membentuk lapisan pelindung seng oksida (ZnO) yang tipis di permukaan kawah, menahan penguapan seng berlebih dan mencegah pembentukan porositas uap.',
+          'C5': 'Bandingkan teknik las mundur (backhand) di mana brander mendahului kawat las: panas terfokus pada kawah cair yang telah terbentuk, menghasilkan penetrasi akar dalam dan konsumsi gas hemat.',
+          'C6': 'Rancang SOP flashback: 1. Tutup seketika keran oksigen pemotong/pembakar, 2. Tutup keran asetilen brander, 3. Tutup kedua regulator silinder, 4. Dinginkan torch dalam air jika panas, 5. Periksa flashback arrestor.'
+        },
+        'bab-7': {
+          'C1': 'Jabarkan kode AWS E7018: E = Elektroda berselaput, 70 = Kuat tarik minimum 70.000 psi (490 MPa), 1 = Semua posisi pengelasan, 8 = Lapisan fluks serbuk besi hidrogen rendah (low-hydrogen).',
+          'C2': 'Bandingkan RD-260 (tipe rutil penetrasi dangkal, busur tenang), RB-26 (tipe rutil titania penetrasi sedang, terak mudah lepas), dan LB-52 (tipe basic/low hydrogen, kekuatan tinggi untuk konstruksi kritis).',
+          'C3': 'Hitung Heat Input Q: Q = (V × I × 60) / (v × 1000) × η = (24 × 110 × 60) / (120 × 1000) × 0,80 = 158.400 / 120.000 × 0,80 = 1,056 kJ/mm.',
+          'C4': 'Analisislah pemanasan elektroda low-hydrogen LB-52 pada oven 300°C-350°C untuk menghilangkan kristal air pada fluks, mencegah difusi hidrogen yang memicu retak getas (hydrogen induced cracking).',
+          'C5': 'Uraikan kelebihan RB-26: viskositas terak tinggi dan cepat beku (fast-freeze slag) mampu menjembatani celah akar yang longgar dan tidak seragam tanpa risiko jebol (burn-through).',
+          'C6': 'Rancang prosedur las pipa: lapisan akar dengan LB-52U (E7016 khusus penetrasi akar tembus seragam) teknik keyhole, bersihkan terak, lanjutkan pengisian dan penutup (capping) dengan LB-52-18.'
+        },
+        'bab-8': {
+          'C1': 'Jelaskan Silikon (Si) dan Mangan (Mn) berfungsi sebagai deoksidator kuat yang mengikat oksigen bebas di kawah las membentuk pulau terak silikat tipis, mencegah porositas gas CO.',
+          'C2': 'Bandingkan transfer celup (short-circuit) yang terjadi pada tegangan & arus rendah saat kawat menyentuh kawah cair vs transfer semprot (spray) pada tegangan tinggi saat tetesan logam halus tersembur tanpa spatter.',
+          'C3': 'Tentukan parameter pelat 6 mm posisi 2G: kawat ER70S-6 Ø 1.0 mm, gas pelindung Ar 80% + CO2 20% laju 14-16 L/menit, tegangan 20-22 Volt, arus 150-180 Ampere, stick-out 12-15 mm.',
+          'C4': 'Analisislah bahwa transfer short-circuit memiliki masukan panas rendah sehingga bila kecepatan ayunan terlalu cepat atau sudut torch salah, logam cair menumpuk tanpa melebur dinding kampuh (cold lap).',
+          'C5': 'Bandingkan 100% CO2 (penetrasi sangat dalam, murah, tetapi spatter banyak) vs campuran Ar 80%+CO2 20% (rigi las mulus, minim spatter, busur halus, tetapi biaya tabung gas campuran lebih tinggi).',
+          'C6': 'Rancang bagan parameter GMAW untuk pelat 2 mm (0.8 mm, 16-18V, 70-90A), 4 mm (0.8/1.0 mm, 18-20V, 120-150A), dan 8 mm (1.0 mm, 22-26V, 180-220A) lengkap dengan gas flow.'
+        },
+        'bab-9': {
+          'C1': 'Sebutkan kode warna emas (gold) menandakan elektroda tungsten paduan Lanthanum Oksida 1,5% (EWLa-1.5), stabil pada busur DC maupun AC dan non-radioaktif dibanding Thoriated.',
+          'C2': 'Jelaskan pengasahan memanjang (longitudinal) menghasilkan garis alur sejajar sumbu elektroda sehingga berkas elektron mengalir lurus memusat. Pengasahan radial menghasilkan busur liar dan spatter.',
+          'C3': 'Tentukan pre-flow (0,5 - 1,0 detik) untuk melindungi tungsten sebelum busur menyala, post-flow (1 detik per 10 Ampere arus las, sekitar 10-12 detik) untuk melindungi tungsten saat mendingin.',
+          'C4': 'Analisislah cacat sugaring (oksidasi bunga karang akar) yang terjadi karena sisi belakang pipa stainless panas bereaksi dengan udara terbuka. Wajib dipurging dengan gas Argon murni.',
+          'C5': 'Evaluasilah bahwa inklusi tungsten memiliki densitas jauh lebih tinggi dari baja sehingga menyerap radiasi sinar X lebih banyak, tampak sebagai bintik putih terang, berbeda dari porositas yang tampak hitam.',
+          'C6': 'Rancang draft WPS 6G pipa: proses GTAW kawat ER70S-6 Ø 2,4 mm, tungsten EWLa-1.5 Ø 2,4 mm runcing, gas Argon 99,99% 8-10 L/menit, root gap 2,5-3,2 mm, teknik freehand atau walking the cup.'
+        },
+        'bab-10': {
+          'C1': 'Jelaskan Essential Variables menurut ASME Section IX adalah parameter pengelasan yang jika diubah akan mempengaruhi sifat mekanik sambungan las, sehingga mewajibkan re-kualifikasi WPS/PQR baru.',
+          'C2': 'Uraikan pengerindaan feathered edge pada kedua ujung las catok (tack weld) bertujuan membuat transisi ketebalan landai tipis sehingga saat busur utama melintas, terjadi peleburan 100% sempurna tanpa cacat fusi.',
+          'C3': 'Tuliskan 6 tahap berurutan PT: 1. Pembersihan awal (Pre-cleaning), 2. Aplikasi penetran (Dwell time 10-20 mnt), 3. Penghilangan sisa penetran, 4. Aplikasi developer, 5. Interpretasi visual, 6. Pembersihan akhir.',
+          'C4': 'Analisislah distorsi angular terjadi akibat penyusutan transversal pada penampang las yang tidak simetris (sisi atas kampuh lebih lebar menyusut lebih besar). Mitigasi: presetting sudut, clamping, ayunan seimbang.',
+          'C5': 'Bandingkan Ultrasonic Testing (UT) sangat sensitif mendeteksi cacat planar tegak lurus arah rambat gelombang suara seperti lack of fusion, sedangkan RT sering tidak mendeteksi jika sudut sinar X tidak sejajar cacat.',
+          'C6': 'Rancang urutan las seimbang (balanced sequence) dan teknik loncat balik (backstep) untuk kotak perkakas (toolbox): las titik catok tiap 50 mm, las mundur pendek 50-75 mm bergantian kiri-kanan dan diagonal.'
+        },
+        'bab-11': {
+          'KASUS_1': 'Jelaskan retak dingin dipicu 3 faktor simultan: mikrostruktur martensit getas, tegangan sisa tinggi, dan difusi atom hidrogen. Uraikan SOP E7018: baking oven 300°-350°C selama 2 jam, holding oven 100°-150°C, pemanasan awal (preheat) pelat tebal.',
+          'KASUS_2': 'Hitung Bending Allowance BA: BA = (π/180) × 90 × (3,0 + 0,40 × 2,0) = 5,97 mm. Jelaskan elastisitas material baja SPCC memicu springback (pegas balik), sehingga sudut punch harus ditekuk berlebih (overbending) 1°-2°.',
+          'KASUS_3': 'Jelaskan baja karbon menggunakan DCEN agar 70% panas terkonsentrasi di benda kerja (penetrasi dalam), sedangkan aluminium memerlukan arus bolak-balik AC agar setengah siklus DCEP membersihkan lapisan isolator oksida Al2O3 (cleaning action).',
+          'KASUS_4': 'Mitigasi posisi 3G uphill: atasi undercut dengan berhenti sejenak (dwell/pause) di tepi kiri-kanan ayunan untuk mengisi takik; atasi burn-through dengan menurunkan kuat arus dan menjaga kecepatan ayunan keyhole konstan.',
+          'KASUS_5': 'Bandingkan letupan balik (backfire di ujung tip) vs nyala api balik (flashback merambat ke dalam selang berisiko ledakan). Uraikan 3 fitur arrestor: non-return valve, filter sintered metal peredam api, dan thermal cut-off valve.'
+        }
+      };
+
+      const chapHints = hints[chapId] || {};
+      return chapHints[code] || 'Uraikan jawaban teknis Anda secara mendalam, mencakup prinsip kerja, istilah kejuruan, dan langkah kerja sesuai standar industri.';
+    }
+
+    // Daftar Kata Kunci Teknis untuk Analisis Kelengkapan Jawaban Siswa
+    function getKeywordsForQuestion(chapId, code, qNum) {
+      const kwMap = {
+        'bab-1': {
+          'C1': ['din', 'shade', '10', '11', '12', 'filter', 'kaca'],
+          'C2': ['kulit', 'sapi', 'kambing', 'split', 'panas', 'jari', 'gtaw'],
+          'C3': ['pass', 'pull', 'aim', 'squeeze', 'sweep', 'pin', 'tuas'],
+          'C4': ['galvanis', 'seng', 'zno', 'uap', 'fume', 'respirator'],
+          'C5': ['lev', 'local', 'exhaust', 'ventilasi', 'sumber', 'pernapasan'],
+          'C6': ['sop', 'bocor', 'asetilen', 'valve', 'ventilasi', 'evakuasi']
+        },
+        'bab-2': {
+          'C1': ['penitik', '30', '90', 'garis', 'pusat', 'bor'],
+          'C2': ['panjang', 'sebenarnya', 'true', 'length', 'proyeksi', 'miring'],
+          'C3': ['sudut', 'bukaan', '120', 'rumus', 'kerucut', 'sektor'],
+          'C4': ['mitre', 'elbow', 'simetris', 'lingkaran', 'cacat', 'sejajar'],
+          'C5': ['bridge', 'cam', 'gauge', 'wps', 'bevel', 'gap'],
+          'C6': ['pipa', 'cabang', 't', 'garis', 'sejajar', 'keliling']
+        },
+        'bab-3': {
+          'C1': ['celah', 'pisau', 'clearance', '5', '8', 'persen'],
+          'C2': ['rake', 'angle', 'miring', '1', '2', 'geser', 'gaya'],
+          'C3': ['celah', '0,3', '0,4', 'feeler', 'gauge', '5'],
+          'C4': ['twisting', 'puntir', 'strip', 'penjepit', 'holddown'],
+          'C5': ['burr', 'sirip', 'tajam', 'pisau', 'tumpul', 'clearance'],
+          'C6': ['sop', 'perawatan', 'pisau', 'balik', '4', 'sisi', 'loto']
+        },
+        'bab-4': {
+          'C1': ['kemurnian', 'oksigen', '99,5', 'persen', 'oksidasi'],
+          'C2': ['plasma', 'ionisasi', 'busur', 'hafnium', 'nozzle'],
+          'C3': ['tekanan', 'regulator', 'oksigen', 'asetilen', 'bar'],
+          'C4': ['dross', 'terak', 'kecepatan', 'arus', 'standoff'],
+          'C5': ['plasma', 'stainless', 'kromium', 'oksida', 'cr2o3'],
+          'C6': ['sop', 'back', 'gouging', 'u', 'karbon', 'akar']
+        },
+        'bab-5': {
+          'C1': ['sumbu', 'netral', 'neutral', 'axis', 'k', 'tekanan'],
+          'C2': ['pre-bending', 'tekuk', 'awal', 'rol', 'ujung'],
+          'C3': ['ba', 'bending', 'allowance', '5,9', '6', 'rumus'],
+          'C4': ['retak', 'arah', 'serat', 'rolling', 'grain', 'tegak'],
+          'C5': ['brazing', 'kapilaritas', 'celah', '0,1', 'perak'],
+          'C6': ['urutan', 'bending', 'sequence', 'hat', 'channel', 'punch']
+        },
+        'bab-6': {
+          'C1': ['tekanan', 'asetilen', '1,0', '15', 'psi', 'bar'],
+          'C2': ['karbon', 'monoksida', 'co', 'hidrogen', 'h2', 'kawah'],
+          'C3': ['las', 'maju', 'forehand', 'kawat', 'torch', 'pelat'],
+          'C4': ['nyala', 'oksidasi', 'kuningan', 'seng', 'asap', 'zno'],
+          'C5': ['las', 'mundur', 'backhand', 'penetrasi', 'pipa', 'tebal'],
+          'C6': ['sop', 'flashback', 'api', 'balik', 'arrestor', 'katup']
+        },
+        'bab-7': {
+          'C1': ['e7018', '70', 'posisi', 'low', 'hydrogen', 'serbuk'],
+          'C2': ['rd-260', 'rb-26', 'lb-52', 'fluks', 'rutil', 'basic'],
+          'C3': ['heat', 'input', 'rumus', 'tegangan', 'arus', 'kj'],
+          'C4': ['baking', 'oven', 'lb-52', '300', '350', 'hidrogen'],
+          'C5': ['rb-26', 'celah', 'lebar', 'gap', 'terak', 'cepat'],
+          'C6': ['lb-52u', 'root', 'akar', 'capping', 'pipa', 'keyhole']
+        },
+        'bab-8': {
+          'C1': ['silikon', 'mangan', 'deoksidator', 'porositas', 'si', 'mn'],
+          'C2': ['short', 'circuit', 'spray', 'transfer', 'tetesan'],
+          'C3': ['flow', 'gas', 'tegangan', 'stick-out', 'liter', 'arus'],
+          'C4': ['cold', 'lap', 'lack', 'fusion', 'kawah', 'peleburan'],
+          'C5': ['co2', 'argon', 'spatter', 'penetrasi', 'campuran'],
+          'C6': ['parameter', 'chart', 'kawat', 'voltase', 'kecepatan']
+        },
+        'bab-9': {
+          'C1': ['warna', 'emas', 'lanthanum', '1,5', 'ewla'],
+          'C2': ['asahan', 'longitudinal', 'memanjang', 'fokus', 'busur'],
+          'C3': ['pre-flow', 'post-flow', 'argon', 'timer', 'pendingin'],
+          'C4': ['sugaring', 'oksidasi', 'akar', 'purging', 'argon'],
+          'C5': ['x-ray', 'bintik', 'putih', 'densitas', 'tungsten'],
+          'C6': ['wps', 'pipa', '6g', 'root', 'argon', 'er70s']
+        },
+        'bab-10': {
+          'C1': ['essential', 'variables', 'asme', 'wps', 'pqr'],
+          'C2': ['feathered', 'edge', 'tack', 'ikat', 'gerinda'],
+          'C3': ['penetrant', 'cleaner', 'dwell', 'developer', 'inspeksi'],
+          'C4': ['distorsi', 'angular', 'penyusutan', 'transversal', 'sudut'],
+          'C5': ['ultrasonic', 'ut', 'radiografi', 'rt', 'lack', 'fusion'],
+          'C6': ['balanced', 'sequence', 'backstep', 'seimbang', 'urutan']
+        },
+        'bab-11': {
+          'KASUS_1': ['retak', 'dingin', 'hydrogen', 'cracking', 'baking', 'oven', 'e7018'],
+          'KASUS_2': ['ba', 'bending', 'allowance', 'springback', 'radius', 'spcc'],
+          'KASUS_3': ['dcen', 'ac', 'aluminium', 'cleaning', 'action', 'oksida'],
+          'KASUS_4': ['3g', 'uphill', 'vertikal', 'undercut', 'burn', 'through'],
+          'KASUS_5': ['flashback', 'arrestor', 'backfire', 'valve', 'api', 'balik']
+        }
+      };
+
+      const chapKw = kwMap[chapId] || {};
+      return chapKw[code] || ['teknik', 'fabrikasi', 'pengelasan', 'standar', 'prosedur'];
+    }
+
+    // Ekstraksi Soal Essay Dinamis dari Konten Buku
+    function getChapterEssayQuestions(chap) {
+      if (!chap || !chap.blocks) return [];
+      const essays = [];
+
+      chap.blocks.forEach((block) => {
+        if (block.type === 'bullet' && block.text) {
+          const txt = block.text.trim();
+          const matchBloom = txt.match(/^Soal\s+(C\d)\s*\(([^)]+)\)\s*:\s*([\s\S]+)$/i);
+          const matchCase = txt.match(/^(\d+)\.\s*(Studi Kasus|Analisis|Mitigasi)([^:]*):\s*([\s\S]+)$/i);
+
+          if (matchBloom) {
+            const code = matchBloom[1].toUpperCase();
+            const level = matchBloom[2].trim();
+            const qText = matchBloom[3].trim();
+            const qNum = essays.length + 1;
+
+            let colorClass = 'bg-[#E0F2FE] text-[#0369A1] border-[#BAE6FD]';
+            if (code === 'C2') colorClass = 'bg-[#EEF2FF] text-[#4338CA] border-[#C7D2FE]';
+            if (code === 'C3') colorClass = 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]';
+            if (code === 'C4') colorClass = 'bg-[#FEF3C7] text-[#B45309] border-[#FDE68A]';
+            if (code === 'C5') colorClass = 'bg-[#FFE4E6] text-[#BE123C] border-[#FECDD3]';
+            if (code === 'C6') colorClass = 'bg-[#F3E8FF] text-[#7E22CE] border-[#E9D5FF]';
+
+            essays.push({
+              index: qNum,
+              code: code,
+              level: `${code} - ${level}`,
+              title: `Soal ${code} (${level})`,
+              question: qText,
+              colorClass: colorClass,
+              category: 'bloom',
+              hint: getRubricHintForQuestion(chap.id, code, qNum),
+              keywords: getKeywordsForQuestion(chap.id, code, qNum)
+            });
+          } else if (matchCase) {
+            const caseNum = matchCase[1];
+            const caseTitle = (matchCase[2] + matchCase[3]).trim();
+            const qText = matchCase[4].trim();
+            const qNum = essays.length + 1;
+
+            essays.push({
+              index: qNum,
+              code: `KASUS_${caseNum}`,
+              level: `Kasus ${caseNum} - ${caseTitle}`,
+              title: `${caseTitle} (Kasus ${caseNum})`,
+              question: qText,
+              colorClass: 'bg-[#FCE6DD] text-[#C2410C] border-[#FDBA74]',
+              category: 'case_study',
+              hint: getRubricHintForQuestion(chap.id, `KASUS_${caseNum}`, qNum),
+              keywords: getKeywordsForQuestion(chap.id, `KASUS_${caseNum}`, qNum)
+            });
+          }
+        }
+      });
+
+      return essays;
+    }
+
+    // Helper Hitung Kata & Keyword
+    function countWords(str) {
+      if (!str) return 0;
+      const words = str.trim().split(/\s+/).filter(w => w.length > 0);
+      return words.length;
+    }
+
+    function countKeywordMatches(text, keywords) {
+      if (!text || !keywords || keywords.length === 0) return 0;
+      const lower = text.toLowerCase();
+      let count = 0;
+      keywords.forEach(kw => {
+        if (lower.includes(kw.toLowerCase())) count++;
+      });
+      return count;
+    }
+
+    // Input Handler dengan Auto-Save
+    let essayDebounceTimers = {};
+    function handleEssayInput(chapId, qIndex, val) {
+      if (!studentEssayAnswers[chapId]) studentEssayAnswers[chapId] = {};
+      studentEssayAnswers[chapId][qIndex] = val;
+
+      const wCount = countWords(val);
+      const counterEl = document.getElementById(`word-count-${chapId}-${qIndex}`);
+      if (counterEl) {
+        counterEl.innerHTML = `<i class="fa-solid fa-keyboard mr-1"></i>${wCount} kata`;
+      }
+
+      const saveEl = document.getElementById(`save-status-${chapId}-${qIndex}`);
+      if (saveEl) {
+        saveEl.innerText = val.trim().length > 0 ? '✓ Tersimpan di memori browser' : 'Belum diisi';
+        saveEl.className = val.trim().length > 0 ? 'text-[#166534] font-medium' : 'text-[#7A6B64]';
+      }
+
+      updateEssayProgress(chapId);
+
+      if (essayDebounceTimers[chapId]) clearTimeout(essayDebounceTimers[chapId]);
+      essayDebounceTimers[chapId] = setTimeout(() => {
+        saveState();
+      }, 500);
+    }
+
+    function updateEssayProgress(chapId) {
+      const chap = window.BUKU_DATA ? window.BUKU_DATA.chapters.find(c => c.id === chapId) : null;
+      if (!chap) return;
+      const essays = getChapterEssayQuestions(chap);
+      const answers = studentEssayAnswers[chapId] || {};
+      let filled = 0;
+      essays.forEach(q => {
+        if ((answers[q.index] || '').trim().length > 0) filled++;
+      });
+      const pct = essays.length > 0 ? Math.round((filled / essays.length) * 100) : 0;
+
+      const countEls = document.querySelectorAll(`.essay-count-${chapId}`);
+      countEls.forEach(el => { el.innerText = `${filled} / ${essays.length}`; });
+
+      const barEls = document.querySelectorAll(`.essay-progress-bar-${chapId}`);
+      barEls.forEach(el => { el.style.width = `${pct}%`; });
+    }
+
+    function toggleRubricHint(chapId, qIndex) {
+      playSound('click');
+      const body = document.getElementById(`hint-body-${chapId}-${qIndex}`);
+      const icon = document.getElementById(`hint-icon-${chapId}-${qIndex}`);
+      if (body) {
+        body.classList.toggle('hidden');
+        if (icon) {
+          icon.classList.toggle('rotate-180');
+        }
+      }
+    }
+
+    // Engine Penilaian Essay Otomatis Berbasis Rubrik & Kata Kunci
+    function gradeChapterEssay(chapId) {
+      const chap = window.BUKU_DATA.chapters.find(c => c.id === chapId);
+      if (!chap) return;
+      const essays = getChapterEssayQuestions(chap);
+      if (essays.length === 0) return;
+
+      const answers = (studentEssayAnswers[chapId]) || {};
+      let totalScore = 0;
+      let filledCount = 0;
+
+      essays.forEach(q => {
+        const ans = (answers[q.index] || '').trim();
+        const wCount = countWords(ans);
+        let qScore = 0;
+        let feedback = '';
+
+        if (wCount === 0) {
+          qScore = 0;
+          feedback = 'Belum diisi. Silakan ketikkan jawaban teknis Anda pada kolom di atas.';
+        } else if (wCount < 8) {
+          qScore = 40;
+          feedback = 'Jawaban terlalu singkat. Uraikan argumen teknis atau langkah kerja lebih lengkap.';
+          filledCount++;
+        } else {
+          filledCount++;
+          let base = Math.min(80, 55 + Math.round((wCount / 25) * 25));
+          const matches = countKeywordMatches(ans, q.keywords || []);
+          let kwBonus = Math.min(20, matches * 5);
+
+          qScore = Math.min(100, base + kwBonus);
+          if (qScore >= 85) {
+            feedback = 'Sangat Kompeten! Uraian lengkap, analitis, dan memuat istilah/prinsip teknis kejuruan dengan tepat.';
+          } else if (qScore >= 75) {
+            feedback = 'Kompeten. Konsep inti sudah dipahami dengan baik dan memenuhi standar evaluasi.';
+          } else {
+            feedback = 'Cukup. Jawaban sudah mengarah pada topik, tetapi perlu melengkapi aspek prosedur teknis.';
+          }
+        }
+
+        totalScore += qScore;
+        q.score = qScore;
+        q.feedback = feedback;
+      });
+
+      const avgScore = essays.length > 0 ? Math.round(totalScore / essays.length) : 0;
+      essayScores[chapId] = {
+        score: avgScore,
+        filledCount: filledCount,
+        total: essays.length,
+        gradedAt: new Date().toISOString()
+      };
+      saveState();
+
+      if (avgScore >= 75) {
+        playSound('fanfare');
+      } else {
+        playSound('correct');
+      }
+
+      renderActiveSection();
+
+      setTimeout(() => {
+        const el = document.getElementById(`essay-section-${chapId}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+
+      return essayScores[chapId];
+    }
+
+    // Sinkronisasi Nilai Essay ke Google Spreadsheet
+    async function syncEssayToSheets(chapId) {
+      playSound('click');
+      const chap = window.BUKU_DATA.chapters.find(c => c.id === chapId);
+      if (!chap) return;
+      const essays = getChapterEssayQuestions(chap);
+      const answers = (studentEssayAnswers[chapId]) || {};
+
+      let gradeData = essayScores[chapId];
+      if (!gradeData) {
+        gradeData = gradeChapterEssay(chapId);
+      }
+
+      let user = { name: 'Peserta Didik', noAbsen: '01', kelas: 'XI TPFL', asalSekolah: 'SMKN 2 Depok Sleman' };
+      try {
+        const raw = localStorage.getItem('metalverse_user_session');
+        if (raw) user = JSON.parse(raw);
+      } catch(e) {}
+
+      if (!user.name || user.name === 'Peserta Didik (Siswa)' || user.name === 'Peserta Didik' || !user.noAbsen || user.noAbsen === '-') {
+        const pName = prompt('Masukkan Nama Lengkap Anda untuk Rekap Spreadsheet Guru:', user.name || '');
+        if (pName && pName.trim()) user.name = pName.trim();
+        const pAbsen = prompt('Masukkan Nomor Presensi / Absen Anda (Contoh: 05):', user.noAbsen !== '-' ? user.noAbsen : '01');
+        if (pAbsen && pAbsen.trim()) user.noAbsen = pAbsen.trim();
+        try {
+          localStorage.setItem('metalverse_user_session', JSON.stringify(user));
+          updateStudentSessionPill();
+        } catch(e) {}
+      }
+
+      const btn = document.getElementById(`btn-sync-essay-${chapId}`);
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Mengirim ke Spreadsheet...';
+      }
+
+      const now = new Date();
+      const timestamp = now.toLocaleDateString('id-ID', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+
+      let excerpt = '';
+      essays.forEach(q => {
+        const a = (answers[q.index] || '').trim();
+        if (a) excerpt += `[${q.code}] ${a.slice(0, 45)}... `;
+      });
+
+      const payload = {
+        timestamp: timestamp,
+        noAbsen: user.noAbsen || '01',
+        nama: user.name || 'Siswa',
+        kelas: user.kelas || 'XI TPFL',
+        asalSekolah: user.asalSekolah || 'SMKN 2 Depok Sleman',
+        role: 'student',
+        kategori: `Asesmen Essay: ${chap.numberStr}`,
+        rincianTugas: `${chap.numberStr}: Nilai Essay ${gradeData.score}/100 (${gradeData.filledCount}/${essays.length} Soal Dijawab). ${excerpt}`,
+        skor: gradeData.score,
+        xp: Math.round(gradeData.score * 1.5) + (gradeData.filledCount * 10),
+        status: gradeData.score >= 75 ? 'Kompeten (Tuntas Essay)' : 'Perlu Pendalaman',
+        catatan: `Modul Buku Digital TFLM: ${chap.title} (${user.name})`
+      };
+
+      const sheetsUrl = DEFAULT_SHEETS_URL;
+      try {
+        await fetch(sheetsUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } catch(err) {
+        console.warn('Sheets sync error:', err);
+      }
+
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({
+            type: 'METALVERSE_ESSAY_COMPLETED',
+            chapId: chapId,
+            chapTitle: chap.title,
+            score: gradeData.score,
+            filled: gradeData.filledCount,
+            total: essays.length,
+            payload: payload
+          }, '*');
+        }
+      } catch(e) {}
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>Terkirim ke Spreadsheet!';
+      }
+
+      playSound('fanfare');
+      alert(`✅ NILAI ESSAY BERHASIL DIKIRIM KE GOOGLE SPREADSHEET!\n\n` +
+            `• Nama Siswa: ${user.name}\n` +
+            `• No. Presensi: ${user.noAbsen}\n` +
+            `• Kelas: ${user.kelas}\n` +
+            `• Modul: ${chap.numberStr} - ${chap.title}\n` +
+            `• Nilai Uraian / Essay: ${gradeData.score} / 100\n` +
+            `• Soal Terisi: ${gradeData.filledCount} dari ${essays.length} soal\n` +
+            `• Status: ${payload.status}\n\n` +
+            `Data jawaban essay dan skor telah tercatat di Google Spreadsheet guru.`);
+    }
+
+    // Sinkronisasi Nilai Lengkap (Pilihan Ganda + Essay)
+    async function syncCombinedGradeToSheets(chapId) {
+      playSound('click');
+      const chap = window.BUKU_DATA.chapters.find(c => c.id === chapId);
+      if (!chap) return;
+      const quizzes = chap.quizzes || [];
+      const essays = getChapterEssayQuestions(chap);
+
+      const pgScoreData = getChapterScore(chapId);
+      let essayData = essayScores[chapId];
+      if (!essayData && essays.length > 0) {
+        essayData = gradeChapterEssay(chapId);
+      }
+      const essayScore = essayData ? essayData.score : 0;
+      const combinedScore = Math.round((pgScoreData.score + essayScore) / 2);
+
+      let user = { name: 'Peserta Didik', noAbsen: '01', kelas: 'XI TPFL', asalSekolah: 'SMKN 2 Depok Sleman' };
+      try {
+        const raw = localStorage.getItem('metalverse_user_session');
+        if (raw) user = JSON.parse(raw);
+      } catch(e) {}
+
+      if (!user.name || user.name === 'Peserta Didik (Siswa)' || user.name === 'Peserta Didik' || !user.noAbsen || user.noAbsen === '-') {
+        const pName = prompt('Masukkan Nama Lengkap Anda untuk Rekap Spreadsheet Guru:', user.name || '');
+        if (pName && pName.trim()) user.name = pName.trim();
+        const pAbsen = prompt('Masukkan Nomor Presensi / Absen Anda (Contoh: 05):', user.noAbsen !== '-' ? user.noAbsen : '01');
+        if (pAbsen && pAbsen.trim()) user.noAbsen = pAbsen.trim();
+        try {
+          localStorage.setItem('metalverse_user_session', JSON.stringify(user));
+          updateStudentSessionPill();
+        } catch(e) {}
+      }
+
+      const btn = document.getElementById(`btn-sync-combined-${chapId}`);
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Mengirim Rekap Nilai...';
+      }
+
+      const now = new Date();
+      const timestamp = now.toLocaleDateString('id-ID', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+
+      const payload = {
+        timestamp: timestamp,
+        noAbsen: user.noAbsen || '01',
+        nama: user.name || 'Siswa',
+        kelas: user.kelas || 'XI TPFL',
+        asalSekolah: user.asalSekolah || 'SMKN 2 Depok Sleman',
+        role: 'student',
+        kategori: `Asesmen Lengkap: ${chap.numberStr}`,
+        rincianTugas: `${chap.numberStr}: Nilai Akhir ${combinedScore}/100 [Kuis PG: ${pgScoreData.score}/100, Essay: ${essayScore}/100]`,
+        skor: combinedScore,
+        xp: Math.round(combinedScore * 2) + 20,
+        status: combinedScore >= 75 ? 'Kompeten (Tuntas Modul)' : 'Perlu Remedial',
+        catatan: `Rekap nilai komprehensif Bab ${chap.numberStr} (${user.name})`
+      };
+
+      const sheetsUrl = DEFAULT_SHEETS_URL;
+      try {
+        await fetch(sheetsUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } catch(err) {
+        console.warn('Sheets sync error:', err);
+      }
+
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({
+            type: 'METALVERSE_CHAPTER_FULL_COMPLETED',
+            chapId: chapId,
+            chapTitle: chap.title,
+            pgScore: pgScoreData.score,
+            essayScore: essayScore,
+            finalScore: combinedScore,
+            payload: payload
+          }, '*');
+        }
+      } catch(e) {}
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i>Semua Nilai Terkirim!';
+      }
+
+      playSound('fanfare');
+      alert(`✅ REKAPITULASI NILAI LENGKAP TELAH TERSINKRONISASI KE GOOGLE SPREADSHEET!\n\n` +
+            `• Nama Siswa: ${user.name}\n` +
+            `• No. Presensi: ${user.noAbsen}\n` +
+            `• Kelas: ${user.kelas}\n` +
+            `• Modul: ${chap.numberStr} (${chap.title})\n\n` +
+            `📊 Rincian Nilai:\n` +
+            `  - Skor Pilihan Ganda: ${pgScoreData.score} / 100\n` +
+            `  - Skor Uraian / Essay: ${essayScore} / 100\n` +
+            `  - Nilai Akhir Modul: ${combinedScore} / 100\n` +
+            `  - Status Kelulusan: ${payload.status}\n\n` +
+            `Seluruh data berhasil tercatat di Google Spreadsheet guru.`);
+    }
+
+    // Reset Jawaban Essay per Bab
+    function resetChapterEssay(chapId) {
+      if (confirm(`Apakah Anda yakin ingin mengosongkan seluruh jawaban essay untuk ${chapId.toUpperCase()}?\n\nJawaban akan dibersihkan agar siswa baru dapat mengerjakan dari awal.`)) {
+        if (studentEssayAnswers[chapId]) delete studentEssayAnswers[chapId];
+        if (essayScores[chapId]) delete essayScores[chapId];
+        saveState();
+        renderActiveSection();
+      }
+    }
+
+    // Tab Switcher Asesmen (Semua / PG / Essay)
+    function setAssessmentTab(chapId, tabName) {
+      playSound('click');
+      currentAssessmentTab[chapId] = tabName;
+      renderActiveSection();
+      setTimeout(() => {
+        const c = document.getElementById(`assessment-container-${chapId}`);
+        if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+
+    function scrollToEssay(chapId) {
+      playSound('click');
+      currentAssessmentTab[chapId] = 'essay';
+      renderActiveSection();
+      setTimeout(() => {
+        const el = document.getElementById(`essay-section-${chapId}`) || document.getElementById(`assessment-container-${chapId}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+
+    // Profil Siswa pada Header Buku
+    function updateStudentSessionPill() {
+      let user = null;
+      try {
+        const raw = localStorage.getItem('metalverse_user_session');
+        if (raw) user = JSON.parse(raw);
+      } catch(e) {}
+
+      const nameEl = document.getElementById('book-student-name');
+      const detailEl = document.getElementById('book-student-detail');
+      if (user && user.name && user.name !== 'Peserta Didik (Siswa)') {
+        if (nameEl) nameEl.innerText = user.name;
+        if (detailEl) detailEl.innerText = `Presensi: ${user.noAbsen || '-'} | ${user.kelas || 'XI TPFL'}`;
+      } else {
+        if (nameEl) nameEl.innerText = 'Peserta Didik';
+        if (detailEl) detailEl.innerText = 'Presensi: 01 | XI TPFL';
+      }
+    }
+
+    function promptSwitchStudentBook() {
+      let user = { name: '', noAbsen: '01', kelas: 'XI TPFL', asalSekolah: 'SMKN 2 Depok Sleman' };
+      try {
+        const raw = localStorage.getItem('metalverse_user_session');
+        if (raw) user = JSON.parse(raw);
+      } catch(e) {}
+
+      const pName = prompt('Masukkan Nama Lengkap Siswa:', user.name || '');
+      if (!pName || !pName.trim()) return;
+      const pAbsen = prompt('Masukkan Nomor Presensi / Absen (Contoh: 05):', user.noAbsen || '01');
+      if (!pAbsen || !pAbsen.trim()) return;
+      const pKelas = prompt('Masukkan Kelas / Jurusan:', user.kelas || 'XI TPFL');
+
+      user.name = pName.trim();
+      user.noAbsen = pAbsen.trim();
+      user.kelas = (pKelas && pKelas.trim()) ? pKelas.trim() : 'XI TPFL';
+      user.role = 'student';
+
+      try {
+        localStorage.setItem('metalverse_user_session', JSON.stringify(user));
+      } catch(e) {}
+
+      updateStudentSessionPill();
+      alert(`✅ Identitas Siswa Berhasil Diperbarui:\n\nNama: ${user.name}\nNo. Presensi: ${user.noAbsen}\nKelas: ${user.kelas}`);
+    }
+
+    // Render Lembar Kerja Essay Interaktif
+    function renderEssaySection(chapId, chapNumberStr, essays) {
+      const answers = studentEssayAnswers[chapId] || {};
+      const gradeData = essayScores[chapId] || null;
+      let filledCount = 0;
+      essays.forEach(q => {
+        if ((answers[q.index] || '').trim().length > 0) filledCount++;
+      });
+      const progressPct = essays.length > 0 ? Math.round((filledCount / essays.length) * 100) : 0;
+
+      let html = `
+        <div id="essay-section-${chapId}" class="quiz-wrapper mt-8 p-6 sm:p-8 rounded-3xl space-y-8 border-2 border-[#E8DDD2]">
+          <!-- Header Lembar Essay -->
+          <div class="border-b border-[#E6DCD1] pb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2 flex-wrap mb-1.5">
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#DCEBE4] text-[#233730] border border-[#B5CCC3]">
+                    <i class="fa-solid fa-pen-nib mr-1"></i>Asesmen Uraian / Essay HOTS
+                  </span>
+                  <span class="text-xs text-[#7A6B64] font-mono font-semibold">${essays.length} Butir Soal Terstruktur</span>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-heading font-extrabold text-[#2B221E]">
+                  Lembar Pengerjaan Essay: ${chapNumberStr}
+                </h3>
+                <p class="text-xs text-[#7A6B64] mt-1 max-w-2xl leading-relaxed">
+                  Ketikkan analisis teknis, langkah perhitungan rumus, atau rancangan SOP pada kolom masing-masing soal. Jawaban Anda <strong>otomatis tersimpan secara lokal</strong> dan dapat dinilai serta dikirim langsung ke <strong>Google Spreadsheet Guru</strong>.
+                </p>
+              </div>
+
+              <!-- Kartu Progres Essay -->
+              <div class="p-3.5 rounded-2xl bg-white border border-[#E6DCD1] shadow-xs text-center shrink-0 min-w-[155px]">
+                <span class="text-[10px] uppercase font-bold text-[#7A6B64] tracking-wider block">Progres Uraian</span>
+                <span class="text-xl font-mono font-extrabold text-[#568A7D] essay-count-${chapId}">${filledCount} / ${essays.length}</span>
+                <div class="w-full bg-[#FAF5EE] h-1.5 rounded-full mt-1.5 overflow-hidden border border-[#E6DCD1]">
+                  <div class="essay-progress-bar-${chapId} bg-gradient-to-r from-[#568A7D] to-[#40685E] h-full transition-all duration-300" style="width: ${progressPct}%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daftar Soal Essay -->
+          <div class="space-y-6">
+      `;
+
+      essays.forEach(q => {
+        const savedAnswer = answers[q.index] || '';
+        const wCount = countWords(savedAnswer);
+        const qScore = gradeData && q.score !== undefined ? q.score : null;
+        const qFeedback = gradeData && q.feedback ? q.feedback : '';
+
+        html += `
+          <div id="essay-card-${chapId}-${q.index}" class="p-5 sm:p-6 rounded-2xl bg-white border border-[#E6DCD1] shadow-xs space-y-4 transition duration-200 hover:border-[#568A7D]">
+            <!-- Nomor & Teks Pertanyaan -->
+            <div class="flex items-start gap-3">
+              <span class="w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0 shadow-xs border ${q.colorClass}">
+                ${q.index}
+              </span>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 flex-wrap mb-1.5">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono uppercase tracking-wider border ${q.colorClass}">
+                    ${q.level}
+                  </span>
+                  <span class="text-[11px] text-[#7A6B64] font-medium font-mono">Standar Penilaian Vokasi TFLM</span>
+                </div>
+                <p class="font-bold text-[#2B221E] text-sm sm:text-base leading-relaxed">
+                  ${q.question}
+                </p>
+              </div>
+            </div>
+
+            <!-- Rubrik & Tips Teknis (Collapsible) -->
+            <div class="p-3 rounded-xl bg-[#FAF5EE] border border-[#E8DDD2] text-xs text-[#5D4E46] space-y-1">
+              <div class="flex items-center justify-between cursor-pointer select-none" onclick="toggleRubricHint('${chapId}', ${q.index})">
+                <span class="font-bold text-[#2B221E] flex items-center gap-1.5 text-xs">
+                  <i class="fa-solid fa-lightbulb text-[#EA734F]"></i>
+                  <span>Panduan Konsep &amp; Aspek Penilaian Jawaban</span>
+                </span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-[#7A6B64] transition transform duration-200" id="hint-icon-${chapId}-${q.index}"></i>
+              </div>
+              <div id="hint-body-${chapId}-${q.index}" class="hidden pt-2 border-t border-[#E8DDD2]/80 mt-1.5 text-[11px] leading-relaxed text-[#4F433E]">
+                <p>${q.hint}</p>
+              </div>
+            </div>
+
+            <!-- Textarea Input Area -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold text-[#2B221E]">
+                Jawaban Teknis Anda:
+              </label>
+              <textarea 
+                id="input-essay-${chapId}-${q.index}" 
+                rows="4" 
+                class="w-full p-3.5 rounded-xl border border-[#D3C5B8] bg-[#FAF5EE] focus:bg-white text-xs sm:text-sm text-[#2B221E] leading-relaxed placeholder-[#9C8E86] focus:outline-none focus:border-[#568A7D] focus:ring-2 focus:ring-[#568A7D]/20 transition shadow-inner font-sans"
+                placeholder="Ketik analisis teknis, langkah perhitungan rumus, atau rancangan SOP Anda di sini..."
+                oninput="handleEssayInput('${chapId}', ${q.index}, this.value)"
+              >${savedAnswer}</textarea>
+              
+              <div class="flex items-center justify-between text-[11px] text-[#7A6B64] pt-0.5">
+                <span id="word-count-${chapId}-${q.index}" class="font-mono">
+                  <i class="fa-solid fa-keyboard mr-1"></i>${wCount} kata
+                </span>
+                <span id="save-status-${chapId}-${q.index}" class="${savedAnswer.trim() ? 'text-[#166534] font-medium' : 'text-[#7A6B64]'}">
+                  ${savedAnswer.trim() ? '✓ Tersimpan di memori browser' : 'Belum diisi'}
+                </span>
+              </div>
+            </div>
+
+            <!-- Feedback Card if graded -->
+            ${qScore !== null ? `
+              <div class="p-3.5 rounded-xl ${qScore >= 75 ? 'bg-[#F0FDF4] border border-[#86EFAC]' : 'bg-[#FEF2F2] border border-[#FCA5A5]'} text-xs space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold ${qScore >= 75 ? 'text-[#166534]' : 'text-[#DC2626]'} flex items-center gap-1.5">
+                    <i class="fa-solid ${qScore >= 75 ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i>
+                    <span>Skor Butir Soal Ini: ${qScore} / 100</span>
+                  </span>
+                  <span class="font-mono text-[10px] text-[#7A6B64]">${qScore >= 75 ? 'Memenuhi Standar' : 'Perlu Pendalaman'}</span>
+                </div>
+                <p class="text-[#382D28] leading-relaxed">${qFeedback}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      html += `
+          </div>
+
+          <!-- Section Footer: Action Buttons -->
+          <div class="mt-8 p-6 rounded-3xl bg-white border-2 border-[#E6DCD1] shadow-clay-card space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h4 class="font-heading font-extrabold text-[#2B221E] text-base flex items-center gap-2">
+                  <i class="fa-solid fa-square-poll-vertical text-[#568A7D]"></i>
+                  <span>Selesai Menjawab Soal Essay?</span>
+                </h4>
+                <p class="text-xs text-[#7A6B64] mt-0.5">
+                  Klik <strong>"Periksa &amp; Nilai Jawaban Essay"</strong> untuk mengevaluasi kelengkapan argumen teknis Anda, atau langsung kirimkan ke Google Spreadsheet Guru.
+                </p>
+              </div>
+
+              <div class="flex items-center gap-2.5 flex-wrap shrink-0">
+                <button onclick="gradeChapterEssay('${chapId}')" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#568A7D] to-[#40685E] hover:from-[#40685E] hover:to-[#33534B] text-white font-extrabold text-xs sm:text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer">
+                  <i class="fa-solid fa-magnifying-glass-chart"></i>
+                  <span>Periksa &amp; Nilai Jawaban Essay</span>
+                </button>
+                <button id="btn-sync-essay-${chapId}" onclick="syncEssayToSheets('${chapId}')" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white font-extrabold text-xs sm:text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer">
+                  <i class="fa-solid fa-file-arrow-up"></i>
+                  <span>Kirim Essay ke Spreadsheet</span>
+                </button>
+                <button onclick="resetChapterEssay('${chapId}')" class="p-3 rounded-2xl bg-white hover:bg-[#FEE2E2]/60 text-[#7A6B64] hover:text-[#DC2626] border border-[#E6DCD1] text-xs transition cursor-pointer" title="Bersihkan Jawaban Essay Bab Ini">
+                  <i class="fa-solid fa-rotate-left"></i>
+                </button>
+              </div>
+            </div>
+
+            ${gradeData ? `
+              <div class="p-4 rounded-2xl bg-[#FAF5EE] border border-[#E6DCD1] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-xl flex items-center justify-center font-mono font-extrabold text-base ${gradeData.score >= 75 ? 'bg-[#DCEBE4] text-[#233730] border border-[#B5CCC3]' : 'bg-[#FCE6DD] text-[#C2410C] border border-[#FDBA74]'}">
+                    ${gradeData.score}
+                  </div>
+                  <div>
+                    <strong class="text-[#2B221E] text-sm block">Skor Rata-rata Essay: ${gradeData.score} / 100</strong>
+                    <span class="text-[#7A6B64]">${gradeData.filledCount} dari ${essays.length} butir soal telah terisi dan dievaluasi.</span>
+                  </div>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-bold ${gradeData.score >= 75 ? 'bg-[#DCEBE4] text-[#166534]' : 'bg-[#FEF2F2] text-[#DC2626]'} self-start sm:self-center">
+                  ${gradeData.score >= 75 ? '✓ Kompeten (Tuntas Essay)' : '⚠️ Perlu Elaborasi Konsep'}
+                </span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      return html;
+    }
+
+    // Render Kartu Rekapitulasi Gabungan (PG + Essay) & Sinkronisasi
+    function renderCombinedScoreCard(chapId, chapNumberStr, quizzes, essays) {
+      const pgScoreData = getChapterScore(chapId);
+      const isPgSubmitted = quizSubmitted[chapId] || false;
+      const essayData = essayScores[chapId] || null;
+      const essayScore = essayData ? essayData.score : 0;
+      const combinedScore = Math.round((pgScoreData.score + essayScore) / 2);
+      const isOverallPassed = combinedScore >= 75;
+
+      let user = { name: 'Peserta Didik', noAbsen: '01', kelas: 'XI TPFL' };
+      try {
+        const raw = localStorage.getItem('metalverse_user_session');
+        if (raw) user = JSON.parse(raw);
+      } catch(e) {}
+
+      return `
+        <!-- ================= KARTU REKAPITULASI NILAI AKHIR & SPREADSHEET SYNC ================= -->
+        <div class="mt-10 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#FAF5EE] via-white to-[#FCE6DD]/30 border-2 border-[#EA734F]/30 shadow-clay-card space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E6DCD1] pb-5">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap mb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#FCE6DD] text-[#EA734F] border border-[#FDBA74]">
+                  <i class="fa-solid fa-chart-pie mr-1"></i>Rekapitulasi Nilai Modul
+                </span>
+                <span class="text-xs text-[#7A6B64] font-mono">Siswa: <strong>${user.name || 'Siswa'}</strong> (Presensi: ${user.noAbsen || '01'})</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-heading font-extrabold text-[#2B221E]">
+                Hasil Evaluasi Akhir: ${chapNumberStr}
+              </h3>
+              <p class="text-xs text-[#7A6B64] mt-0.5">
+                Penggabungan Nilai Pilihan Ganda (Bobot 50%) dan Soal Uraian / Essay HOTS (Bobot 50%) sesuai standar Kurikulum Merdeka.
+              </p>
+            </div>
+
+            <!-- Tombol Kirim Gabungan -->
+            <button id="btn-sync-combined-${chapId}" onclick="syncCombinedGradeToSheets('${chapId}')" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#EA734F] via-[#D95D39] to-[#C2410C] hover:from-[#D95D39] hover:to-[#9A3412] text-white font-extrabold text-xs sm:text-sm shadow-xl shadow-[#EA734F]/30 transition transform hover:-translate-y-0.5 flex items-center gap-2.5 shrink-0 cursor-pointer self-start sm:self-center">
+              <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+              <span>📊 KIRIM SEMUA NILAI KE SPREADSHEET</span>
+            </button>
+          </div>
+
+          <!-- Grid 3 Skor -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- 1. Skor PG -->
+            <div class="p-4 rounded-2xl bg-white border border-[#E6DCD1] shadow-xs text-center space-y-1">
+              <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[#7A6B64] block">Kuis Pilihan Ganda (50%)</span>
+              <div class="text-2xl sm:text-3xl font-mono font-extrabold text-[#EA734F]">
+                ${isPgSubmitted ? pgScoreData.score : '-'}<span class="text-xs text-[#7A6B64] font-normal"> / 100</span>
+              </div>
+              <span class="text-[11px] text-[#7A6B64] block">
+                ${isPgSubmitted ? `${pgScoreData.correct} / ${pgScoreData.total} Benar` : 'Kuis belum diselesaikan'}
+              </span>
+            </div>
+
+            <!-- 2. Skor Essay -->
+            <div class="p-4 rounded-2xl bg-white border border-[#E6DCD1] shadow-xs text-center space-y-1">
+              <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[#568A7D] block">Uraian / Essay HOTS (50%)</span>
+              <div class="text-2xl sm:text-3xl font-mono font-extrabold text-[#568A7D]">
+                ${essayData ? essayData.score : '-'}<span class="text-xs text-[#7A6B64] font-normal"> / 100</span>
+              </div>
+              <span class="text-[11px] text-[#7A6B64] block">
+                ${essayData ? `${essayData.filledCount} / ${essays.length} Soal Dinilai` : 'Essay belum dinilai'}
+              </span>
+            </div>
+
+            <!-- 3. Nilai Akhir Gabungan -->
+            <div class="p-4 rounded-2xl ${isOverallPassed && (isPgSubmitted || essayData) ? 'bg-[#F0FDF4] border-2 border-[#86EFAC]' : 'bg-white border border-[#E6DCD1]'} shadow-xs text-center space-y-1">
+              <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[#2B221E] block">Nilai Akhir Rata-rata</span>
+              <div class="text-2xl sm:text-3xl font-mono font-extrabold ${(isPgSubmitted || essayData) ? (isOverallPassed ? 'text-[#166534]' : 'text-[#DC2626]') : 'text-[#7A6B64]'}">
+                ${(isPgSubmitted || essayData) ? combinedScore : '-'}<span class="text-xs text-[#7A6B64] font-normal"> / 100</span>
+              </div>
+              <span class="text-[11px] font-bold block ${(isPgSubmitted || essayData) ? (isOverallPassed ? 'text-[#166534]' : 'text-[#DC2626]') : 'text-[#7A6B64]'}">
+                ${(isPgSubmitted || essayData) ? (isOverallPassed ? '✓ KOMPETEN (TUNTAS)' : '⚠️ PERLU REMEDIAL') : 'Belum ada pengerjaan'}
+              </span>
+            </div>
+          </div>
+
+          <div class="text-[11px] text-[#7A6B64] flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-[#E6DCD1]/60">
+            <span><i class="fa-solid fa-database mr-1 text-[#568A7D]"></i>Tersinkronisasi ke Google Apps Script Webhook guru secara otomatis.</span>
+            <span>KKM Minimum: <strong>75</strong></span>
+          </div>
+        </div>
+      `;
+    }
+
+
+        function jumpToQuiz() {
       playSound('click');
       const chap = window.BUKU_DATA.chapters[currentChapterIndex];
       if (!chap) return;
@@ -2008,6 +3068,7 @@
     // Initialize Page
     window.addEventListener('DOMContentLoaded', () => {
       loadSavedState();
+      updateStudentSessionPill();
       parseUrlParams();
       
       // Update UI button highlights based on activeViewMode
