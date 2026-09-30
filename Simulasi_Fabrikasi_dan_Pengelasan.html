@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -285,12 +285,16 @@
             overflow: hidden;
             cursor: crosshair;
             box-shadow: 0 6px 18px rgba(160, 135, 120, 0.12) !important;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         canvas {
             width: 100%;
             height: 100%;
             display: block;
+            touch-action: none;
         }
 
         /* HUD Live Floating Badges (Bright Frosted Glass with Crisp Dark Text) */
@@ -310,6 +314,51 @@
             backdrop-filter: blur(8px);
             z-index: 5;
             box-shadow: 0 8px 24px rgba(160, 135, 120, 0.18) !important;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        /* Saat proses pengelasan/pemotongan aktif, keterangan memudar transparan agar kawah/jalur las bebas halangan */
+        .hud-live.welding-active-faded {
+            opacity: 0.18 !important;
+            pointer-events: none !important;
+        }
+
+        /* Status disembunyikan total jika user menekan tombol toggle HUD */
+        .hud-live.hud-hidden {
+            display: none !important;
+        }
+
+        /* Tombol Toggle Keterangan HUD di pojok kanan atas kanvas */
+        .btn-toggle-hud {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 6;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #D8C7B8;
+            color: #2B221E;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .btn-toggle-hud:hover {
+            background: #EA734F;
+            color: #ffffff;
+            border-color: #EA734F;
+        }
+        .btn-toggle-hud.hud-off {
+            background: #FCE6DD;
+            color: #D95A32;
+            border-color: #EA734F;
         }
 
         .hud-live span.val { color: #D95A32 !important; font-weight: 800 !important; }
@@ -1423,6 +1472,107 @@
             color: #2B221E !important;
         }
 
+        /* ================= SMARTPHONE & TABLET RESPONSIVE ENHANCEMENTS ================= */
+        .landscape-notice-banner {
+            background: linear-gradient(135deg, #FFF9F5, #FDECE2);
+            border-bottom: 2px solid #EA734F;
+            padding: 8px 16px;
+            font-size: 0.78rem;
+            color: #78301B;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(234, 115, 79, 0.12);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        .btn-fs-pill {
+            background: linear-gradient(135deg, #EA734F, #D95A32);
+            color: #ffffff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 6px rgba(234, 115, 79, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .canvas-container {
+                height: 280px;
+            }
+            .hud-live {
+                top: 6px;
+                left: 6px;
+                right: 75px;
+                padding: 6px 10px;
+                font-size: 0.63rem;
+                line-height: 1.35;
+                background: rgba(255, 255, 255, 0.92) !important;
+                border-radius: 8px !important;
+            }
+            .btn-toggle-hud {
+                top: 6px;
+                right: 6px;
+                padding: 4px 8px;
+                font-size: 0.65rem;
+            }
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px 14px;
+                gap: 10px;
+            }
+            .header-title h1 {
+                font-size: 1.15rem !important;
+            }
+            .header-right {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .nav-tabs {
+                gap: 4px;
+                padding: 6px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .tab-btn {
+                padding: 8px 12px;
+                font-size: 0.74rem;
+                white-space: nowrap;
+            }
+            .easy-toolbar {
+                padding: 8px 10px;
+                gap: 8px;
+            }
+            .btn-weld-toggle {
+                width: 100%;
+                justify-content: center;
+                padding: 12px;
+            }
+        }
+
+        /* Saat HP dipegang mendatar (Landscape mode) */
+        @media (max-width: 950px) and (orientation: landscape) {
+            .canvas-container {
+                height: 310px;
+            }
+            .landscape-notice-banner {
+                display: none !important;
+            }
+            .hud-live {
+                max-width: 380px;
+                font-size: 0.68rem;
+                padding: 6px 10px;
+            }
+        }
+
         /* Report Print Stylesheet */
         @media print {
             body { background: #fff !important; color: #000 !important; }
@@ -1465,6 +1615,18 @@
 </head>
 <body>
 
+    <!-- Mobile Landscape Orientation Tip Banner -->
+    <div id="mobileLandscapeNotice" class="landscape-notice-banner" style="display: none;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-mobile-screen-button" style="font-size: 1.1rem; color: #EA734F;"></i>
+            <span><b>Saran HP:</b> Gunakan posisi <b>Landscape (Mendatar)</b> & tekan <b>Layar Penuh</b> agar simulasi las lebih lebar & nyaman!</span>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+            <button type="button" class="btn-fs-pill" onclick="toggleFullScreen()"><i class="fa-solid fa-expand"></i> Fullscreen</button>
+            <button type="button" onclick="dismissLandscapeNotice()" style="background:none; border:none; color:#78301B; font-weight:bold; font-size:0.85rem; cursor:pointer; padding:2px 6px;">✕</button>
+        </div>
+    </div>
+
     <!-- Header -->
     <header>
         <div class="header-title">
@@ -1475,6 +1637,9 @@
             <a href="MetalVerseFery.html" style="background: linear-gradient(135deg, #EA734F, #D95A32); color:#FFFFFF; border:1px solid #F9BCA2; padding:8px 18px; border-radius:9999px; font-weight:800; font-size:0.82rem; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(234,115,79,0.35); transition:all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);" title="Kembali ke Portal MetalVerseFery">
                 🏠 DASHBOARD UTAMA
             </a>
+            <button class="btn-orbit-glow" onclick="toggleFullScreen()" title="Aktifkan Layar Penuh pada HP/Laptop" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
+                ⛶ LAYAR PENUH
+            </button>
             <button class="btn-orbit-glow" onclick="openOrbitStudioModal()">
                 🌐 STUDIO ORBIT 3D BENDA
             </button>
@@ -1528,6 +1693,7 @@
                     </div>
 
                     <div class="canvas-container" id="containerSmaw" title="Klik dan geser mouse di atas pelat untuk mengelas sendiri!">
+                        <button type="button" class="btn-toggle-hud" onclick="toggleCanvasHud(this)" title="Sembunyikan / Tampilkan Keterangan">👁️ HUD</button>
                         <canvas id="canvasSmaw" data-view-mode="work"></canvas>
                         <div class="hud-live" id="hudLiveSmaw">
                             STATUS: <span id="hudSmawState" class="warn">STANDBY (KLIK TOMBOL HIJAU ATAU KLIK DRAG PELAT)</span><br>
@@ -1855,6 +2021,7 @@
                     </div>
 
                     <div class="canvas-container" id="containerCut" title="Klik dan drag mouse di atas pelat baja untuk menggeser blender potong!">
+                        <button type="button" class="btn-toggle-hud" onclick="toggleCanvasHud(this)" title="Sembunyikan / Tampilkan Keterangan">👁️ HUD</button>
                         <canvas id="canvasCut" data-view-mode="work"></canvas>
                         <div class="hud-live" id="hudLiveCut">
                             ALAT: <span class="val">Blender Potong Oxy-Fuel Manual</span> | SESI: <span class="val" id="hudCutSessionText">Sesi #1</span><br>
@@ -1960,6 +2127,7 @@
                     </div>
 
                     <div class="canvas-container" id="containerPlasma" title="Klik dan drag mouse di atas pelat logam untuk menggerakkan torch plasma potong!">
+                        <button type="button" class="btn-toggle-hud" onclick="toggleCanvasHud(this)" title="Sembunyikan / Tampilkan Keterangan">👁️ HUD</button>
                         <canvas id="canvasPlasma" data-view-mode="work"></canvas>
                         <div class="hud-live" id="hudLivePlasma">
                             ALAT: <span class="val">Inverter PAC HF (Air Plasma)</span> | SESI: <span class="val" id="hudPlasmaSessionText">Sesi #1</span><br>
@@ -2206,6 +2374,7 @@
                     </div>
 
                     <div class="canvas-container" id="containerOaw" title="Klik dan drag mouse untuk mengarahkan nyala api torch OAW!">
+                        <button type="button" class="btn-toggle-hud" onclick="toggleCanvasHud(this)" title="Sembunyikan / Tampilkan Keterangan">👁️ HUD</button>
                         <canvas id="canvasOaw" data-view-mode="work"></canvas>
                                                 <div class="hud-live" id="hudLiveOaw">
                             PROSES: <span class="val">OAW Gas Welding</span> | POSISI: <span class="val" id="hudOawPos" style="color: #EA734F; font-weight: bold;">1G - Groove Datar</span><br>
@@ -2711,6 +2880,7 @@
                     </div>
 
                     <div class="canvas-container" id="containerGtaw" title="Klik dan drag mouse untuk mengendalikan stang TIG & jarak busur tungsten!">
+                        <button type="button" class="btn-toggle-hud" onclick="toggleCanvasHud(this)" title="Sembunyikan / Tampilkan Keterangan">👁️ HUD</button>
                         <canvas id="canvasGtaw" data-view-mode="work"></canvas>
                         <div class="hud-live" id="hudLiveGtaw">
                             POSISI LAS: <span class="val" id="hudGtawPositionText" style="color:#EA734F; font-weight:bold;">1G - Groove Datar (Flat)</span> | SESI: <span class="val" id="hudGtawSessionText">Sesi #1</span><br>
@@ -3171,6 +3341,7 @@
                     </div>
 
                     <div class="canvas-container" id="containerGmaw" title="Klik dan drag mouse untuk menggeser welding gun GMAW!">
+                        <button type="button" class="btn-toggle-hud" onclick="toggleCanvasHud(this)" title="Sembunyikan / Tampilkan Keterangan">👁️ HUD</button>
                         <canvas id="canvasGmaw" data-view-mode="work"></canvas>
                         <div class="hud-live" id="hudLiveGmaw">
                             POSISI LAS: <span class="val" id="hudGmawPositionText" style="color:#EA734F; font-weight:bold;">1G - Groove Datar (Flat)</span> | SESI: <span class="val" id="hudGmawSessionText">Sesi #1</span><br>
@@ -3596,6 +3767,7 @@
                     </div>
 
                     <div class="canvas-container" id="containerSpot" title="Tekan Pedal atau Spasi untuk mengelas titik lap joint!">
+                        <button type="button" class="btn-toggle-hud" onclick="toggleCanvasHud(this)" title="Sembunyikan / Tampilkan Keterangan">👁️ HUD</button>
                         <canvas id="canvasSpot" data-view-mode="work"></canvas>
                         <div class="hud-live" id="hudLiveSpot">
                             PROSES: <span class="val">Resistance Spot Welding (RSW) - Pedestal C-Frame 50kVA</span> | SESI: <span class="val" id="hudSpotSessionText">Sesi #1</span><br>
@@ -3887,6 +4059,7 @@
                     </div>
 
                     <div class="canvas-container" id="containerBend">
+                        <button type="button" class="btn-toggle-hud" onclick="toggleCanvasHud(this)" title="Sembunyikan / Tampilkan Keterangan">👁️ HUD</button>
                         <canvas id="canvasBend" data-view-mode="work"></canvas>
                         <div class="hud-live" id="hudLiveBend">
                             TEBAL PELAT: <span class="val">1.5 mm</span> | SUDUT BENDING: <span class="val" id="hudBendAngle">90°</span><br>
@@ -4841,7 +5014,13 @@
                 <table style="width: 100%; font-size: 0.8rem; margin-bottom: 14px; border-collapse: collapse;">
                     <tr>
                         <td style="width: 18%; font-weight: bold; padding: 4px 0;">Nama Siswa</td>
-                        <td style="width: 32%;">: <input type="text" id="rptInputName" value="Peserta Didik (Siswa)" style="font-size: 0.8rem; font-weight: bold; border: 1px dashed #94a3b8; padding: 2px 6px; border-radius: 3px; width: 80%;"></td>
+                        <td style="width: 32%;">: <input type="text" id="rptInputName" value="Peserta Didik (Siswa)" placeholder="Nama Lengkap Siswa" style="font-size: 0.8rem; font-weight: bold; border: 1px dashed #94a3b8; padding: 2px 6px; border-radius: 3px; width: 85%;"></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 4px 0;">No. Absen (Presensi)</td>
+                        <td>: <input type="text" id="rptInputAbsen" value="01" placeholder="Absen" style="font-size: 0.8rem; font-weight: bold; border: 1px dashed #94a3b8; padding: 2px 6px; border-radius: 3px; width: 50px; text-align: center;"> <span style="font-size: 0.72rem; color: #64748b;">(Wajib untuk rekap rapor)</span></td>
+                        <td style="font-weight: bold; padding: 4px 0;">Kelas / Jurusan</td>
+                        <td>: <input type="text" id="rptInputKelas" value="XI TPFL" placeholder="Kelas" style="font-size: 0.8rem; font-weight: bold; border: 1px dashed #94a3b8; padding: 2px 6px; border-radius: 3px; width: 90px;"></td>
                         <td style="width: 18%; font-weight: bold; padding: 4px 0;">Tanggal Uji</td>
                         <td style="width: 32%;">: <span id="rptDate"></span></td>
                     </tr>
@@ -4956,7 +5135,11 @@
             </div>
 
             <div class="modal-footer" style="padding: 12px 20px; background: #FAF5EF; border-top: 1px solid #EAE0D5; display: flex; justify-content: flex-end; gap: 10px;">
+                <span id="syncStatusTip" style="font-size: 0.75rem; color: #568A7D; font-weight: 600; margin-right: auto;">âœ¨ Nilai praktikum siap dikirim ke Google Spreadsheet Guru</span>
                 <button class="btn-reset" onclick="closePrintReportModal()">Tutup Jendela</button>
+                <button class="btn-action" id="btnSyncSimSheets" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: bold; padding: 10px 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(16,185,129,0.35); cursor: pointer;" onclick="syncLabScoreToSheets()">
+                    ðŸ“Š KIRIM NILAI KE SPREADSHEET
+                </button>
                 <button class="btn-action" style="background: linear-gradient(135deg, #568A7D, #406D62); color: #fff; font-weight: bold; padding: 10px 20px;" onclick="printStudentReport()">
                     🖨️ CETAK / SIMPAN KE PDF
                 </button>
@@ -5302,6 +5485,70 @@
 
     <!-- Interactive Script -->
     <script>
+        /* ================= GLOBAL MOBILE & UI/UX UTILITIES ================= */
+        function toggleCanvasHud(btn) {
+            const container = btn ? btn.closest('.canvas-container') : null;
+            if (!container) return;
+            const hud = container.querySelector('.hud-live');
+            if (!hud) return;
+            hud.classList.toggle('hud-hidden');
+            if (hud.classList.contains('hud-hidden')) {
+                btn.classList.add('hud-off');
+                btn.innerHTML = '👁️‍🗨️ HUD';
+                btn.title = 'Tampilkan Keterangan HUD';
+            } else {
+                btn.classList.remove('hud-off');
+                btn.innerHTML = '👁️ HUD';
+                btn.title = 'Sembunyikan Keterangan HUD';
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                const docEl = document.documentElement;
+                if (docEl.requestFullscreen) {
+                    docEl.requestFullscreen().catch(() => {});
+                } else if (docEl.webkitRequestFullscreen) {
+                    docEl.webkitRequestFullscreen();
+                } else if (docEl.mozRequestFullScreen) {
+                    docEl.mozRequestFullScreen();
+                } else if (docEl.msRequestFullscreen) {
+                    docEl.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        function dismissLandscapeNotice() {
+            const notice = document.getElementById('mobileLandscapeNotice');
+            if (notice) notice.style.display = 'none';
+            try { sessionStorage.setItem('dismissLandscapeTip', '1'); } catch (e) {}
+        }
+
+        function initMobileViewCheck() {
+            const notice = document.getElementById('mobileLandscapeNotice');
+            if (!notice) return;
+            try {
+                if (sessionStorage.getItem('dismissLandscapeTip') === '1') {
+                    notice.style.display = 'none';
+                    return;
+                }
+            } catch (e) {}
+            const isMobilePortrait = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
+            notice.style.display = isMobilePortrait ? 'flex' : 'none';
+        }
+        window.addEventListener('resize', initMobileViewCheck);
+        window.addEventListener('orientationchange', () => setTimeout(initMobileViewCheck, 200));
+        setTimeout(initMobileViewCheck, 300);
         /* ================= NAVIGATION ================= */
         let lastActiveWorkTab = 'tab-smaw';
         function switchTab(tabId) {
@@ -6700,12 +6947,14 @@
                 btn.innerText = "⏹️ MATIKAN BUSUR LAS (STOP WELD)";
                 hud.className = "ok";
                 hud.innerText = "⚡ BUSUR MENYALA (MENGELAS AKTIF)";
+                document.getElementById('hudLiveSmaw')?.classList.add('welding-active-faded');
                 playArcSound(1.0, 0.18);
             } else {
                 btn.classList.remove('welding');
                 btn.innerText = "⚡ NYALAKAN BUSUR LAS (MANUAL)";
                 hud.className = "warn";
                 hud.innerText = "STANDBY (BUSUR PADAM)";
+                document.getElementById('hudLiveSmaw')?.classList.remove('welding-active-faded');
                 stopArcSound();
             }
         }
@@ -6756,6 +7005,24 @@
             updateSmawCoords(e);
             if (isSmawWelding) depositSmawBead();
         });
+
+        canvasSmaw.addEventListener('touchstart', (e) => {
+            if (activeViewModes.smaw === 'orbit') return;
+            if (e.touches && e.touches[0]) {
+                e.preventDefault();
+                updateSmawCoords(e.touches[0]);
+                if (!isSmawWelding) toggleWeldActive();
+            }
+        }, { passive: false });
+
+        canvasSmaw.addEventListener('touchmove', (e) => {
+            if (activeViewModes.smaw === 'orbit') return;
+            if (e.touches && e.touches[0]) {
+                e.preventDefault();
+                updateSmawCoords(e.touches[0]);
+                if (isSmawWelding) depositSmawBead();
+            }
+        }, { passive: false });
 
         function updateSmawCoords(e) {
             const rect = canvasSmaw.getBoundingClientRect();
@@ -8876,6 +9143,19 @@
 
         /* ================= OFFICIAL ASSESSMENT REPORT & PRINT ENGINE ================= */
         function openPrintReportModal() {
+            // Auto load student session if available
+            try {
+                const rawUser = localStorage.getItem('metalverse_user_session');
+                if (rawUser) {
+                    const u = JSON.parse(rawUser);
+                    const inpName = document.getElementById('rptInputName');
+                    const inpAbsen = document.getElementById('rptInputAbsen');
+                    const inpKelas = document.getElementById('rptInputKelas');
+                    if (inpName && u.name) inpName.value = u.name;
+                    if (inpAbsen && u.noAbsen) inpAbsen.value = u.noAbsen;
+                    if (inpKelas && u.kelas) inpKelas.value = u.kelas;
+                }
+            } catch(e) {}
             const modal = document.getElementById('reportPrintModal');
             if (!modal) return;
 
@@ -9400,6 +9680,147 @@
 
         function printStudentReport() {
             window.print();
+        }
+
+        const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxfZJ7pdx4BcJ9JjNkkX_KeQzz4ieFH65Xwz5DPMEYID41gYfgfzKoZr3U2Yg06_sM11Q/exec';
+
+        async function syncLabScoreToSheets() {
+            const btn = document.getElementById('btnSyncSimSheets');
+            const oldHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.innerHTML = 'â³ Mengirim ke Spreadsheet...';
+                btn.disabled = true;
+            }
+
+            const inpName = document.getElementById('rptInputName');
+            const inpAbsen = document.getElementById('rptInputAbsen');
+            const inpKelas = document.getElementById('rptInputKelas');
+            const rptProcess = document.getElementById('rptProcess');
+            const rptScore = document.getElementById('rptFinalScore');
+            const rptBadge = document.getElementById('rptVerdictBadge');
+            const rptFb = document.getElementById('rptFeedbackText');
+
+            let nama = inpName ? inpName.value.trim() : 'Peserta Didik';
+            let noAbsen = inpAbsen ? inpAbsen.value.trim() : '01';
+            let kelas = inpKelas ? inpKelas.value.trim() : 'XI TPFL';
+
+            if (!nama || nama === 'Peserta Didik (Siswa)') {
+                const promptName = prompt('Masukkan Nama Lengkap Anda:', nama !== 'Peserta Didik (Siswa)' ? nama : '');
+                if (promptName) {
+                    nama = promptName.trim();
+                    if (inpName) inpName.value = nama;
+                }
+            }
+
+            if (!noAbsen || noAbsen === '-' || noAbsen === '00') {
+                const promptAbsen = prompt('Masukkan Nomor Presensi / Absen Anda (Contoh: 05):', '01');
+                if (promptAbsen) {
+                    noAbsen = promptAbsen.trim();
+                    if (inpAbsen) inpAbsen.value = noAbsen;
+                }
+            }
+
+            // Save updated identity to session
+            try {
+                const sessionUser = {
+                    name: nama,
+                    noAbsen: noAbsen,
+                    kelas: kelas,
+                    asalSekolah: 'SMKN 2 Depok Sleman',
+                    role: 'student'
+                };
+                localStorage.setItem('metalverse_user_session', JSON.stringify(sessionUser));
+            } catch(e) {}
+
+            const processName = rptProcess ? rptProcess.innerText.trim() : 'Simulasi Praktikum';
+            let rawScore = rptScore ? parseInt(rptScore.innerText) : 95;
+            if (isNaN(rawScore)) rawScore = 90;
+            const verdict = rptBadge ? rptBadge.innerText.trim() : 'Kompeten';
+            const feedback = rptFb ? rptFb.innerText.trim() : 'Hasil praktikum simulasi laboratorium.';
+
+            const now = new Date();
+            const timestamp = now.toLocaleDateString('id-ID', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+
+            // Map process name to recognized category
+            let kategori = 'Simulasi Praktikum Lab';
+            const pLower = processName.toLowerCase();
+            if (pLower.includes('smaw')) kategori = 'Simulasi Pengelasan SMAW';
+            else if (pLower.includes('oaw')) kategori = 'Simulasi Pengelasan OAW';
+            else if (pLower.includes('cutting') || pLower.includes('potong') || pLower.includes('oxy')) kategori = 'Simulasi Pemotongan Mekanik/Termal';
+            else if (pLower.includes('plasma')) kategori = 'Simulasi Pemotongan Plasma';
+            else if (pLower.includes('gtaw') || pLower.includes('tig')) kategori = 'Simulasi Pengelasan GTAW / TIG';
+            else if (pLower.includes('gmaw') || pLower.includes('mig') || pLower.includes('mag')) kategori = 'Simulasi Pengelasan GMAW / MIG-MAG';
+            else if (pLower.includes('spot') || pLower.includes('rsw')) kategori = 'Simulasi Las Titik (RSW)';
+            else if (pLower.includes('bend')) kategori = 'Simulasi Tekuk Bending Pelat';
+
+            const payload = {
+                timestamp: timestamp,
+                noAbsen: noAbsen,
+                nama: nama,
+                kelas: kelas,
+                asalSekolah: 'SMKN 2 Depok Sleman',
+                role: 'student',
+                kategori: kategori,
+                rincianTugas: `${processName} (Skor: ${rawScore}/100 - ${verdict})`,
+                skor: rawScore,
+                xp: Math.round(rawScore * 1.5),
+                status: rawScore >= 75 ? 'Kompeten' : 'Perlu Remedial',
+                catatan: feedback
+            };
+
+            const customUrl = localStorage.getItem('metalverse_sheets_url');
+            const sheetsUrl = (customUrl && customUrl.startsWith('http')) ? customUrl : DEFAULT_SHEETS_URL;
+
+            let sentSuccess = false;
+            try {
+                await fetch(sheetsUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                sentSuccess = true;
+            } catch (err) {
+                console.warn('Direct fetch error:', err);
+            }
+
+            // PostMessage to parent or opener
+            try {
+                const msg = {
+                    type: 'METALVERSE_SIM_COMPLETED',
+                    category: kategori,
+                    task: payload.rincianTugas,
+                    score: rawScore,
+                    xp: payload.xp,
+                    status: payload.status,
+                    notes: feedback,
+                    nama: nama,
+                    noAbsen: noAbsen,
+                    kelas: kelas,
+                    asalSekolah: 'SMKN 2 Depok Sleman'
+                };
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage(msg, '*');
+                }
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage(msg, '*');
+                }
+            } catch(e) {}
+
+            if (btn) {
+                btn.innerHTML = 'âœ… Nilai Terkirim ke Spreadsheet!';
+                btn.style.background = '#059669';
+                setTimeout(() => {
+                    btn.innerHTML = oldHtml;
+                    btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    btn.disabled = false;
+                }, 4000);
+            }
+
+            alert(`âœ… BERHASIL TERSINKRON!\n\nNama: ${nama}\nNo. Absen: ${noAbsen}\nPraktik: ${processName}\nNilai: ${rawScore}/100 (${verdict})\n\nNilai Anda telah otomatis tercatat ke Google Spreadsheet Guru!`);
         }
 
         function updateHistoryTables() {
@@ -10182,12 +10603,14 @@
                 btn.style.background = "#ef4444";
                 hud.innerText = "TERBUKA (REAKSI POTONG AKTIF)";
                 hud.className = "ok";
+                document.getElementById('hudLiveCut')?.classList.add('welding-active-faded');
                 playArcSound(1.4, 0.25);
             } else {
                 btn.innerText = "⚡ BUKA TUAS OKSIGEN POTONG (CUTTING JET)";
                 btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
                 hud.innerText = "TERTUTUP (HANYA API PEMANAS)";
                 hud.className = "val";
+                document.getElementById('hudLiveCut')?.classList.remove('welding-active-faded');
                 stopArcSound();
             }
         }
@@ -10203,6 +10626,26 @@
             cutTorch.x = Math.max(60, Math.min(canvasCut.width - 60, e.clientX - rect.left));
             processCutMove();
         });
+
+        canvasCut.addEventListener('touchstart', (e) => {
+            if (activeViewModes.cutting === 'orbit') return;
+            if (e.touches && e.touches[0]) {
+                e.preventDefault();
+                const rect = canvasCut.getBoundingClientRect();
+                cutTorch.x = Math.max(60, Math.min(canvasCut.width - 60, e.touches[0].clientX - rect.left));
+                processCutMove();
+            }
+        }, { passive: false });
+
+        canvasCut.addEventListener('touchmove', (e) => {
+            if (activeViewModes.cutting === 'orbit') return;
+            if (e.touches && e.touches[0]) {
+                e.preventDefault();
+                const rect = canvasCut.getBoundingClientRect();
+                cutTorch.x = Math.max(60, Math.min(canvasCut.width - 60, e.touches[0].clientX - rect.left));
+                processCutMove();
+            }
+        }, { passive: false });
 
         function processCutMove() {
             const now = Date.now();
@@ -10630,6 +11073,7 @@
                     btn.style.background = "#ef4444";
                     btn.style.boxShadow = "0 4px 15px rgba(239, 68, 68, 0.5)";
                 }
+                document.getElementById('hudLivePlasma')?.classList.add('welding-active-faded');
                 playPlasmaSound();
             } else {
                 if (btn) {
@@ -10639,6 +11083,7 @@
                 }
                 isPlasmaTransferred = false;
                 isPlasmaBlowback = false;
+                document.getElementById('hudLivePlasma')?.classList.remove('welding-active-faded');
                 if (hud) {
                     hud.innerText = "STANDBY (Trigger Mati)";
                     hud.className = "val";
@@ -11211,14 +11656,24 @@
                 plasmaTorch.x = Math.max(60, Math.min(canvasPlasma.width - 60, e.clientX - rect.left));
                 processPlasmaMove();
             });
+            canvasPlasma.addEventListener('touchstart', (e) => {
+                if (activeViewModes.plasma === 'orbit') return;
+                const rect = canvasPlasma.getBoundingClientRect();
+                if (e.touches && e.touches[0]) {
+                    e.preventDefault();
+                    plasmaTorch.x = Math.max(60, Math.min(canvasPlasma.width - 60, e.touches[0].clientX - rect.left));
+                    processPlasmaMove();
+                }
+            }, { passive: false });
             canvasPlasma.addEventListener('touchmove', (e) => {
                 if (activeViewModes.plasma === 'orbit') return;
                 const rect = canvasPlasma.getBoundingClientRect();
                 if (e.touches && e.touches[0]) {
+                    e.preventDefault();
                     plasmaTorch.x = Math.max(60, Math.min(canvasPlasma.width - 60, e.touches[0].clientX - rect.left));
                     processPlasmaMove();
                 }
-            });
+            }, { passive: false });
         }
 
                 /* ================= 3. OAW ENGINE (USER OPERATED TORCH & WIRE DIP) ================= */
@@ -11973,10 +12428,37 @@
             oawHoldTime = 0;
         });
 
+        // Touch events for OAW canvas on mobile/tablets
+        canvasOaw.addEventListener('touchstart', (e) => {
+            if (activeViewModes.oaw === 'orbit') return;
+            if (e.cancelable) e.preventDefault();
+            const rect = canvasOaw.getBoundingClientRect();
+            const touch = e.touches[0];
+            oawTorch.x = Math.max(70, Math.min(canvasOaw.width - 70, touch.clientX - rect.left));
+            oawHoldTime = 0;
+            document.getElementById('hudLiveOaw')?.classList.add('welding-active-faded');
+        }, { passive: false });
+
+        canvasOaw.addEventListener('touchmove', (e) => {
+            if (activeViewModes.oaw === 'orbit') return;
+            if (e.cancelable) e.preventDefault();
+            const rect = canvasOaw.getBoundingClientRect();
+            const touch = e.touches[0];
+            oawTorch.x = Math.max(70, Math.min(canvasOaw.width - 70, touch.clientX - rect.left));
+            oawHoldTime = 0;
+        }, { passive: false });
+
+        canvasOaw.addEventListener('touchend', () => {
+            setTimeout(() => {
+                document.getElementById('hudLiveOaw')?.classList.remove('welding-active-faded');
+            }, 800);
+        });
+
         let oawDemoPhase = 0;
         function runOawDemo() {
             resetOawFull();
             oawDemoPhase = 0;
+            document.getElementById('hudLiveOaw')?.classList.add('welding-active-faded');
             const midY = canvasOaw.height / 2;
             let timer = setInterval(() => {
                 oawDemoPhase += 0.25;
@@ -11986,6 +12468,7 @@
                 dipOawWire();
                 if (oawTorch.x >= canvasOaw.width - 90 || oawDips >= 24) {
                     clearInterval(timer);
+                    document.getElementById('hudLiveOaw')?.classList.remove('welding-active-faded');
                     alert(`âœ¨ Pengelasan OAW Selesai!\nPola ayunan ${WEAVE_PATTERNS[currentOawWeave].name} terpadu sempurna dengan kawat ${oawConfig.filler}.`);
                 }
             }, 90);
@@ -13533,6 +14016,7 @@
 
         function toggleGtawArc() {
             isGtawArc = !isGtawArc;
+            document.getElementById('hudLiveGtaw')?.classList.toggle('welding-active-faded', isGtawArc);
             const btn = document.getElementById('btnGtawToggle');
             const hud = document.getElementById('hudGtawArc');
 
@@ -14572,6 +15056,25 @@
                 if (isGmawOn) depositGmawBead();
             });
 
+            // Mobile / Touch Dragging for GMAW Gun
+            canvasGmaw.addEventListener('touchstart', (e) => {
+                if (activeViewModes.gmaw === 'orbit') return;
+                if (e.cancelable) e.preventDefault();
+                const rect = canvasGmaw.getBoundingClientRect();
+                const touch = e.touches[0];
+                gmawX = Math.max(60, Math.min(canvasGmaw.width - 60, touch.clientX - rect.left));
+                if (isGmawOn) depositGmawBead();
+            }, { passive: false });
+
+            canvasGmaw.addEventListener('touchmove', (e) => {
+                if (activeViewModes.gmaw === 'orbit') return;
+                if (e.cancelable) e.preventDefault();
+                const rect = canvasGmaw.getBoundingClientRect();
+                const touch = e.touches[0];
+                gmawX = Math.max(60, Math.min(canvasGmaw.width - 60, touch.clientX - rect.left));
+                if (isGmawOn) depositGmawBead();
+            }, { passive: false });
+
             updateGmawConfig();
         }
 
@@ -15224,6 +15727,7 @@
 
         function toggleGasWeld() {
             isGmawOn = !isGmawOn;
+            document.getElementById('hudLiveGmaw')?.classList.toggle('welding-active-faded', isGmawOn);
             const btn = document.getElementById('btnGasWeldToggle');
             if (isGmawOn) {
                 btn.classList.add('welding');
@@ -16401,20 +16905,22 @@
                 const my = touch.clientY - rect.top;
                 const seamY = canvasSpot.height / 2;
                 if (my >= seamY - 45 && my <= seamY + 45) {
+                    if (e.cancelable) e.preventDefault();
                     isSpotDragging = true;
                     spotDragStartX = mx;
                     spotWorkpieceOriginX = spotWorkpieceX;
                 }
-            }, { passive: true });
+            }, { passive: false });
 
             window.addEventListener('touchmove', (e) => {
                 if (!isSpotDragging || !canvasSpot) return;
+                if (e.cancelable) e.preventDefault();
                 const rect = canvasSpot.getBoundingClientRect();
                 const touch = e.touches[0];
                 const mx = touch.clientX - rect.left;
                 const dx = mx - spotDragStartX;
                 spotWorkpieceX = Math.max(-280, Math.min(280, spotWorkpieceOriginX + dx));
-            }, { passive: true });
+            }, { passive: false });
 
             window.addEventListener('touchend', () => {
                 isSpotDragging = false;
@@ -16551,6 +17057,7 @@
 
             const btn = document.getElementById('btnSpotPedal');
             if (btn) btn.classList.add('welding');
+            document.getElementById('hudLiveSpot')?.classList.add('welding-active-faded');
 
             // 1. Squeeze Phase
             spotPhase = 'squeeze';
@@ -16638,6 +17145,7 @@
                         setTimeout(() => {
                             spotPhase = 'idle';
                             if (btn) btn.classList.remove('welding');
+                            document.getElementById('hudLiveSpot')?.classList.remove('welding-active-faded');
                             if (hudStep) hudStep.innerText = "Menunggu Pedal";
                             if (hudPhase) { hudPhase.innerText = "SIAP (STANDBY)"; hudPhase.className = "ok"; }
                             if (timeline) timeline.innerHTML = "Tekan ➔ Las ➔ Tahan ➔ Lepas";
@@ -17496,6 +18004,9 @@
         const ctxBend = canvasBend.getContext('2d');
         let bendAngle = 90;
         let isTacked = true;
+        let isBendDragging = false;
+        let bendDragStartX = 0;
+        let bendStartAngle = 90;
 
         function initBending() {
             canvasBend.width = canvasBend.parentElement.clientWidth || 800;
@@ -17506,6 +18017,51 @@
                 animateBendLoop();
             }
         }
+
+        // Interactive Mouse & Touch Dragging for Bending Plate
+        canvasBend.addEventListener('mousedown', (e) => {
+            if (activeViewModes.bending === 'orbit') return;
+            isBendDragging = true;
+            bendDragStartX = e.clientX;
+            bendStartAngle = bendAngle;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isBendDragging) return;
+            const dx = e.clientX - bendDragStartX;
+            bendAngle = Math.max(0, Math.min(135, Math.round(bendStartAngle + dx * 0.4)));
+            const hud = document.getElementById('hudBendAngle');
+            if (hud) hud.innerText = bendAngle + "°";
+            drawBendingWork();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isBendDragging = false;
+        });
+
+        canvasBend.addEventListener('touchstart', (e) => {
+            if (activeViewModes.bending === 'orbit') return;
+            if (e.cancelable) e.preventDefault();
+            isBendDragging = true;
+            bendDragStartX = e.touches[0].clientX;
+            bendStartAngle = bendAngle;
+            document.getElementById('hudLiveBend')?.classList.add('welding-active-faded');
+        }, { passive: false });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isBendDragging) return;
+            if (e.cancelable) e.preventDefault();
+            const dx = e.touches[0].clientX - bendDragStartX;
+            bendAngle = Math.max(0, Math.min(135, Math.round(bendStartAngle + dx * 0.4)));
+            const hud = document.getElementById('hudBendAngle');
+            if (hud) hud.innerText = bendAngle + "°";
+            drawBendingWork();
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => {
+            isBendDragging = false;
+            document.getElementById('hudLiveBend')?.classList.remove('welding-active-faded');
+        });
 
         function stepBendAngle(delta) {
             bendAngle = Math.max(0, Math.min(135, bendAngle + delta));
@@ -18282,6 +18838,10 @@
                     e.preventDefault(); toggleGtawArc();
                 } else if (document.getElementById('tab-spot').classList.contains('active')) {
                     e.preventDefault(); triggerSpotCycle();
+                } else if (document.getElementById('tab-gmaw').classList.contains('active')) {
+                    e.preventDefault(); toggleGasWeld();
+                } else if (document.getElementById('tab-bending').classList.contains('active')) {
+                    e.preventDefault(); stepBendAngle(10);
                 }
             } else if (e.code === 'KeyD') {
                 // Key 'D' to dip filler wire
@@ -18303,6 +18863,10 @@
                     e.preventDefault(); moveGtawStep(15);
                 } else if (document.getElementById('tab-spot').classList.contains('active')) {
                     e.preventDefault(); moveSpotWorkpiece(25);
+                } else if (document.getElementById('tab-gmaw').classList.contains('active')) {
+                    e.preventDefault(); moveGasTorch(15);
+                } else if (document.getElementById('tab-bending').classList.contains('active')) {
+                    e.preventDefault(); stepBendAngle(5);
                 }
             } else if (e.code === 'ArrowLeft') {
                 if (document.getElementById('tab-smaw').classList.contains('active')) {
@@ -18317,6 +18881,10 @@
                     e.preventDefault(); moveGtawStep(-15);
                 } else if (document.getElementById('tab-spot').classList.contains('active')) {
                     e.preventDefault(); moveSpotWorkpiece(-25);
+                } else if (document.getElementById('tab-gmaw').classList.contains('active')) {
+                    e.preventDefault(); moveGasTorch(-15);
+                } else if (document.getElementById('tab-bending').classList.contains('active')) {
+                    e.preventDefault(); stepBendAngle(-5);
                 }
             }
         });

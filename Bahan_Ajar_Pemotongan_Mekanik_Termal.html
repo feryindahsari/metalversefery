@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="utf-8">
@@ -1549,6 +1549,8 @@ Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pol
     updateAnsweredProgress();
   });
 
+  const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxfZJ7pdx4BcJ9JjNkkX_KeQzz4ieFH65Xwz5DPMEYID41gYfgfzKoZr3U2Yg06_sM11Q/exec';
+
   // 1. Membaca Sesi Siswa & URL Spreadsheet dari LocalStorage MetalVerse
   function loadStudentSession() {
     try {
@@ -1562,8 +1564,9 @@ Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pol
         if (u.asalSekolah) document.getElementById('stu_school').value = u.asalSekolah;
       }
 
-      // Ambil URL Google Spreadsheet yang sudah diset di header dashboard
-      const sheetsUrl = localStorage.getItem('metalverse_sheets_url');
+      // Ambil URL Google Spreadsheet (custom atau bawaan guru)
+      const customUrl = localStorage.getItem('metalverse_sheets_url');
+      const sheetsUrl = (customUrl && customUrl.startsWith('http')) ? customUrl : DEFAULT_SHEETS_URL;
       const urlInput = document.getElementById('stu_sheet_url');
       const pill = document.getElementById('sheets-indicator-pill');
       const pillText = document.getElementById('sheets-indicator-text');
@@ -1573,7 +1576,7 @@ Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pol
         urlInput.value = sheetsUrl;
         pill.className = 'sheets-live-pill online';
         pillText.innerHTML = '<i class="fa-solid fa-circle-check"></i> Spreadsheet Terkoneksi';
-        badge.innerText = 'Terhubung Sesi Utama';
+        badge.innerText = customUrl ? 'Terhubung Kustom' : 'Terhubung Webhook Guru';
         badge.style.background = '#dcfce7';
         badge.style.color = '#166534';
       } else {
@@ -1803,7 +1806,7 @@ Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pol
     // Ambil URL Google Sheets
     let sheetsUrl = document.getElementById('stu_sheet_url').value.trim();
     if (!sheetsUrl) {
-      sheetsUrl = localStorage.getItem('metalverse_sheets_url') || '';
+      sheetsUrl = localStorage.getItem('metalverse_sheets_url') || DEFAULT_SHEETS_URL;
     }
 
     let isSentToCloud = false;
@@ -1815,7 +1818,7 @@ Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pol
           method: 'POST',
           mode: 'no-cors',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'text/plain;charset=utf-8'
           },
           body: JSON.stringify(payload)
         });

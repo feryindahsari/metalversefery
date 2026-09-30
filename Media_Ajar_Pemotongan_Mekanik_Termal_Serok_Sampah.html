@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -1802,7 +1802,9 @@
       catatan: 'Dikerjakan via slide interaktif Media Ajar Serok Sampah'
     };
 
-    const sheetsUrl = localStorage.getItem('metalverse_sheets_url');
+    const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxfZJ7pdx4BcJ9JjNkkX_KeQzz4ieFH65Xwz5DPMEYID41gYfgfzKoZr3U2Yg06_sM11Q/exec';
+    const customSheetsUrl = localStorage.getItem('metalverse_sheets_url');
+    const sheetsUrl = (customSheetsUrl && customSheetsUrl.startsWith('http')) ? customSheetsUrl : DEFAULT_SHEETS_URL;
     let isCloud = false;
 
     if (sheetsUrl && sheetsUrl.startsWith('http')) {
@@ -1810,7 +1812,7 @@
         await fetch(sheetsUrl, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
         isCloud = true;

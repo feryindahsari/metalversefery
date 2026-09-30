@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -4781,12 +4781,20 @@
     // ==============================================================
     // GOOGLE SPREADSHEET INTEGRATION ENGINE
     // ==============================================================
+    const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxfZJ7pdx4BcJ9JjNkkX_KeQzz4ieFH65Xwz5DPMEYID41gYfgfzKoZr3U2Yg06_sM11Q/exec';
+
+    function getEffectiveSheetsUrl() {
+      const custom = localStorage.getItem('metalverse_sheets_url');
+      if (custom && custom.startsWith('http')) return custom;
+      return DEFAULT_SHEETS_URL;
+    }
+
     function openSheetsModal() {
       playClickSound();
       const modal = document.getElementById('sheets-modal');
       const input = document.getElementById('input-sheets-webhook-url');
       if (input) {
-        input.value = localStorage.getItem('metalverse_sheets_url') || '';
+        input.value = localStorage.getItem('metalverse_sheets_url') || DEFAULT_SHEETS_URL;
       }
       updateSheetsStatusBadge();
       if (modal) modal.classList.remove('hidden');
@@ -4805,17 +4813,17 @@
       if (!val) {
         localStorage.removeItem('metalverse_sheets_url');
         AppState.sheetsWebhookUrl = '';
-        showToast('Pengaturan Direset', 'URL Webhook dikosongkan. Pengiriman cloud dinonaktifkan.');
+        showToast('Pengaturan Direset', 'Kembali menggunakan URL Webhook Guru bawaan.');
       } else {
         localStorage.setItem('metalverse_sheets_url', val);
         AppState.sheetsWebhookUrl = val;
-        showToast('Tersimpan! âœ…', 'URL Webhook Google Apps Script berhasil disimpan.');
+        showToast('Tersimpan! ✅', 'URL Webhook Google Apps Script berhasil disimpan.');
       }
       updateSheetsStatusBadge();
     }
 
     function updateSheetsStatusBadge() {
-      const url = localStorage.getItem('metalverse_sheets_url');
+      const url = getEffectiveSheetsUrl();
       const headerDot = document.getElementById('header-sheets-dot');
       const headerLabel = document.getElementById('header-sheets-label');
       const statusTitle = document.getElementById('sheets-status-title');
@@ -4826,11 +4834,11 @@
         if (headerDot) headerDot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
         if (headerLabel) headerLabel.innerText = 'Sheets Terhubung';
         if (statusTitle) {
-          statusTitle.innerText = 'Status: Terhubung ke Webhook Google Sheets';
+          statusTitle.innerText = 'Status: Terhubung ke Webhook Google Sheets Guru';
           statusTitle.className = 'font-bold text-emerald-900';
         }
         if (statusDesc) {
-          statusDesc.innerText = 'Hasil simulasi & kuis siswa akan otomatis masuk sesuai No. Absen.';
+          statusDesc.innerText = 'Hasil simulasi lab, kuis & tugas siswa otomatis masuk ke Spreadsheet sesuai No. Absen.';
           statusDesc.className = 'text-[11px] text-emerald-700';
         }
         if (btnSyncLabel) btnSyncLabel.innerText = 'Sheets Terhubung (Siap Kirim)';
@@ -4850,8 +4858,25 @@
     }
 
     async function sendStudentTaskToSpreadsheet(activityData) {
-      const user = AppState.currentUser;
-      if (!user) return;
+      let user = AppState.currentUser;
+      if (!user) {
+        try {
+          const saved = localStorage.getItem('metalverse_user_session');
+          if (saved) {
+            user = JSON.parse(saved);
+            AppState.currentUser = user;
+          }
+        } catch (e) {}
+      }
+      if (!user) {
+        user = {
+          name: activityData.nama || 'Peserta Didik (Siswa)',
+          noAbsen: activityData.noAbsen || '01',
+          kelas: activityData.kelas || 'XI TPFL',
+          asalSekolah: activityData.asalSekolah || 'SMKN 2 Depok Sleman',
+          role: 'student'
+        };
+      }
 
       const now = new Date();
       const timestamp = now.toLocaleDateString('id-ID', {
@@ -4861,10 +4886,10 @@
 
       const payload = {
         timestamp: timestamp,
-        noAbsen: user.noAbsen || '-',
-        nama: user.name || 'Siswa',
-        kelas: user.kelas || '-',
-        asalSekolah: user.asalSekolah || '-',
+        noAbsen: (activityData.noAbsen && activityData.noAbsen !== '-') ? String(activityData.noAbsen).trim() : (user.noAbsen || '01'),
+        nama: activityData.nama || user.name || 'Siswa',
+        kelas: activityData.kelas || user.kelas || 'XI TPFL',
+        asalSekolah: activityData.asalSekolah || user.asalSekolah || 'SMKN 2 Depok Sleman',
         role: user.role || 'student',
         kategori: activityData.category || 'Simulasi',
         rincianTugas: activityData.task || 'Tugas Praktikum',
@@ -4879,30 +4904,30 @@
       renderStudentSyncHistory();
 
       // Send to Google Sheets if configured
-      const sheetsUrl = localStorage.getItem('metalverse_sheets_url');
+      const sheetsUrl = getEffectiveSheetsUrl();
       if (sheetsUrl && sheetsUrl.startsWith('http')) {
         try {
           await fetch(sheetsUrl, {
             method: 'POST',
             mode: 'no-cors',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'text/plain;charset=utf-8'
             },
             body: JSON.stringify(payload)
           });
-          showToast('Tersinkron ke Spreadsheet! ðŸ“Š', `Absen ${payload.noAbsen} (${payload.nama}): ${payload.rincianTugas} (Skor: ${payload.skor})`);
+          showToast('Tersinkron ke Spreadsheet! 📊', `Absen #${payload.noAbsen} (${payload.nama}): ${payload.rincianTugas} (Skor: ${payload.skor})`);
         } catch (err) {
           console.error('Spreadsheet sync error:', err);
           showToast('Tersimpan Lokal', 'Data tersimpan di sesi lokal. Cek koneksi internet untuk sync Google Sheets.', 'warn');
         }
       } else {
-        showToast('Tersimpan Lokal', `${payload.rincianTugas} (Skor: ${payload.skor}). Sambungkan Spreadsheet di header.`);
+        showToast('Tersimpan Lokal', `${payload.rincianTugas} (Skor: ${payload.skor}).`);
       }
     }
 
     async function testSheetsConnection() {
       playClickSound();
-      const sheetsUrl = localStorage.getItem('metalverse_sheets_url');
+      const sheetsUrl = getEffectiveSheetsUrl();
       if (!sheetsUrl || !sheetsUrl.startsWith('http')) {
         showToast('URL Belum Disetel', 'Silakan masukkan URL Web App Google Apps Script Anda terlebih dahulu.', 'warn');
         openSheetsModal();
@@ -4963,7 +4988,7 @@
           navigator.clipboard.writeText(text).then(() => {
             const btnText = document.getElementById('btn-copy-code-text');
             if (btnText) {
-              btnText.innerText = 'Kode Berhasil Disalin! âœ…';
+              btnText.innerText = 'Kode Berhasil Disalin! ✅';
               setTimeout(() => { btnText.innerText = 'Salin Kode Template ke Clipboard'; }, 3000);
             }
             showToast('Kode Disalin!', 'Tempel kode tersebut di Ekstensi > Apps Script spreadsheet Anda.');
@@ -4976,7 +5001,8 @@
 
     // Listen for messages from child iframes (Quiz completion or Simulation results)
     window.addEventListener('message', (e) => {
-      if (e.data && e.data.type === 'METALVERSE_QUIZ_COMPLETED') {
+      if (!e.data) return;
+      if (e.data.type === 'METALVERSE_QUIZ_COMPLETED') {
         const q = e.data;
         sendStudentTaskToSpreadsheet({
           category: q.payload?.kategori || `Kuis: ${q.chapTitle || ('Bab ' + q.chapId)}`,
@@ -4985,6 +5011,20 @@
           xp: q.payload?.xp || Math.round(q.score * 1.5),
           status: q.payload?.status || (q.score >= 75 ? 'Kompeten (Tuntas Kuis)' : 'Perlu Remedial'),
           notes: q.payload?.catatan || `Evaluasi mandiri ${q.chapTitle}`
+        });
+      } else if (e.data.type === 'METALVERSE_SIM_COMPLETED' || e.data.type === 'METALVERSE_LAB_COMPLETED') {
+        const sim = e.data;
+        sendStudentTaskToSpreadsheet({
+          category: sim.category || 'Simulasi Praktikum',
+          task: sim.task || 'Praktikum Laboratorium',
+          score: sim.score !== undefined ? sim.score : 90,
+          xp: sim.xp || 50,
+          status: sim.status || 'Kompeten',
+          notes: sim.notes || '',
+          nama: sim.nama,
+          noAbsen: sim.noAbsen,
+          kelas: sim.kelas,
+          asalSekolah: sim.asalSekolah
         });
       }
     });

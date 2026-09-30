@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8">
@@ -1780,10 +1780,69 @@
       if (barEl) barEl.style.width = `${pct}%`;
     }
 
-    function syncGradeToLab(chapId) {
+    const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxfZJ7pdx4BcJ9JjNkkX_KeQzz4ieFH65Xwz5DPMEYID41gYfgfzKoZr3U2Yg06_sM11Q/exec';
+
+    async function syncGradeToLab(chapId) {
       playSound('correct');
       const scoreData = getChapterScore(chapId);
-      alert(`Berhasil mengirim nilai ${chapId.toUpperCase()} (${scoreData.score}/100) ke buku rapor laboratorium MetalVerseFery!`);
+      const chap = window.BUKU_DATA.chapters.find(c => c.id === chapId) || { title: `Bab ${chapId}` };
+      
+      let user = { name: 'Siswa TPFL', noAbsen: '01', kelas: 'XI TPFL', asalSekolah: 'SMKN 2 Depok Sleman' };
+      try {
+        const rawUser = localStorage.getItem('metalverse_user_session');
+        if (rawUser) user = JSON.parse(rawUser);
+      } catch(e) {}
+
+      const now = new Date();
+      const timestamp = now.toLocaleDateString('id-ID', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+
+      const payload = {
+        timestamp: timestamp,
+        noAbsen: user.noAbsen || '01',
+        nama: user.name || 'Siswa',
+        kelas: user.kelas || 'XI TPFL',
+        asalSekolah: user.asalSekolah || 'SMKN 2 Depok Sleman',
+        role: 'student',
+        kategori: `Kuis Buku: ${chap.title || chapId.toUpperCase()}`,
+        rincianTugas: `Evaluasi ${chapId.toUpperCase()}: ${scoreData.correct}/${scoreData.total} Benar`,
+        skor: scoreData.score,
+        xp: Math.round(scoreData.score * 1.5),
+        status: scoreData.score >= 75 ? 'Kompeten (Tuntas Kuis)' : 'Perlu Remedial',
+        catatan: `Sinkronisasi langsung dari modul buku digital ${chapId}`
+      };
+
+      const customSheetsUrl = localStorage.getItem('metalverse_sheets_url');
+      const sheetsUrl = (customSheetsUrl && customSheetsUrl.startsWith('http')) ? customSheetsUrl : DEFAULT_SHEETS_URL;
+
+      try {
+        await fetch(sheetsUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.warn('Sheets sync error:', err);
+      }
+
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({
+            type: 'METALVERSE_QUIZ_COMPLETED',
+            chapId: chapId,
+            chapTitle: chap.title || `Bab ${chapId}`,
+            score: scoreData.score,
+            correct: scoreData.correct,
+            total: scoreData.total,
+            payload: payload
+          }, '*');
+        }
+      } catch (err) {}
+
+      alert(`✅ Berhasil! Nilai ${chapId.toUpperCase()} (${scoreData.score}/100) telah disinkronkan ke Google Spreadsheet Guru!`);
     }
 
     function jumpToQuiz() {
