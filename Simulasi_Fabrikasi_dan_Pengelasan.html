@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -1634,6 +1634,20 @@
             <p>Pengguna Mengendalikan Sendiri Proses Las SMAW, Oxy-Fuel Cutting, OAW, & GTAW (Hasil 90%+ Dinamis)</p>
         </div>
         <div class="header-right">
+            <!-- Sesi Siswa Aktif & Tombol Logout / Ganti Siswa -->
+            <div id="student-session-pill" style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.25); padding:5px 12px; border-radius:9999px; backdrop-filter:blur(8px); box-shadow:0 2px 10px rgba(0,0,0,0.25);">
+                <span style="font-size:1.15rem;">&#128100;</span>
+                <div style="display:flex; flex-direction:column; line-height:1.15; text-align:left;">
+                    <div style="font-weight:800; color:#38bdf8; font-size:0.82rem; white-space:nowrap;" id="lab-pill-name">Peserta Didik</div>
+                    <div style="font-size:0.68rem; color:#cbd5e1; white-space:nowrap;" id="lab-pill-detail">Presensi: 01 | XI TPFL</div>
+                </div>
+                <button type="button" onclick="openStudentIdentityModal()" title="Ubah Nama / Ganti Siswa" style="background:rgba(56, 189, 248, 0.2); border:1px solid #38bdf8; color:#e0f2fe; padding:4px 10px; border-radius:9999px; font-size:0.72rem; font-weight:700; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#0284c7'" onmouseout="this.style.background='rgba(56, 189, 248, 0.2)'">
+                    &#9998; Ganti
+                </button>
+                <button type="button" onclick="logoutStudentFromLab()" title="Keluar dari Akun Siswa (Log Out)" style="background:linear-gradient(135deg, #ef4444, #b91c1c); border:1px solid #f87171; color:#ffffff; padding:4px 12px; border-radius:9999px; font-size:0.72rem; font-weight:800; cursor:pointer; transition:all 0.2s; box-shadow:0 2px 6px rgba(239,68,68,0.35);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                    &#128682; LOG OUT
+                </button>
+            </div>
             <a href="MetalVerseFery.html" style="background: linear-gradient(135deg, #EA734F, #D95A32); color:#FFFFFF; border:1px solid #F9BCA2; padding:8px 18px; border-radius:9999px; font-weight:800; font-size:0.82rem; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(234,115,79,0.35); transition:all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);" title="Kembali ke Portal MetalVerseFery">
                 🏠 DASHBOARD UTAMA
             </a>
@@ -5014,7 +5028,9 @@
                 <table style="width: 100%; font-size: 0.8rem; margin-bottom: 14px; border-collapse: collapse;">
                     <tr>
                         <td style="width: 18%; font-weight: bold; padding: 4px 0;">Nama Siswa</td>
-                        <td style="width: 32%;">: <input type="text" id="rptInputName" value="Peserta Didik (Siswa)" placeholder="Nama Lengkap Siswa" style="font-size: 0.8rem; font-weight: bold; border: 1px dashed #94a3b8; padding: 2px 6px; border-radius: 3px; width: 85%;"></td>
+                        <td style="width: 32%;">: <input type="text" id="rptInputName" value="Peserta Didik (Siswa)" placeholder="Nama Lengkap Siswa" style="font-size: 0.8rem; font-weight: bold; border: 1px dashed #94a3b8; padding: 2px 6px; border-radius: 3px; width: 68%;"> <button type="button" onclick="openStudentIdentityModal()" style="background:#e2e8f0; border:1px solid #cbd5e1; border-radius:4px; font-size:0.7rem; font-weight:700; padding:2px 8px; cursor:pointer;" title="Ganti Identitas / Log Out Siswa">
+                    &#9998; Ganti
+                </button></td>
                     </tr>
                     <tr>
                         <td style="font-weight: bold; padding: 4px 0;">No. Absen (Presensi)</td>
@@ -5479,6 +5495,58 @@
             </div>
             <div class="modal-footer" style="padding: 10px 16px; background: #FAF5EF; border-top: 1px solid #EAE0D5; display: flex; justify-content: flex-end;">
                 <button type="button" class="btn-action" onclick="closeDefectDiagramModal()">Tutup Jendela Atlas</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- ================= MODAL IDENTITAS & GANTI / LOGOUT SISWA ================= -->
+    <div id="studentSwitchModal" class="modal-overlay" style="z-index: 1200;">
+        <div class="modal-container" style="max-width: 480px; width: 92%; background: #FFFFFF; border: 2.5px solid #EA734F; border-radius: 18px; box-shadow: 0 25px 50px rgba(0,0,0,0.35); overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #FAF5EF, #FFF); border-bottom: 2px solid #EA734F; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.6rem;">👤</span>
+                    <div>
+                        <h3 style="color: #2B221E; font-size: 1.05rem; margin: 0; font-weight: 800;">IDENTITAS SISWA PRAKTIKUM</h3>
+                        <p style="color: #64748b; font-size: 0.74rem; margin: 0;">Laboratorium Virtual MetalVerseFery TFLM</p>
+                    </div>
+                </div>
+                <button class="btn-modal-close" onclick="closeStudentIdentityModal()" style="font-size: 1.2rem; cursor: pointer; border: none; background: transparent; color: #64748b;">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 20px; color: #334155; font-size: 0.85rem;">
+                <p style="margin-top: 0; margin-bottom: 14px; font-size: 0.82rem; color: #475569; line-height: 1.45;">
+                    Pastikan identitas di bawah sesuai dengan nama dan presensi Anda. Nilai dari pengujian praktikum simulator (SMAW, Oxy-Fuel, Plasma, OAW, GTAW, GMAW, Spot Welding) akan <strong>langsung tersimpan otomatis di Google Spreadsheet Guru</strong>.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label style="font-weight: 700; color: #1e293b; display: block; margin-bottom: 4px; font-size: 0.8rem;">Nama Lengkap Siswa <span style="color:#ef4444;">*</span></label>
+                        <input type="text" id="switchModalName" placeholder="Contoh: Fery Nur Indahsari" style="width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; font-weight: 600; box-sizing: border-box; outline: none;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="font-weight: 700; color: #1e293b; display: block; margin-bottom: 4px; font-size: 0.8rem;">No. Presensi / Absen <span style="color:#ef4444;">*</span></label>
+                            <input type="text" id="switchModalAbsen" placeholder="Contoh: 01" style="width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; font-weight: 600; text-align: center; box-sizing: border-box; outline: none;">
+                        </div>
+                        <div>
+                            <label style="font-weight: 700; color: #1e293b; display: block; margin-bottom: 4px; font-size: 0.8rem;">Kelas / Rombel</label>
+                            <input type="text" id="switchModalKelas" value="XI TPFL" placeholder="XI TPFL" style="width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; font-weight: 600; box-sizing: border-box; outline: none;">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-weight: 700; color: #1e293b; display: block; margin-bottom: 4px; font-size: 0.8rem;">Asal Sekolah</label>
+                        <input type="text" id="switchModalSekolah" value="SMK N 2 Depok Sleman" placeholder="SMK N 2 Depok Sleman" style="width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; font-weight: 600; box-sizing: border-box; outline: none;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 20px; background: #FAF5EF; border-top: 1px solid #EAE0D5; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <button type="button" onclick="logoutStudentAndRedirect()" style="background: transparent; color: #ef4444; border: 1px solid #fca5a5; font-size: 0.78rem; font-weight: 700; padding: 7px 12px; border-radius: 8px; cursor: pointer;">
+                    🚪 Log Out & Portal
+                </button>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-reset" onclick="closeStudentIdentityModal()" style="padding: 7px 14px; font-size: 0.82rem; cursor: pointer;">Batal</button>
+                    <button type="button" onclick="saveStudentIdentityModal()" style="background: linear-gradient(135deg, #EA734F, #D95A32); color: #fff; border: none; font-size: 0.82rem; font-weight: 800; padding: 8px 18px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(234,115,79,0.35);">
+                        💾 Simpan Identitas
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -9139,6 +9207,154 @@
             setTimeout(() => {
                 switchResultSubTab(targetSub);
             }, 80);
+        }
+
+                /* ================= STUDENT SESSION & LOGOUT MANAGEMENT ================= */
+        function updateLabStudentPill() {
+            let user = null;
+            try {
+                const rawUser = localStorage.getItem('metalverse_user_session');
+                if (rawUser) {
+                    user = JSON.parse(rawUser);
+                }
+            } catch(e) {}
+
+            const pillName = document.getElementById('lab-pill-name');
+            const pillDetail = document.getElementById('lab-pill-detail');
+            const inpName = document.getElementById('rptInputName');
+            const inpAbsen = document.getElementById('rptInputAbsen');
+            const inpKelas = document.getElementById('rptInputKelas');
+
+            if (user && user.name && user.name.trim() !== '' && user.name !== 'Peserta Didik (Siswa)') {
+                if (pillName) pillName.innerText = user.name;
+                if (pillDetail) pillDetail.innerText = `Presensi: ${user.noAbsen || '-'} | ${user.kelas || 'XI TPFL'}`;
+                if (inpName && (!inpName.value || inpName.value === 'Peserta Didik (Siswa)')) inpName.value = user.name;
+                if (inpAbsen && (!inpAbsen.value || inpAbsen.value === '01')) inpAbsen.value = user.noAbsen || '01';
+                if (inpKelas && (!inpKelas.value || inpKelas.value === 'XI TPFL')) inpKelas.value = user.kelas || 'XI TPFL';
+            } else {
+                if (pillName) pillName.innerText = 'Peserta Didik';
+                if (pillDetail) pillDetail.innerText = 'Presensi: - | XI TPFL';
+            }
+        }
+
+        function openStudentIdentityModal() {
+            let user = null;
+            try {
+                const rawUser = localStorage.getItem('metalverse_user_session');
+                if (rawUser) user = JSON.parse(rawUser);
+            } catch(e) {}
+
+            const inpName = document.getElementById('switchModalName');
+            const inpAbsen = document.getElementById('switchModalAbsen');
+            const inpKelas = document.getElementById('switchModalKelas');
+            const inpSekolah = document.getElementById('switchModalSekolah');
+
+            if (inpName) inpName.value = (user && user.name && user.name !== 'Peserta Didik (Siswa)') ? user.name : '';
+            if (inpAbsen) inpAbsen.value = (user && user.noAbsen && user.noAbsen !== '-') ? user.noAbsen : '';
+            if (inpKelas) inpKelas.value = (user && user.kelas) ? user.kelas : 'XI TPFL';
+            if (inpSekolah) inpSekolah.value = (user && user.asalSekolah) ? user.asalSekolah : 'SMK N 2 Depok Sleman';
+
+            const modal = document.getElementById('studentSwitchModal');
+            if (modal) modal.classList.add('active');
+            if (inpName) setTimeout(() => inpName.focus(), 120);
+        }
+
+        function closeStudentIdentityModal() {
+            const modal = document.getElementById('studentSwitchModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function saveStudentIdentityModal() {
+            const inpName = document.getElementById('switchModalName');
+            const inpAbsen = document.getElementById('switchModalAbsen');
+            const inpKelas = document.getElementById('switchModalKelas');
+            const inpSekolah = document.getElementById('switchModalSekolah');
+
+            const name = inpName ? inpName.value.trim() : '';
+            const noAbsen = inpAbsen ? inpAbsen.value.trim() : '';
+            const kelas = inpKelas ? inpKelas.value.trim() : 'XI TPFL';
+            const asalSekolah = inpSekolah ? inpSekolah.value.trim() : 'SMK N 2 Depok Sleman';
+
+            if (!name) {
+                alert('Silakan masukkan Nama Lengkap Siswa terlebih dahulu.');
+                if (inpName) inpName.focus();
+                return;
+            }
+            if (!noAbsen) {
+                alert('Silakan masukkan Nomor Presensi / Absen Siswa.');
+                if (inpAbsen) inpAbsen.focus();
+                return;
+            }
+
+            const sessionUser = {
+                name: name,
+                noAbsen: noAbsen,
+                kelas: kelas,
+                asalSekolah: asalSekolah,
+                role: 'student'
+            };
+
+            try {
+                localStorage.setItem('metalverse_user_session', JSON.stringify(sessionUser));
+            } catch(e) {
+                console.error(e);
+            }
+
+            // Sync inputs in Lembar Penilaian
+            const rptName = document.getElementById('rptInputName');
+            const rptAbsen = document.getElementById('rptInputAbsen');
+            const rptKelas = document.getElementById('rptInputKelas');
+            if (rptName) rptName.value = name;
+            if (rptAbsen) rptAbsen.value = noAbsen;
+            if (rptKelas) rptKelas.value = kelas;
+
+            updateLabStudentPill();
+            closeStudentIdentityModal();
+
+            alert(`\u2705 Identitas Siswa Berhasil Disimpan!\n\nNama: ${name}\nNo. Presensi: ${noAbsen}\nKelas: ${kelas}\n\nSeluruh nilai pengujian laboratorium akan otomatis tersimpan di Google Spreadsheet Guru atas nama Anda.`);
+        }
+
+        function logoutStudentFromLab() {
+            let currentName = 'Peserta Didik';
+            try {
+                const rawUser = localStorage.getItem('metalverse_user_session');
+                if (rawUser) {
+                    const u = JSON.parse(rawUser);
+                    if (u.name) currentName = u.name;
+                }
+            } catch(e) {}
+
+            const confirmLogout = confirm(`Apakah Anda yakin ingin LOG OUT dari akun "${currentName}"?\n\n` +
+                `- Seluruh nilai praktikum yang telah dikirim ke Spreadsheet tetap aman tersimpan.\n` +
+                `- Siswa berikutnya dapat langsung login / mengganti identitas.`);
+            if (!confirmLogout) return;
+
+            try {
+                localStorage.removeItem('metalverse_user_session');
+            } catch(e) {}
+
+            updateLabStudentPill();
+
+            const rptName = document.getElementById('rptInputName');
+            const rptAbsen = document.getElementById('rptInputAbsen');
+            if (rptName) rptName.value = 'Peserta Didik (Siswa)';
+            if (rptAbsen) rptAbsen.value = '-';
+
+            const goToPortal = confirm("Anda telah berhasil LOG OUT!\n\n" +
+                "- Klik [OK] untuk kembali ke Dashboard Portal Utama (MetalVerseFery).\n" +
+                "- Klik [Batal] jika ingin tetap di Simulator untuk Siswa Baru masuk.");
+            if (goToPortal) {
+                window.location.href = "MetalVerseFery.html";
+            } else {
+                openStudentIdentityModal();
+            }
+        }
+
+        function logoutStudentAndRedirect() {
+            try {
+                localStorage.removeItem('metalverse_user_session');
+            } catch(e) {}
+            window.location.href = "MetalVerseFery.html";
         }
 
         /* ================= OFFICIAL ASSESSMENT REPORT & PRINT ENGINE ================= */
@@ -18736,6 +18952,7 @@
 
         /* ================= WINDOW INIT & KEYBOARD CONTROLS ================= */
         window.addEventListener('load', () => {
+            updateLabStudentPill();
             initSmaw();
             updateSmawConfig();
             renderAllDynamicResults();
