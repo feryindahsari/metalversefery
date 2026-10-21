@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -364,6 +364,51 @@
         .hud-live span.val { color: #D95A32 !important; font-weight: 800 !important; }
         .hud-live span.ok { color: #15803d !important; font-weight: 800 !important; }
         .hud-live span.warn { color: #b91c1c !important; font-weight: 800 !important; }
+
+        /* Floating Touchpad Button [D] for Mobile/Gadget OAW */
+        .btn-touch-d-pad {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #EA734F, #C84924);
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 14px rgba(234, 115, 79, 0.5), 0 0 0 3px rgba(200, 73, 36, 0.3);
+            border-radius: 30px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 800;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            transition: transform 0.1s ease, filter 0.15s ease;
+        }
+        .btn-touch-d-pad:active {
+            transform: scale(0.92);
+            filter: brightness(1.2);
+        }
+        .btn-touch-d-pad .d-pad-key {
+            background: #ffffff;
+            color: #C84924;
+            font-size: 1.05rem;
+            font-weight: 900;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .btn-touch-d-pad .d-pad-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
 
         /* Easy Controls Toolbar */
         .easy-toolbar {
@@ -2390,6 +2435,11 @@
                     <div class="canvas-container" id="containerOaw" title="Klik dan drag mouse untuk mengarahkan nyala api torch OAW!">
                         <button type="button" class="btn-toggle-hud" onclick="toggleCanvasHud(this)" title="Sembunyikan / Tampilkan Keterangan">👁️ HUD</button>
                         <canvas id="canvasOaw" data-view-mode="work"></canvas>
+                        <!-- Floating Virtual [D] Button for HP/Touchscreen -->
+                        <button type="button" class="btn-touch-d-pad" id="btnTouchOawD" onclick="dipOawWire()" title="Sentuh untuk celup kawat RG 45 (Huruf 'D')">
+                            <span class="d-pad-key">D</span>
+                            <span class="d-pad-label">🥢 CELUP KAWAT</span>
+                        </button>
                                                 <div class="hud-live" id="hudLiveOaw">
                             PROSES: <span class="val">OAW Gas Welding</span> | POSISI: <span class="val" id="hudOawPos" style="color: #EA734F; font-weight: bold;">1G - Groove Datar</span><br>
                             SUDUT KERJA: <span class="val" id="hudOawWorkAngle">90Â°</span> | SUDUT JALAN: <span class="val" id="hudOawTravelAngle">65Â° (Maju)</span><br>
@@ -2414,13 +2464,39 @@
                         </div>
                     </div>
 
+                    <!-- Interactive Manual Torch Travel Controller for OAW (Touchscreen & Desktop) -->
+                    <div style="background: #FFFFFF; border: 1.5px solid #EAE0D5; border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--clay-shadow-sm);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <strong style="color: #EA734F; font-size: 0.85rem;">🎛️ Kendali Gerak Blander Torch OAW Mandiri:</strong>
+                                <span style="font-size: 0.75rem; color: #5D4E46;">(Tarik slider ini atau drag jari langsung pada pelat)</span>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.76rem; color: #2B221E; cursor: pointer; background: #FAF5EF; padding: 4px 10px; border-radius: 6px; border: 1px solid #D8C7B8;">
+                                    <input type="checkbox" id="chkOawAutoDab" checked onchange="toggleOawAutoDab(this.checked)">
+                                    <span>✨ Celup Kawat Otomatis saat Blander Digeser (Rhythmic Dabbing OAW)</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 0.75rem; color: #5D4E46; font-weight: bold; white-space: nowrap;">◀ Start (Kiri)</span>
+                            <input type="range" id="rngOawTorchPos" min="70" max="730" value="80" style="flex: 1; accent-color: #EA734F; cursor: pointer; height: 8px;" oninput="setOawTorchPos(parseFloat(this.value), true)" title="Tarik slider ini untuk menggerakkan blander OAW dengan jari atau mouse!">
+                            <span style="font-size: 0.75rem; color: #5D4E46; font-weight: bold; white-space: nowrap;">Stop (Kanan) ▶</span>
+                            <span style="font-size: 0.78rem; background: #EA734F; color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: bold; white-space: nowrap;" id="lblOawTorchPosText">Posisi: 0.0 cm</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 0.72rem; color: #6B5B53;">
+                            <span>📱 <em>Khusus Siswa di HP/Gadget:</em> Geser slider di atas untuk melajukan api blander (kawat mencelup otomatis), atau sentuh tombol <strong>[D]</strong> di kanan bawah pelat untuk celup manual.</span>
+                            <span>💻 <em>Di Laptop:</em> Geser mouse + Tekan keyboard <strong>[D]</strong> atau <strong>[Spasi]</strong>.</span>
+                        </div>
+                    </div>
+
                     <div class="easy-toolbar">
-                        <button class="btn-weld-toggle" onclick="dipOawWire()" style="background: linear-gradient(135deg, #EA734F, #D95D39); color: #fff; font-size: 0.95rem; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 12px rgba(234, 115, 79, 0.28);">
-                            🥢 CELUP KAWAT LAS PENGISI RG 45 (TEKAN 'D' / KLIK)
+                        <button class="btn-weld-toggle" id="btnOawDipMain" onclick="dipOawWire()" style="background: linear-gradient(135deg, #EA734F, #D95D39); color: #fff; font-size: 0.95rem; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 12px rgba(234, 115, 79, 0.28);">
+                            🥢 CELUP KAWAT LAS PENGISI RG 45 (TOMBOL 'D' / SENTUH)
                         </button>
                         <div style="display: flex; gap: 6px;">
-                            <button class="btn-action" onclick="moveOawStep(-15)">◀ Mundur</button>
-                            <button class="btn-action" onclick="moveOawStep(15)">Maju Torch ▶</button>
+                            <button class="btn-action" onclick="moveOawStep(-15)">◀ Mundur 15mm</button>
+                            <button class="btn-action" onclick="moveOawStep(15)">Maju Torch 15mm ▶</button>
                         </div>
                         <div class="mode-pill">
                             <span style="color: #EA734F; font-weight: bold;">Teknik Dua Tangan:</span>
@@ -6768,6 +6844,10 @@
 
             if (hudLive) hudLive.style.display = isOrbit ? 'none' : 'block';
             if (hudOrbit) hudOrbit.style.display = isOrbit ? 'flex' : 'none';
+            if (proc === 'oaw') {
+                const btnTouchD = document.getElementById('btnTouchOawD');
+                if (btnTouchD) btnTouchD.style.display = isOrbit ? 'none' : 'flex';
+            }
 
             if (isOrbit) {
                 renderMainOrbitCanvas(proc);
@@ -11912,6 +11992,9 @@
         let isOawBurned = false;
         let oawSparks = [];
         let oawDipAnim = 0;
+        let isOawAutoDab = true;
+        let oawLastDabX = 80;
+        let isOawDragging = false;
 
         let currentOawPosition = '1G';
         let currentOawWorkAngle = 90;
@@ -12469,6 +12552,11 @@
             if (typeof updateWeaveUI === 'function') updateWeaveUI('oaw');
             canvasOaw.width = canvasOaw.parentElement.clientWidth || 800;
             canvasOaw.height = canvasOaw.parentElement.clientHeight || 350;
+            const rngPos = document.getElementById('rngOawTorchPos');
+            if (rngPos) {
+                rngPos.min = 70;
+                rngPos.max = Math.max(300, canvasOaw.width - 70);
+            }
             if (typeof selectOawPosition === 'function') selectOawPosition(currentOawPosition || '1G');
             else updateOawConfig();
         }
@@ -12622,6 +12710,7 @@
         function dipOawWire() {
             oawDips++;
             oawHoldTime = 0; // Reset heat concentration!
+            oawLastDabX = oawTorch.x;
             oawDipAnim = 1.0; // Trigger visual rod dipping animation!
             const hudDips = document.getElementById('hudOawDips');
             if (hudDips) hudDips.innerText = oawDips + " Kali";
@@ -12642,26 +12731,78 @@
             playArcSound(0.8, 0.12);
         }
 
-        function moveOawStep(dx) {
-            oawTorch.x = Math.max(70, Math.min(canvasOaw.width - 70, oawTorch.x + dx));
-            oawHoldTime = 0;
+        function toggleOawAutoDab(checked) {
+            isOawAutoDab = !!checked;
+            const chk = document.getElementById('chkOawAutoDab');
+            if (chk) chk.checked = isOawAutoDab;
+            showNotification(isOawAutoDab 
+                ? "✨ Mode Celup Kawat Otomatis OAW Aktif! Kawat RG 45 akan mencelup ritmis saat blander digeser/dislider."
+                : "🥢 Mode Celup Manual Aktif! Gunakan Tombol [D] di layar HP atau tekan huruf 'D' di laptop.");
         }
+
+        function setOawTorchPos(newX, triggerDab = true) {
+            const minX = 70;
+            const maxX = Math.max(minX + 50, canvasOaw.width - 70);
+            const clampedX = Math.max(minX, Math.min(maxX, newX));
+            oawTorch.x = clampedX;
+            oawHoldTime = 0; // Reset heat concentration so moving on mobile doesn't trigger false burn-through!
+
+            // Auto-Dab: Deposit RG 45 wire bead rhythmically as torch moves across the puddle
+            if (isOawAutoDab && triggerDab) {
+                const dist = Math.abs(clampedX - oawLastDabX);
+                if (dist >= 12) {
+                    dipOawWire();
+                    oawLastDabX = clampedX;
+                }
+            }
+
+            // Sync Slider UI
+            const rngPos = document.getElementById('rngOawTorchPos');
+            if (rngPos && document.activeElement !== rngPos) {
+                rngPos.value = Math.round(clampedX);
+            }
+            const lblPos = document.getElementById('lblOawTorchPosText');
+            if (lblPos) {
+                const cmVal = Math.min(20, Math.max(0, ((clampedX - 70) / (maxX - 70 || 1)) * 20)).toFixed(1);
+                lblPos.innerText = `Posisi: ${cmVal} cm`;
+            }
+        }
+
+        function moveOawStep(dx) {
+            setOawTorchPos(oawTorch.x + dx, true);
+        }
+
+        canvasOaw.addEventListener('mousedown', (e) => {
+            if (activeViewModes.oaw === 'orbit') return;
+            isOawDragging = true;
+            const rect = canvasOaw.getBoundingClientRect();
+            const scaleX = canvasOaw.width / (rect.width || 1);
+            const mx = (e.clientX - rect.left) * scaleX;
+            setOawTorchPos(mx, true);
+        });
+
+        window.addEventListener('mouseup', () => {
+            isOawDragging = false;
+        });
 
         canvasOaw.addEventListener('mousemove', (e) => {
             if (activeViewModes.oaw === 'orbit') return;
             const rect = canvasOaw.getBoundingClientRect();
-            oawTorch.x = Math.max(70, Math.min(canvasOaw.width - 70, e.clientX - rect.left));
-            oawHoldTime = 0;
+            const scaleX = canvasOaw.width / (rect.width || 1);
+            const mx = (e.clientX - rect.left) * scaleX;
+            setOawTorchPos(mx, isOawDragging || isOawAutoDab);
         });
 
-        // Touch events for OAW canvas on mobile/tablets
+        // Touch events for OAW canvas on mobile/tablets with proper scale ratio
         canvasOaw.addEventListener('touchstart', (e) => {
             if (activeViewModes.oaw === 'orbit') return;
             if (e.cancelable) e.preventDefault();
+            isOawDragging = true;
             const rect = canvasOaw.getBoundingClientRect();
             const touch = e.touches[0];
-            oawTorch.x = Math.max(70, Math.min(canvasOaw.width - 70, touch.clientX - rect.left));
-            oawHoldTime = 0;
+            const scaleX = canvasOaw.width / (rect.width || 1);
+            const mx = (touch.clientX - rect.left) * scaleX;
+            setOawTorchPos(mx, true);
             document.getElementById('hudLiveOaw')?.classList.add('welding-active-faded');
         }, { passive: false });
 
@@ -12670,11 +12811,13 @@
             if (e.cancelable) e.preventDefault();
             const rect = canvasOaw.getBoundingClientRect();
             const touch = e.touches[0];
-            oawTorch.x = Math.max(70, Math.min(canvasOaw.width - 70, touch.clientX - rect.left));
-            oawHoldTime = 0;
+            const scaleX = canvasOaw.width / (rect.width || 1);
+            const mx = (touch.clientX - rect.left) * scaleX;
+            setOawTorchPos(mx, true);
         }, { passive: false });
 
         canvasOaw.addEventListener('touchend', () => {
+            isOawDragging = false;
             setTimeout(() => {
                 document.getElementById('hudLiveOaw')?.classList.remove('welding-active-faded');
             }, 800);
@@ -12689,7 +12832,7 @@
             let timer = setInterval(() => {
                 oawDemoPhase += 0.25;
                 const offset = getWeaveDisplacement(currentOawWeave, oawDemoPhase, 8);
-                oawTorch.x = Math.min(canvasOaw.width - 70, oawTorch.x + offset.dx * 1.8);
+                setOawTorchPos(Math.min(canvasOaw.width - 70, oawTorch.x + offset.dx * 1.8), false);
                 oawTorch.y = midY + offset.dy;
                 dipOawWire();
                 if (oawTorch.x >= canvasOaw.width - 90 || oawDips >= 24) {
@@ -12737,10 +12880,16 @@
             sessionCounter.oaw++;
             oawDips = 0;
             oawTorch.x = 80;
+            oawLastDabX = 80;
             oawBeads = [];
             oawSparks = [];
             oawHoldTime = 0;
             isOawBurned = false;
+
+            const rngPos = document.getElementById('rngOawTorchPos');
+            if (rngPos) rngPos.value = 80;
+            const lblPos = document.getElementById('lblOawTorchPosText');
+            if (lblPos) lblPos.innerText = "Posisi: 0.0 cm";
 
             const b1 = document.getElementById('badgeOawSession');
             if (b1) b1.innerText = `✨ Sesi OAW #${sessionCounter.oaw} (Baru)`;
@@ -19061,6 +19210,8 @@
                     e.preventDefault(); toggleCutJet();
                 } else if (document.getElementById('tab-plasma').classList.contains('active')) {
                     e.preventDefault(); togglePlasmaTrigger();
+                } else if (document.getElementById('tab-oaw').classList.contains('active')) {
+                    e.preventDefault(); dipOawWire();
                 } else if (document.getElementById('tab-gtaw').classList.contains('active')) {
                     e.preventDefault(); toggleGtawArc();
                 } else if (document.getElementById('tab-spot').classList.contains('active')) {
