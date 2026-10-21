@@ -605,7 +605,7 @@
       <!-- Top Avatar & Welcome (Matching Pinterest Mia Avatar) -->
       <div class="p-3.5 rounded-[24px] bg-white/70 border border-white/80 shadow-sm flex items-center gap-3">
         <div class="relative">
-          <img id="sidebar-avatar-img" src="./assets/UST_Fery_N.jpg" alt="Foto Pengguna" class="w-11 h-11 rounded-full object-cover object-top ring-2 ring-white shadow-sm" />
+          <img id="sidebar-avatar-img" src="./assets/logo_smkn2_depok_sleman.png" alt="Logo SMK Negeri 2 Depok Sleman" class="w-11 h-11 rounded-full object-contain bg-white p-1 ring-2 ring-white shadow-sm" />
           <span id="sidebar-status-dot" class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white"></span>
         </div>
         <div class="leading-tight" id="sidebar-user-info">
@@ -4858,13 +4858,22 @@
             <h4 class="font-heading font-extrabold text-xs text-[#1E322A]">${user.name}</h4>
             <span class="text-[10px] font-bold text-[#356153] font-mono">Akses Penuh Instruktur</span>
           `;
-          if (sidebarAvatarImg) sidebarAvatarImg.src = './assets/UST_Fery_N.jpg';
+          if (sidebarAvatarImg) {
+            sidebarAvatarImg.src = './assets/UST_Fery_N.jpg';
+            sidebarAvatarImg.alt = 'Foto Guru Pengampu';
+            sidebarAvatarImg.className = 'w-11 h-11 rounded-full object-cover object-top ring-2 ring-white shadow-sm';
+          }
         } else {
           sidebarUserText.innerHTML = `
             <p class="text-[11px] font-medium text-[#4D655D]">Siswa Praktikan</p>
             <h4 class="font-heading font-extrabold text-xs text-[#1E322A] truncate max-w-[140px]">${user.name}</h4>
             <span class="text-[10px] font-bold text-[#356153] font-mono">Absen: ${user.noAbsen} | ${user.kelas}</span>
           `;
+          if (sidebarAvatarImg) {
+            sidebarAvatarImg.src = './assets/logo_smkn2_depok_sleman.png';
+            sidebarAvatarImg.alt = 'Logo SMK Negeri 2 Depok Sleman';
+            sidebarAvatarImg.className = 'w-11 h-11 rounded-full object-contain bg-white p-1 ring-2 ring-white shadow-sm';
+          }
         }
       }
 
