@@ -555,7 +555,7 @@
         </div>
         <div class="leading-tight" id="sidebar-user-info">
           <p class="text-[11px] font-medium text-[#4D655D]">Selamat Datang</p>
-          <h4 class="font-heading font-extrabold text-xs text-[#1E322A]">XI TPFL 1 - Bengkel</h4>
+          <h4 class="font-heading font-extrabold text-xs text-[#1E322A]">XI TFLM 1 - Bengkel</h4>
           <span class="text-[10px] font-bold text-[#356153] font-mono">1F & 2F Fillet</span>
         </div>
       </div>
@@ -766,7 +766,7 @@
                 <div class="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-md py-1 px-2.5 rounded-full text-center border border-[#EADBCE] shadow-sm">
                   <span class="text-[11px] font-bold text-[#2B221E] flex items-center justify-center gap-1">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Bengkel Aktif &bull; XI TPFL
+                    Bengkel Aktif &bull; XI TFLM
                   </span>
                 </div>
               </div>
@@ -1130,7 +1130,7 @@
                 Jelajahi Simulator & Modul Interaktif Lengkap &#10024;
               </h4>
               <p class="text-xs text-[#46655B] font-medium">
-                Didesain khusus untuk pembelajaran bermakna dan praktikum mandiri siswa Fase F SMK TPFL.
+                Didesain khusus untuk pembelajaran bermakna dan praktikum mandiri siswa Fase F SMK TFLM.
               </p>
             </div>
           </div>
@@ -1404,7 +1404,7 @@
               <div class="space-y-2 text-xs">
                 <div class="flex justify-between py-1 border-b border-[#F4ECE2]">
                   <span class="text-[#7A6B64]">Satuan Pendidikan</span>
-                  <span class="font-semibold text-[#2B221E]">SMK Negeri TPFL</span>
+                  <span class="font-semibold text-[#2B221E]">SMK Negeri TFLM</span>
                 </div>
                 <div class="flex justify-between py-1 border-b border-[#F4ECE2]">
                   <span class="text-[#7A6B64]">Fokus Proyek</span>
@@ -4101,7 +4101,7 @@
           <div class="p-4 border-b border-slate-800 flex items-center justify-between">
             <div class="flex items-center gap-2 flex-wrap">
               <button onclick="goToDashboard()" class="btn-back-to-dashboard" title="Kembali ke Dashboard Utama"><i class="fa-solid fa-arrow-left text-cyan-400"></i><span>Kembali ke Dashboard</span></button>
-              <h3 class="font-heading font-bold text-sm text-white">Tabel Asesmen & Capaian Kompetensi Kelas XI TPFL 1</h3>
+              <h3 class="font-heading font-bold text-sm text-white">Tabel Asesmen & Capaian Kompetensi Kelas XI TFLM 1</h3>
             </div>
             <span class="text-xs text-slate-400 font-mono">Tahun Ajaran 2026/2027</span>
           </div>
@@ -4319,7 +4319,7 @@
         </div>
         <div class="flex items-center gap-2">
           <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#DCEBE4] text-[#233730] border border-[#B5CCC3]">
-            Fase F TPFL
+            Fase F TFLM
           </span>
           <button type="button" onclick="closeLoginModal()" title="Tutup / Eksplorasi sebagai Tamu" class="w-8 h-8 rounded-full bg-white hover:bg-red-50 text-[#7A6B64] hover:text-red-500 border border-[#D5C7B7] flex items-center justify-center transition shadow-xs cursor-pointer">
             <i class="fa-solid fa-xmark text-sm"></i>
@@ -4337,7 +4337,7 @@
       </div>
 
       <!-- Form Inputs -->
-      <form id="form-login-metalverse" onsubmit="handleFormLogin(event)" class="mt-4 space-y-4">
+      <form id="form-login-metalverse" onsubmit="handleFormLogin(event); return false;" class="mt-4 space-y-4">
         
         <!-- Field 1: Nama Lengkap -->
         <div>
@@ -4400,11 +4400,11 @@
                   id="login-input-kelas" 
                   class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-[#D5C7B7] text-xs font-semibold text-[#2B221E] focus:outline-none focus:ring-2 focus:ring-[#EA734F] focus:border-[#EA734F] shadow-inner transition cursor-pointer"
                 >
-                  <option value="XI TPFL 1" selected>XI TPFL 1</option>
-                  <option value="XI TPFL 2">XI TPFL 2</option>
-                  <option value="XI TPFL 3">XI TPFL 3</option>
-                  <option value="XII TPFL 1">XII TPFL 1</option>
-                  <option value="XII TPFL 2">XII TPFL 2</option>
+                  <option value="XI TFLM 1" selected>XI TFLM 1</option>
+                  <option value="XI TFLM 2">XI TFLM 2</option>
+                  <option value="XI TFLM 3">XI TFLM 3</option>
+                  <option value="XII TFLM 1">XII TFLM 1</option>
+                  <option value="XII TFLM 2">XII TFLM 2</option>
                   <option value="Lainnya">Lainnya / Umum</option>
                 </select>
               </div>
@@ -4430,7 +4430,8 @@
 
         <!-- Submit Button -->
         <button 
-          type="submit" 
+          type="button" 
+          onclick="handleFormLogin(event)"
           id="btn-login-submit" 
           class="w-full py-3 rounded-2xl bg-gradient-to-r from-[#EA734F] to-[#D95D39] hover:from-[#D95D39] hover:to-[#C2410C] text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-[#EA734F]/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer mt-4"
         >
@@ -4821,40 +4822,49 @@
     }
 
     function handleFormLogin(e) {
-      if (e) e.preventDefault();
-      const nameInput = document.getElementById('login-input-nama');
-      const absenInput = document.getElementById('login-input-absen');
-      const kelasInput = document.getElementById('login-input-kelas');
-      const sekolahInput = document.getElementById('login-input-sekolah');
-
-      const nameVal = nameInput ? nameInput.value.trim() : '';
-      const absenVal = absenInput ? absenInput.value.trim() : '';
-      const kelasVal = kelasInput ? kelasInput.value.trim() : '';
-      const sekolahVal = sekolahInput ? sekolahInput.value.trim() : '';
-
-      if (isTeacherName(nameVal)) {
-        loginAsTeacher(nameVal || 'Fery Nur Indahsari, S.Pd');
-        return;
+      if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
       }
+      try {
+        const nameInput = document.getElementById('login-input-nama');
+        const absenInput = document.getElementById('login-input-absen');
+        const kelasInput = document.getElementById('login-input-kelas');
+        const sekolahInput = document.getElementById('login-input-sekolah');
 
-      const finalName = nameVal || 'Siswa Praktikan';
-      const finalAbsen = absenVal ? String(absenVal).padStart(2, '0') : '01';
-      const finalKelas = kelasVal || 'XI TPFL 1';
-      const finalSekolah = sekolahVal || 'SMKN 2 Yogyakarta';
+        const nameVal = nameInput ? nameInput.value.trim() : '';
+        const absenVal = absenInput ? absenInput.value.trim() : '';
+        const kelasVal = kelasInput ? kelasInput.value.trim() : '';
+        const sekolahVal = sekolahInput ? sekolahInput.value.trim() : '';
 
-      const studentUser = {
-        role: 'student',
-        name: finalName,
-        noAbsen: finalAbsen,
-        kelas: finalKelas,
-        asalSekolah: finalSekolah,
-        loginTime: new Date().toISOString()
-      };
+        if (isTeacherName(nameVal)) {
+          loginAsTeacher(nameVal || 'Fery Nur Indahsari, S.Pd');
+          return false;
+        }
 
-      setSessionUser(studentUser);
-      closeLoginModal();
-      playSuccessChime();
-      showToast(`Selamat Belajar, ${studentUser.name}!`, `Presensi: Absen ${studentUser.noAbsen} | ${studentUser.kelas} (${studentUser.asalSekolah})`);
+        const finalName = nameVal || 'Siswa Praktikan';
+        const finalAbsen = absenVal ? String(absenVal).padStart(2, '0') : '01';
+        const finalKelas = kelasVal || 'XI TFLM 1';
+        const finalSekolah = sekolahVal || 'SMKN 2 Yogyakarta';
+
+        const studentUser = {
+          role: 'student',
+          name: finalName,
+          noAbsen: finalAbsen,
+          kelas: finalKelas,
+          asalSekolah: finalSekolah,
+          loginTime: new Date().toISOString()
+        };
+
+        closeLoginModal();
+        setSessionUser(studentUser);
+        try { playSuccessChime(); } catch (err) {}
+        try { showToast(`Selamat Belajar, ${studentUser.name}!`, `Presensi: Absen ${studentUser.noAbsen} | ${studentUser.kelas} (${studentUser.asalSekolah})`); } catch (err) {}
+      } catch (err) {
+        console.error('Login error:', err);
+        closeLoginModal();
+      }
+      return false;
     }
 
     function loginAsTeacher(customName) {
@@ -4862,15 +4872,15 @@
         role: 'teacher',
         name: customName || 'Fery Nur Indahsari, S.Pd',
         noAbsen: 'Guru',
-        kelas: 'Instruktur TPFL',
+        kelas: 'Instruktur TFLM',
         asalSekolah: 'Guru Pengampu / Welder Lead',
         loginTime: new Date().toISOString()
       };
 
-      setSessionUser(teacherUser);
       closeLoginModal();
-      playSuccessChime();
-      showToast('Selamat Datang, Bu Fery!', 'Akses penuh Guru Pengampu aktif tanpa batasan.');
+      setSessionUser(teacherUser);
+      try { playSuccessChime(); } catch (err) {}
+      try { showToast('Selamat Datang, Bu Fery!', 'Akses penuh Guru Pengampu aktif tanpa batasan.'); } catch (err) {}
     }
 
     function loginAsGuest() {
@@ -4878,15 +4888,15 @@
         role: 'student',
         name: 'Siswa Tamu (Eksplorasi)',
         noAbsen: '01',
-        kelas: 'XI TPFL 1',
+        kelas: 'XI TFLM 1',
         asalSekolah: 'SMKN 2 Yogyakarta',
         loginTime: new Date().toISOString()
       };
 
-      setSessionUser(guestUser);
       closeLoginModal();
-      playSuccessChime();
-      showToast('Mode Eksplorasi Aktif!', 'Selamat belajar dan mencoba simulator pengelasan & fabrikasi.');
+      setSessionUser(guestUser);
+      try { playSuccessChime(); } catch (err) {}
+      try { showToast('Mode Eksplorasi Aktif!', 'Selamat belajar dan mencoba simulator pengelasan & fabrikasi.'); } catch (err) {}
     }
 
     function setSessionUser(userData) {
@@ -4911,7 +4921,7 @@
 
     function logoutUser() {
       if (confirm('Apakah Anda ingin keluar / mengganti sesi pengguna?')) {
-        localStorage.removeItem('metalverse_user_session');
+        try { localStorage.removeItem('metalverse_user_session'); } catch (e) {}
         AppState.currentUser = null;
         const nameInput = document.getElementById('login-input-nama');
         const absenInput = document.getElementById('login-input-absen');
@@ -4929,20 +4939,19 @@
     }
 
     function checkLoginState() {
-      const saved = localStorage.getItem('metalverse_user_session');
-      if (saved) {
-        try {
+      try {
+        const saved = localStorage.getItem('metalverse_user_session');
+        if (saved) {
           AppState.currentUser = JSON.parse(saved);
           closeLoginModal();
-          updateUserInterface();
-          renderStudentSyncHistory();
-        } catch (e) {
-          console.warn('Could not parse user session:', e);
-          openLoginModal();
+          try { updateUserInterface(); } catch (err) { console.warn('UI update error:', err); }
+          try { renderStudentSyncHistory(); } catch (err) { console.warn('History render error:', err); }
+          return;
         }
-      } else {
-        openLoginModal();
+      } catch (e) {
+        console.warn('Could not parse user session:', e);
       }
+      openLoginModal();
     }
 
     function updateUserInterface() {
@@ -5126,7 +5135,7 @@
         user = {
           name: activityData.nama || 'Peserta Didik (Siswa)',
           noAbsen: activityData.noAbsen || '01',
-          kelas: activityData.kelas || 'XI TPFL',
+          kelas: activityData.kelas || 'XI TFLM',
           asalSekolah: activityData.asalSekolah || 'SMKN 2 Depok Sleman',
           role: 'student'
         };
@@ -5142,7 +5151,7 @@
         timestamp: timestamp,
         noAbsen: (activityData.noAbsen && activityData.noAbsen !== '-') ? String(activityData.noAbsen).trim() : (user.noAbsen || '01'),
         nama: activityData.nama || user.name || 'Siswa',
-        kelas: activityData.kelas || user.kelas || 'XI TPFL',
+        kelas: activityData.kelas || user.kelas || 'XI TFLM',
         asalSekolah: activityData.asalSekolah || user.asalSekolah || 'SMKN 2 Depok Sleman',
         role: user.role || 'student',
         kategori: activityData.category || 'Simulasi',
@@ -6588,26 +6597,26 @@
       playClickSound();
       const csvHeader = "\uFEFFNo,Nama Siswa,Kelas,Spesialisasi,Skor Fillet 1F/2F,Presisi Potong (Deviasi),Kepatuhan K3LH,Total XP,Badge Predikat\n";
       const rows = [
-        "1,Rizky Pratama,XI TPFL 1,Welder Cadet,96 / 100,±0.2 mm,100%,950 XP,Master Welder",
-        "2,Dewi Anggraini,XI TPFL 1,QC Inspector,93 / 100,±0.3 mm,98%,910 XP,QC Detective",
-        "3,Budi Santoso,XI TPFL 1,Shearing Master,89 / 100,±0.1 mm,97%,880 XP,Precision Cutter",
-        "4,Fajar Nugroho,XI TPFL 1,Safety Leader,88 / 100,±0.4 mm,100%,860 XP,Safety Champion",
-        "5,Ahmad Fauzi,XI TPFL 1,Tack Welder,85 / 100,±0.5 mm,95%,820 XP,Junior Welder",
-        "6,Siti Rahma,XI TPFL 1,Fabricator,87 / 100,±0.3 mm,98%,840 XP,Precision Maker",
-        "7,Dimas Setiawan,XI TPFL 1,SMAW Specialist,91 / 100,±0.2 mm,96%,890 XP,Arc Artisan",
-        "8,Wahyu Hidayat,XI TPFL 1,Assembly Tech,84 / 100,±0.4 mm,94%,810 XP,Skilled Fabricator"
+        "1,Rizky Pratama,XI TFLM 1,Welder Cadet,96 / 100,±0.2 mm,100%,950 XP,Master Welder",
+        "2,Dewi Anggraini,XI TFLM 1,QC Inspector,93 / 100,±0.3 mm,98%,910 XP,QC Detective",
+        "3,Budi Santoso,XI TFLM 1,Shearing Master,89 / 100,±0.1 mm,97%,880 XP,Precision Cutter",
+        "4,Fajar Nugroho,XI TFLM 1,Safety Leader,88 / 100,±0.4 mm,100%,860 XP,Safety Champion",
+        "5,Ahmad Fauzi,XI TFLM 1,Tack Welder,85 / 100,±0.5 mm,95%,820 XP,Junior Welder",
+        "6,Siti Rahma,XI TFLM 1,Fabricator,87 / 100,±0.3 mm,98%,840 XP,Precision Maker",
+        "7,Dimas Setiawan,XI TFLM 1,SMAW Specialist,91 / 100,±0.2 mm,96%,890 XP,Arc Artisan",
+        "8,Wahyu Hidayat,XI TFLM 1,Assembly Tech,84 / 100,±0.4 mm,94%,810 XP,Skilled Fabricator"
       ];
       const csvContent = csvHeader + rows.join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", "Rekap_Nilai_MetalVerseFery_XI_TPFL.csv");
+      link.setAttribute("download", "Rekap_Nilai_MetalVerseFery_XI_TFLM.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      showToast('Export Berhasil', 'File Rekap_Nilai_MetalVerseFery_XI_TPFL.csv telah diunduh.');
+      showToast('Export Berhasil', 'File Rekap_Nilai_MetalVerseFery_XI_TFLM.csv telah diunduh.');
     }
 
     function showSafetyChecklist() {
