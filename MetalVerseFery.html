@@ -447,8 +447,63 @@
       border: 1px solid rgba(245, 158, 11, 0.3);
     }
   </style>
+<style>
+    #metalverse-app[hidden] { display: none !important; }
+    body.login-required { overflow: hidden; }
+    #login-modal { position: fixed; inset: 0; z-index: 10000; overflow-y: auto; }
+    #login-modal .login-field { width: 100%; padding: .7rem .8rem; border: 1px solid #D5C7B7; border-radius: .75rem; background: #fff; color: #2B221E; font-size: .875rem; }
+    #login-modal .login-field:focus { outline: 2px solid #EA734F; outline-offset: 2px; }
+    #login-modal button:focus-visible { outline: 3px solid #233730; outline-offset: 3px; }
+  </style>
 </head>
-<body class="bg-[#F7F2EB] text-[#2B221E] font-sans min-h-screen antialiased flex flex-col selection:bg-[#EA734F] selection:text-white">
+<body class="bg-[#F7F2EB] text-[#2B221E] font-sans min-h-screen antialiased flex flex-col login-required selection:bg-[#EA734F] selection:text-white">
+
+  <!-- Wajib mengisi identitas sebelum membuka dashboard siswa atau guru. -->
+  <div id="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-heading" class="fixed inset-0 z-[100] bg-[#2B221E]/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-[#F7F2EB] border-2 border-[#E6DCD1] w-full max-w-lg rounded-[32px] p-6 sm:p-8 shadow-2xl relative my-auto">
+      <div class="flex items-center justify-between gap-3 pb-3 border-b border-[#E6DCD1]">
+        <img src="./assets/logo_metalverse_fery.png" alt="MetalVerseFery" class="h-10 sm:h-11 w-auto object-contain" />
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#DCEBE4] text-[#233730]">Fase F TFLM</span>
+      </div>
+      <h1 id="login-heading" class="mt-4 text-2xl font-heading font-extrabold text-[#2B221E]">Selamat datang di MetalVerseFery</h1>
+      <p id="login-description" class="mt-2 text-sm text-[#5D4E46]">Siswa dan guru wajib melengkapi identitas sebelum masuk ke dashboard. Semua kolom wajib diisi.</p>
+      <form id="form-login-metalverse" onsubmit="handleFormLogin(event); return false;" class="mt-5 space-y-4" aria-describedby="login-description">
+        <div>
+          <label for="login-input-role" class="block text-xs font-bold text-[#2B221E] mb-1">Masuk sebagai <span class="text-red-500">*</span></label>
+          <select id="login-input-role" name="role" required class="login-field" onchange="updateLoginRole()">
+            <option value="student">Siswa</option><option value="teacher">Guru</option>
+          </select>
+        </div>
+        <div>
+          <label for="login-input-nama" class="block text-xs font-bold text-[#2B221E] mb-1">Nama lengkap <span class="text-red-500">*</span></label>
+          <input id="login-input-nama" name="nama" type="text" required maxlength="100" autocomplete="name" placeholder="Tuliskan nama lengkap Anda" class="login-field" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="login-input-absen" class="block text-xs font-bold text-[#2B221E] mb-1">Nomor absen <span class="text-red-500">*</span></label>
+            <input id="login-input-absen" name="noAbsen" type="number" required min="1" step="1" inputmode="numeric" placeholder="Contoh: 14" class="login-field" />
+          </div>
+          <div>
+            <label for="login-input-kelas" class="block text-xs font-bold text-[#2B221E] mb-1">Kelas <span class="text-red-500">*</span></label>
+            <input id="login-input-kelas" name="kelas" type="text" required maxlength="60" placeholder="Contoh: XI TFLM 1" class="login-field" />
+          </div>
+        </div>
+        <p id="login-role-help" class="text-xs text-[#5D4E46]">Isi nomor absen dan kelas Anda.</p>
+        <div>
+          <label for="login-input-sekolah" class="block text-xs font-bold text-[#2B221E] mb-1">Asal sekolah <span class="text-red-500">*</span></label>
+          <input id="login-input-sekolah" name="asalSekolah" type="text" required maxlength="150" autocomplete="organization" placeholder="Tuliskan nama sekolah Anda" class="login-field" />
+        </div>
+        <p id="login-error" role="alert" class="text-sm text-red-700" hidden></p>
+        <button type="submit" id="btn-login-submit" class="w-full py-3 rounded-2xl bg-[#EA734F] hover:bg-[#D95D39] text-white font-extrabold text-sm shadow-lg transition">
+          <span id="btn-login-text">Masuk ke Dashboard Siswa</span>
+        </button>
+      </form>
+      <p class="mt-4 text-[11px] text-[#7A6B64]">Identitas digunakan selama halaman ini dibuka. Buka ulang atau muat ulang halaman untuk masuk kembali.</p>
+      <noscript><p>Aktifkan JavaScript pada browser untuk masuk ke dashboard.</p></noscript>
+    </div>
+  </div>
+
+  <div id="metalverse-app" class="min-h-screen flex flex-col" hidden inert style="display:none">
   <!-- ================= TOP HEADER (Pinterest Warm Clay Style) ================= -->
   <header class="sticky top-0 z-40 w-full border-b border-[#E6DCD1] bg-[#F7F2EB]/90 backdrop-blur-md px-4 lg:px-8 py-3 transition-all duration-200 shadow-sm">
     <div class="max-w-[1720px] mx-auto flex items-center justify-between gap-4">
@@ -4308,164 +4363,6 @@
     </div>
   </footer>
 
-  <!-- ================= MODAL: LOGIN / GERBANG MASUK SISWA & GURU ================= -->
-  <div id="login-modal" class="fixed inset-0 z-[100] bg-[#2B221E]/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-    <div class="bg-[#F7F2EB] border-2 border-[#E6DCD1] w-full max-w-lg rounded-[32px] p-6 sm:p-8 shadow-2xl relative my-auto animate-fade-in">
-      
-      <!-- Top Decorative Elements & Close Button -->
-      <div class="flex items-center justify-between pb-3 border-b border-[#E6DCD1]">
-        <div class="flex items-center gap-3">
-          <img src="./assets/logo_metalverse_fery.png" alt="MetalVerse Fery" class="h-10 sm:h-11 w-auto object-contain" style="mix-blend-mode: multiply;" />
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#DCEBE4] text-[#233730] border border-[#B5CCC3]">
-            Fase F TFLM
-          </span>
-          <button type="button" onclick="closeLoginModal()" title="Tutup / Eksplorasi sebagai Tamu" class="w-8 h-8 rounded-full bg-white hover:bg-red-50 text-[#7A6B64] hover:text-red-500 border border-[#D5C7B7] flex items-center justify-center transition shadow-xs cursor-pointer">
-            <i class="fa-solid fa-xmark text-sm"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Welcome Banner Info -->
-      <div class="mt-4 p-3.5 rounded-2xl bg-[#FAF5EF] border border-[#EFE7DE] text-xs text-[#5D4E46] leading-relaxed">
-        <p class="font-bold text-[#2B221E] flex items-center gap-1.5 mb-1">
-          <i class="fa-solid fa-id-card text-[#EA734F]"></i>
-          <span>Gerbang Masuk Pembelajaran &amp; Praktik</span>
-        </p>
-        Masukkan nama Anda untuk masuk ke sistem. Hasil belajar, kuis, dan simulasi pengelasan akan tersinkronisasi ke Google Spreadsheet.
-      </div>
-
-      <!-- Form Inputs -->
-      <form id="form-login-metalverse" onsubmit="handleFormLogin(event); return false;" class="mt-4 space-y-4">
-        
-        <!-- Field 1: Nama Lengkap -->
-        <div>
-          <label class="block text-xs font-bold text-[#2B221E] mb-1">
-            Nama Lengkap <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-[#93847C] text-xs"></i>
-            <input 
-              type="text" 
-              id="login-input-nama" 
-              placeholder="Ketik nama Anda (contoh: Fery Nur Indahsari atau nama siswa)..."
-              oninput="checkTeacherBypass(this.value)"
-              class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-[#D5C7B7] text-xs font-semibold text-[#2B221E] focus:outline-none focus:ring-2 focus:ring-[#EA734F] focus:border-[#EA734F] shadow-inner transition"
-            />
-          </div>
-        </div>
-
-        <!-- Teacher Detection Banner (Auto Show if teacher name typed) -->
-        <div id="login-teacher-detected-badge" class="hidden p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 text-xs text-amber-900 animate-pulse">
-          <div class="flex items-center gap-2 font-bold text-[#B45309]">
-            <i class="fa-solid fa-crown text-amber-500 text-sm"></i>
-            <span>Akses Guru Pengampu Dikenali!</span>
-          </div>
-          <p class="mt-1 text-[11px] text-[#78350F]">
-            Halo Guru Pengampu (Ibu Fery Nur Indahsari, S.Pd). Akses penuh instruktur aktif tanpa perlu mengisi nomor presensi siswa atau asal sekolah.
-          </p>
-        </div>
-
-        <!-- Student Dynamic Fields Container -->
-        <div id="login-student-fields" class="space-y-3 transition-all">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            
-            <!-- Field 2: No Absen -->
-            <div>
-              <label class="block text-xs font-bold text-[#2B221E] mb-1">
-                No. Absen / Presensi
-              </label>
-              <div class="relative">
-                <i class="fa-solid fa-list-ol absolute left-3.5 top-1/2 -translate-y-1/2 text-[#93847C] text-xs"></i>
-                <input 
-                  type="number" 
-                  id="login-input-absen" 
-                  min="1" 
-                  max="99" 
-                  placeholder="Contoh: 14 (default: 01)"
-                  class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-[#D5C7B7] text-xs font-semibold text-[#2B221E] focus:outline-none focus:ring-2 focus:ring-[#EA734F] focus:border-[#EA734F] shadow-inner transition"
-                />
-              </div>
-            </div>
-
-            <!-- Field 3: Kelas -->
-            <div>
-              <label class="block text-xs font-bold text-[#2B221E] mb-1">
-                Kelas
-              </label>
-              <div class="relative">
-                <i class="fa-solid fa-users absolute left-3.5 top-1/2 -translate-y-1/2 text-[#93847C] text-xs"></i>
-                <select 
-                  id="login-input-kelas" 
-                  class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-[#D5C7B7] text-xs font-semibold text-[#2B221E] focus:outline-none focus:ring-2 focus:ring-[#EA734F] focus:border-[#EA734F] shadow-inner transition cursor-pointer"
-                >
-                  <option value="XI TFLM 1" selected>XI TFLM 1</option>
-                  <option value="XI TFLM 2">XI TFLM 2</option>
-                  <option value="XI TFLM 3">XI TFLM 3</option>
-                  <option value="XII TFLM 1">XII TFLM 1</option>
-                  <option value="XII TFLM 2">XII TFLM 2</option>
-                  <option value="Lainnya">Lainnya / Umum</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Field 4: Asal Sekolah -->
-          <div>
-            <label class="block text-xs font-bold text-[#2B221E] mb-1">
-              Asal Sekolah
-            </label>
-            <div class="relative">
-              <i class="fa-solid fa-school absolute left-3.5 top-1/2 -translate-y-1/2 text-[#93847C] text-xs"></i>
-              <input 
-                type="text" 
-                id="login-input-sekolah" 
-                placeholder="Contoh: SMKN 2 Yogyakarta"
-                class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-[#D5C7B7] text-xs font-semibold text-[#2B221E] focus:outline-none focus:ring-2 focus:ring-[#EA734F] focus:border-[#EA734F] shadow-inner transition"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Submit Button -->
-        <button 
-          type="button" 
-          onclick="handleFormLogin(event)"
-          id="btn-login-submit" 
-          class="w-full py-3 rounded-2xl bg-gradient-to-r from-[#EA734F] to-[#D95D39] hover:from-[#D95D39] hover:to-[#C2410C] text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-[#EA734F]/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer mt-4"
-        >
-          <i class="fa-solid fa-arrow-right-to-bracket"></i>
-          <span id="btn-login-text">Masuk ke MetalVerseFery</span>
-        </button>
-      </form>
-
-      <!-- Quick Actions: Guest / Teacher Bypass -->
-      <div class="mt-4 pt-3.5 border-t border-[#E6DCD1]">
-        <p class="text-[11px] text-[#7A6B64] font-medium text-center mb-2">Atau Pilih Akses Cepat Langsung:</p>
-        <div class="grid grid-cols-2 gap-2">
-          <button 
-            type="button" 
-            onclick="loginAsTeacher()" 
-            class="py-2.5 px-3 rounded-2xl bg-[#DCEBE4] hover:bg-[#C8DBD3] text-[#1E322A] border border-[#B5CCC3] font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-          >
-            <i class="fa-solid fa-user-tie text-[#356153]"></i>
-            <span>Akses Guru (Bu Fery)</span>
-          </button>
-          <button 
-            type="button" 
-            onclick="loginAsGuest()" 
-            class="py-2.5 px-3 rounded-2xl bg-white hover:bg-[#FAF5EE] text-[#5D4E46] border border-[#D5C7B7] font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-          >
-            <i class="fa-solid fa-user-graduate text-[#EA734F]"></i>
-            <span>Akses Siswa / Tamu</span>
-          </button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
   <!-- ================= MODAL: KONFIGURASI GOOGLE SPREADSHEET ================= -->
   <div id="sheets-modal" class="hidden fixed inset-0 z-50 bg-[#2B221E]/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
     <div class="bg-[#F7F2EB] border-2 border-[#E6DCD1] w-full max-w-2xl rounded-[32px] p-6 sm:p-8 shadow-2xl relative my-auto">
@@ -4770,193 +4667,145 @@
       lastWeldPos: null,
       currentUser: null,
       studentSubmissions: [],
-      sheetsWebhookUrl: localStorage.getItem('metalverse_sheets_url') || ''
+      sheetsWebhookUrl: readLocalSetting('metalverse_sheets_url') || ''
     };
 
     // ==============================================================
-    // AUTHENTICATION & LOGIN MANAGEMENT (STUDENT & TEACHER BYPASS)
+    // IDENTITAS WAJIB UNTUK SISWA DAN GURU
+    // Gerbang identitas browser; tidak memverifikasi akun atau kewenangan guru.
     // ==============================================================
-    function isTeacherName(val) {
-      const clean = (val || '').toLowerCase().replace(/[^a-z]/g, '');
-      if (!clean) return false;
-      return clean.includes('fery') || 
-             clean.includes('guru') || 
-             clean.includes('pengampu') || 
-             clean.includes('instruktur') || 
-             clean.includes('admin') ||
-             clean.includes('bufery') ||
-             clean.includes('ibufery');
+    function readLocalSetting(key) {
+      try { return localStorage.getItem(key); } catch (error) { return null; }
     }
 
-    function checkTeacherBypass(val) {
-      const isTeacher = isTeacherName(val);
-      const teacherBadge = document.getElementById('login-teacher-detected-badge');
-      const studentFields = document.getElementById('login-student-fields');
-      const submitBtnText = document.getElementById('btn-login-text');
+    function escapeUserText(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[ch]));
+    }
 
-      if (isTeacher) {
-        if (teacherBadge) teacherBadge.classList.remove('hidden');
-        if (studentFields) studentFields.classList.add('opacity-40');
-        if (submitBtnText) submitBtnText.innerText = 'Masuk Langsung sebagai Guru Pengampu';
-      } else {
-        if (teacherBadge) teacherBadge.classList.add('hidden');
-        if (studentFields) studentFields.classList.remove('opacity-40');
-        if (submitBtnText) submitBtnText.innerText = 'Masuk ke MetalVerseFery';
-      }
+    function hasCompleteIdentity(user) {
+      return !!user && ['student', 'teacher'].includes(user.role) &&
+        ['name', 'kelas', 'asalSekolah'].every(key => typeof user[key] === 'string' && user[key].trim().length > 0) &&
+        /^\d+$/.test(String(user.noAbsen)) && Number.isSafeInteger(Number(user.noAbsen)) && Number(user.noAbsen) > 0;
+    }
+
+    function updateLoginRole() {
+      const teacher = document.getElementById('login-input-role').value === 'teacher';
+      document.getElementById('btn-login-text').textContent = teacher ? 'Masuk ke Dashboard Guru' : 'Masuk ke Dashboard Siswa';
+      document.getElementById('login-role-help').textContent = teacher
+        ? 'Guru mengisi nomor presensi dan kelas yang diampu.' : 'Isi nomor absen dan kelas Anda.';
     }
 
     function closeLoginModal() {
+      if (!hasCompleteIdentity(AppState.currentUser)) { openLoginModal(); return; }
+      const app = document.getElementById('metalverse-app');
+      app.hidden = false;
+      app.inert = false;
+      app.style.display = 'flex';
       const modal = document.getElementById('login-modal');
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-      }
+      modal.hidden = true;
+      modal.style.display = 'none';
+      document.body.classList.remove('login-required');
     }
 
     function openLoginModal() {
+      const app = document.getElementById('metalverse-app');
+      app.hidden = true;
+      app.inert = true;
+      app.style.display = 'none';
       const modal = document.getElementById('login-modal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-      }
+      modal.hidden = false;
+      modal.style.display = 'flex';
+      document.body.classList.add('login-required');
+      document.getElementById('login-input-nama').focus();
     }
 
-    function handleFormLogin(e) {
-      if (e) {
-        if (e.preventDefault) e.preventDefault();
-        if (e.stopPropagation) e.stopPropagation();
+    function handleFormLogin(event) {
+      if (event) event.preventDefault();
+      const form = document.getElementById('form-login-metalverse');
+      const error = document.getElementById('login-error');
+      error.hidden = true;
+      const ids = ['nama', 'absen', 'kelas', 'sekolah'];
+      ids.forEach(id => {
+        const input = document.getElementById('login-input-' + id);
+        input.value = input.value.trim();
+      });
+      if (!form.reportValidity()) return false;
+      const user = {
+        role: document.getElementById('login-input-role').value,
+        name: document.getElementById('login-input-nama').value,
+        noAbsen: document.getElementById('login-input-absen').value.padStart(2, '0'),
+        kelas: document.getElementById('login-input-kelas').value,
+        asalSekolah: document.getElementById('login-input-sekolah').value,
+        loginTime: new Date().toISOString()
+      };
+      if (!hasCompleteIdentity(user)) {
+        error.textContent = 'Lengkapi semua identitas. Nomor absen harus berupa bilangan bulat positif.';
+        error.hidden = false;
+        return false;
       }
       try {
-        const nameInput = document.getElementById('login-input-nama');
-        const absenInput = document.getElementById('login-input-absen');
-        const kelasInput = document.getElementById('login-input-kelas');
-        const sekolahInput = document.getElementById('login-input-sekolah');
-
-        const nameVal = nameInput ? nameInput.value.trim() : '';
-        const absenVal = absenInput ? absenInput.value.trim() : '';
-        const kelasVal = kelasInput ? kelasInput.value.trim() : '';
-        const sekolahVal = sekolahInput ? sekolahInput.value.trim() : '';
-
-        if (isTeacherName(nameVal)) {
-          loginAsTeacher(nameVal || 'Fery Nur Indahsari, S.Pd');
-          return false;
-        }
-
-        const finalName = nameVal || 'Siswa Praktikan';
-        const finalAbsen = absenVal ? String(absenVal).padStart(2, '0') : '01';
-        const finalKelas = kelasVal || 'XI TFLM 1';
-        const finalSekolah = sekolahVal || 'SMKN 2 Yogyakarta';
-
-        const studentUser = {
-          role: 'student',
-          name: finalName,
-          noAbsen: finalAbsen,
-          kelas: finalKelas,
-          asalSekolah: finalSekolah,
-          loginTime: new Date().toISOString()
-        };
-
+        setSessionUser(user);
         closeLoginModal();
-        setSessionUser(studentUser);
-        try { playSuccessChime(); } catch (err) {}
-        try { showToast(`Selamat Belajar, ${studentUser.name}!`, `Presensi: Absen ${studentUser.noAbsen} | ${studentUser.kelas} (${studentUser.asalSekolah})`); } catch (err) {}
-      } catch (err) {
-        console.error('Login error:', err);
-        closeLoginModal();
+        switchTab('dashboard');
+        openRequestedDestination();
+        try { initWeldingCanvas(); } catch (error) { console.warn('Canvas:', error); }
+        const heading = document.getElementById('dashboard-welcome-heading');
+        if (heading) { heading.tabIndex = -1; heading.focus(); }
+      } catch (failure) {
+        AppState.currentUser = null;
+        openLoginModal();
+        error.textContent = 'Belum dapat membuka dashboard. Silakan coba masuk kembali.';
+        error.hidden = false;
+        console.error('Login error:', failure);
       }
       return false;
     }
 
-    function loginAsTeacher(customName) {
-      const teacherUser = {
-        role: 'teacher',
-        name: customName || 'Fery Nur Indahsari, S.Pd',
-        noAbsen: 'Guru',
-        kelas: 'Instruktur TFLM',
-        asalSekolah: 'Guru Pengampu / Welder Lead',
-        loginTime: new Date().toISOString()
-      };
-
-      closeLoginModal();
-      setSessionUser(teacherUser);
-      try { playSuccessChime(); } catch (err) {}
-      try { showToast('Selamat Datang, Bu Fery!', 'Akses penuh Guru Pengampu aktif tanpa batasan.'); } catch (err) {}
-    }
-
-    function loginAsGuest() {
-      const guestUser = {
-        role: 'student',
-        name: 'Siswa Tamu (Eksplorasi)',
-        noAbsen: '01',
-        kelas: 'XI TFLM 1',
-        asalSekolah: 'SMKN 2 Yogyakarta',
-        loginTime: new Date().toISOString()
-      };
-
-      closeLoginModal();
-      setSessionUser(guestUser);
-      try { playSuccessChime(); } catch (err) {}
-      try { showToast('Mode Eksplorasi Aktif!', 'Selamat belajar dan mencoba simulator pengelasan & fabrikasi.'); } catch (err) {}
-    }
-
-    function setSessionUser(userData) {
-      if (!userData) return;
-      AppState.currentUser = userData;
-      try {
-        localStorage.setItem('metalverse_user_session', JSON.stringify(userData));
-      } catch (err) {
-        console.warn('LocalStorage error:', err);
-      }
-      try {
-        updateUserInterface();
-      } catch (err) {
-        console.warn('updateUserInterface error:', err);
-      }
-      try {
-        renderStudentSyncHistory();
-      } catch (err) {
-        console.warn('renderStudentSyncHistory error:', err);
-      }
+    function setSessionUser(user) {
+      if (!hasCompleteIdentity(user)) throw new Error('Identitas belum lengkap');
+      AppState.currentUser = user;
+      updateUserInterface();
+      renderStudentSyncHistory();
     }
 
     function logoutUser() {
-      if (confirm('Apakah Anda ingin keluar / mengganti sesi pengguna?')) {
-        try { localStorage.removeItem('metalverse_user_session'); } catch (e) {}
-        AppState.currentUser = null;
-        const nameInput = document.getElementById('login-input-nama');
-        const absenInput = document.getElementById('login-input-absen');
-        if (nameInput) nameInput.value = '';
-        if (absenInput) absenInput.value = '';
-        const badge = document.getElementById('login-teacher-detected-badge');
-        if (badge) badge.classList.add('hidden');
-        const fields = document.getElementById('login-student-fields');
-        if (fields) fields.classList.remove('opacity-40');
-        const submitText = document.getElementById('btn-login-text');
-        if (submitText) submitText.innerText = 'Masuk ke MetalVerseFery';
-        openLoginModal();
-        showToast('Sesi Berakhir', 'Silakan masuk dengan identitas baru.');
-      }
-    }
-
-    function checkLoginState() {
-      try {
-        const saved = localStorage.getItem('metalverse_user_session');
-        if (saved) {
-          AppState.currentUser = JSON.parse(saved);
-          closeLoginModal();
-          try { updateUserInterface(); } catch (err) { console.warn('UI update error:', err); }
-          try { renderStudentSyncHistory(); } catch (err) { console.warn('History render error:', err); }
-          return;
-        }
-      } catch (e) {
-        console.warn('Could not parse user session:', e);
-      }
+      AppState.currentUser = null;
+      AppState.studentSubmissions = [];
+      try { localStorage.removeItem('metalverse_user_session'); } catch (error) {}
+      document.getElementById('form-login-metalverse').reset();
+      document.getElementById('login-error').hidden = true;
+      document.querySelectorAll('#metalverse-app [id$="-modal"]').forEach(modal => modal.classList.add('hidden'));
+      document.querySelectorAll('#metalverse-app iframe').forEach(frame => { frame.src = 'about:blank'; });
+      document.getElementById('toast-container').replaceChildren();
+      updateLoginRole();
       openLoginModal();
     }
 
+    function checkLoginState() {
+      // Sesi lama tidak boleh menghilangkan formulir ketika halaman dibuka ulang.
+      AppState.currentUser = null;
+      try { localStorage.removeItem('metalverse_user_session'); } catch (error) {}
+      updateLoginRole();
+      openLoginModal();
+    }
+
+    function openRequestedDestination() {
+      if (!hasCompleteIdentity(AppState.currentUser)) return;
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab && document.getElementById('tab-' + tab)) switchTab(tab);
+      if (params.get('modal') === 'buku') {
+        const requestedMode = params.get('mode');
+        const mode = ['read', 'quiz', 'jobsheet'].includes(requestedMode) ? requestedMode : 'read';
+        openInteractiveBookModal(mode);
+      }
+    }
+
     function updateUserInterface() {
-      const user = AppState.currentUser;
-      if (!user) return;
+      if (!hasCompleteIdentity(AppState.currentUser)) return;
+      const user = Object.fromEntries(Object.entries(AppState.currentUser).map(([key, value]) => [key, escapeUserText(value)]));
 
       // 1. Header User Profile Pill
       const headerProfileEl = document.getElementById('header-user-profile');
@@ -5047,7 +4896,7 @@
     const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxfZJ7pdx4BcJ9JjNkkX_KeQzz4ieFH65Xwz5DPMEYID41gYfgfzKoZr3U2Yg06_sM11Q/exec';
 
     function getEffectiveSheetsUrl() {
-      const custom = localStorage.getItem('metalverse_sheets_url');
+      const custom = readLocalSetting('metalverse_sheets_url');
       if (custom && custom.startsWith('http')) return custom;
       return DEFAULT_SHEETS_URL;
     }
@@ -5057,7 +4906,7 @@
       const modal = document.getElementById('sheets-modal');
       const input = document.getElementById('input-sheets-webhook-url');
       if (input) {
-        input.value = localStorage.getItem('metalverse_sheets_url') || DEFAULT_SHEETS_URL;
+        input.value = readLocalSetting('metalverse_sheets_url') || DEFAULT_SHEETS_URL;
       }
       updateSheetsStatusBadge();
       if (modal) modal.classList.remove('hidden');
@@ -5121,25 +4970,8 @@
     }
 
     async function sendStudentTaskToSpreadsheet(activityData) {
-      let user = AppState.currentUser;
-      if (!user) {
-        try {
-          const saved = localStorage.getItem('metalverse_user_session');
-          if (saved) {
-            user = JSON.parse(saved);
-            AppState.currentUser = user;
-          }
-        } catch (e) {}
-      }
-      if (!user) {
-        user = {
-          name: activityData.nama || 'Peserta Didik (Siswa)',
-          noAbsen: activityData.noAbsen || '01',
-          kelas: activityData.kelas || 'XI TFLM',
-          asalSekolah: activityData.asalSekolah || 'SMKN 2 Depok Sleman',
-          role: 'student'
-        };
-      }
+      const user = AppState.currentUser;
+      if (!hasCompleteIdentity(user)) { openLoginModal(); return; }
 
       const now = new Date();
       const timestamp = now.toLocaleDateString('id-ID', {
@@ -5300,6 +5132,7 @@
 
     // --- Tab Navigation Switcher ---
     function switchTab(tabId) {
+      if (!hasCompleteIdentity(AppState.currentUser)) { openLoginModal(); return; }
       AppState.activeTab = tabId;
       playClickSound();
 
@@ -5498,8 +5331,8 @@
           <i class="fa-solid fa-sparkles"></i>
         </div>
         <div>
-          <h5 class="font-bold text-slate-200">${title}</h5>
-          <p class="text-[11px] text-slate-400 mt-0.5">${desc}</p>
+          <h5 class="font-bold text-slate-200">${escapeUserText(title)}</h5>
+          <p class="text-[11px] text-slate-400 mt-0.5">${escapeUserText(desc)}</p>
         </div>
       `;
       container.appendChild(toast);
@@ -5518,6 +5351,7 @@
 
     // --- Modal Handlers ---
     function openInteractiveBookModal(mode = 'read', chap = 1) {
+      if (!hasCompleteIdentity(AppState.currentUser)) { openLoginModal(); return; }
       playClickSound();
       const modal = document.getElementById('buku-modal');
       const iframe = document.getElementById('interactive-book-iframe');
@@ -6737,22 +6571,17 @@
       }
     }
 
-    // Initialize Canvas, Authentication & Spreadsheet on Page Load
+    // Wajib mengisi identitas kembali setiap kali halaman dimuat.
     window.addEventListener('DOMContentLoaded', () => {
       checkLoginState();
-      initWeldingCanvas();
-      updateSheetsStatusBadge();
-      renderStudentSyncHistory();
-      const params = new URLSearchParams(window.location.search);
-      const tab = params.get('tab');
-      if (tab) switchTab(tab);
-      const modal = params.get('modal');
-      if (modal === 'buku') {
-        const mode = params.get('mode') || 'read';
-        openInteractiveBookModal(mode);
+    });
+    window.addEventListener('pageshow', event => {
+      if (event.persisted) {
+        logoutUser();
       }
     });
   </script>
+  </div>
 </body>
 </html>
 
