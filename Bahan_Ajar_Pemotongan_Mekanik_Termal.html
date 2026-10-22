@@ -653,6 +653,7 @@
     }
   }
 </style>
+  <script src="./assets/metalverse-sync.js?v=20261022-1"></script>
 </head>
 <body>
 
@@ -1656,7 +1657,7 @@ Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pol
   function loadStudentSession() {
     try {
       // Ambil profil login dari dashboard MetalVerse jika tersedia
-      const rawUser = localStorage.getItem('metalverse_user_session');
+      const rawUser = MetalVerseSync.readUser();
       if (rawUser) {
         const u = JSON.parse(rawUser);
         if (u.name) document.getElementById('stu_name').value = u.name;
@@ -1788,6 +1789,7 @@ Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pol
     badge.style.background = score >= 75 ? '#15803d' : (score >= 40 ? '#b45309' : '#b91c1c');
 
     if (showAlert) {
+      submitFullAssessment();
       showToastBanner(`Evaluasi Kuis Selesai!`, `Skor Pilihan Ganda Anda: ${score}/100 (${correctCount}/5 Soal Benar).`);
     }
 
@@ -1808,13 +1810,13 @@ Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pol
       ref_joyful: document.getElementById('ref_joyful')?.value || '',
     };
     try {
-      localStorage.setItem('metalverse_bahan_ajar_progress', JSON.stringify(data));
+      localStorage.setItem(MetalVerseSync.storageKey('metalverse_bahan_ajar_progress'), JSON.stringify(data));
     } catch (e) {}
   }
 
   function loadSavedQuizState() {
     try {
-      const raw = localStorage.getItem('metalverse_bahan_ajar_progress');
+      const raw = localStorage.getItem(MetalVerseSync.storageKey('metalverse_bahan_ajar_progress'));
       if (!raw) return;
       const data = JSON.parse(raw);
       if (Array.isArray(data.answers)) {
@@ -1839,147 +1841,24 @@ Amati gambar kerja bentangan berikut dengan teliti sebelum memulai pelukisan pol
   }
 
   // 5. PENGIRIMAN UTAMA KE GOOGLE SPREADSHEET
-  async function submitFullAssessment() {
-    const nama = document.getElementById('stu_name').value.trim();
-    const noAbsen = document.getElementById('stu_absen').value.trim();
-    const kelas = document.getElementById('stu_kelas').value.trim();
-    const sekolah = document.getElementById('stu_school').value.trim();
-
-    if (!nama) {
-      alert('Harap lengkapi Nama Lengkap Anda terlebih dahulu pada kotak identitas!');
-      document.getElementById('stu_name').focus();
-      return;
-    }
-    if (!noAbsen) {
-      alert('Harap isi Nomor Presensi (Absen) Anda!');
-      document.getElementById('stu_absen').focus();
-      return;
-    }
-
-    // Jalankan evaluasi PG otomatis jika belum
-    const { score: pgScore, correctCount } = evaluateQuizPG(false);
-
-    // Kumpulkan jawaban uraian & refleksi
-    const c1_1 = document.getElementById('essay_case1_q1').value.trim();
-    const c1_2 = document.getElementById('essay_case1_q2').value.trim();
-    const c2_1 = document.getElementById('essay_case2_q1').value.trim();
-    const c2_2 = document.getElementById('essay_case2_q2').value.trim();
-    const r_mind = document.getElementById('ref_mindful').value.trim();
-    const r_mean = document.getElementById('ref_meaningful').value.trim();
-    const r_bud = document.getElementById('ref_buddy').value.trim();
-    const r_joy = document.getElementById('ref_joyful').value.trim();
-
-    // Hitung kelengkapan uraian
-    const essayCount = [c1_1, c1_2, c2_1, c2_2].filter(t => t.length > 5).length;
-    const refCount = [r_mind, r_mean, r_bud, r_joy].filter(t => t.length > 5).length;
-
-    // Tombol animasi loading
-    const btn = document.getElementById('btn-submit-action');
-    const oldBtnText = btn.innerHTML;
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Mengirim ke Spreadsheet...</span>`;
-    btn.disabled = true;
-
-    const consoleLog = document.getElementById('sync-console-log');
-    consoleLog.style.display = 'block';
-    consoleLog.innerHTML = `<span style="color:#38bdf8;">[SINKRONISASI]</span> Menyiapkan payload data siswa (${nama}, Absen ${noAbsen})...`;
-
-    const now = new Date();
-    const timestamp = now.toLocaleDateString('id-ID', {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit', second: '2-digit'
-    });
-
-    const payload = {
-      timestamp: timestamp,
-      noAbsen: noAbsen,
-      nama: nama,
-      kelas: kelas || 'XI TPFL',
-      asalSekolah: sekolah || 'SMK Negeri 2 Depok Sleman',
-      role: 'student',
-      kategori: 'Kuis & Uraian: Pemotongan Mekanik & Termal',
-      rincianTugas: `Kuis PG: ${pgScore}/100 (${correctCount}/5 Benar). Uraian Kasus: ${essayCount}/4 terisi. Refleksi: ${refCount}/4 terisi.`,
-      skor: pgScore,
-      xp: Math.round(pgScore * 1.5) + (essayCount * 10) + (refCount * 5),
-      status: pgScore >= 75 ? 'Kompeten (Tuntas Modul)' : 'Perlu Penguatan',
-      catatan: `[Kasus 1.1]: ${c1_1.substring(0, 120)} | [Kasus 2.1]: ${c2_1.substring(0, 120)} | [Refleksi]: ${r_mind.substring(0, 100)}`
-    };
-
-    // Ambil URL Google Sheets
-    let sheetsUrl = document.getElementById('stu_sheet_url').value.trim();
-    if (!sheetsUrl) {
-      sheetsUrl = localStorage.getItem('metalverse_sheets_url') || DEFAULT_SHEETS_URL;
-    }
-
-    let isSentToCloud = false;
-
-    if (sheetsUrl && sheetsUrl.startsWith('http')) {
-      try {
-        consoleLog.innerHTML += `<br><span style="color:#e2e8f0;">[MENGHUBUNGI CLOUD]</span> Mengirimkan HTTP POST ke Google Apps Script Web App...</span>`;
-        await fetch(sheetsUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-          },
-          body: JSON.stringify(payload)
-        });
-        isSentToCloud = true;
-        consoleLog.innerHTML += `<br><span style="color:#4ade80;">[SUKSES]</span> Data berhasil diterima oleh server Google Apps Script!</span>`;
-      } catch (err) {
-        console.error('Spreadsheet sync error:', err);
-        consoleLog.innerHTML += `<br><span style="color:#f87171;">[PERINGATAN]</span> Gagal sinkron jaringan: ${err.message}. Data tetap disimpan di memori portofolio lokal.</span>`;
-      }
-    } else {
-      consoleLog.innerHTML += `<br><span style="color:#facc15;">[LOKAL]</span> URL Google Apps Script belum disetel. Data direkam ke riwayat sesi lokal browser.</span>`;
-    }
-
-    // Kirim pesan postMessage ke parent MetalVerse jika dibuka di dalam tab/iframe/opener
-    try {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-          type: 'METALVERSE_QUIZ_COMPLETED',
-          chapTitle: 'Bahan Ajar: Pemotongan Mekanik & Termal (Serok Sampah)',
-          total: 5,
-          correct: correctCount,
-          score: pgScore,
-          payload: payload
-        }, '*');
-      }
-      if (window.opener && !window.opener.closed) {
-        window.opener.postMessage({
-          type: 'METALVERSE_QUIZ_COMPLETED',
-          chapTitle: 'Bahan Ajar: Pemotongan Mekanik & Termal (Serok Sampah)',
-          total: 5,
-          correct: correctCount,
-          score: pgScore,
-          payload: payload
-        }, '*');
-      }
-    } catch(e) {}
-
-    // Simpan riwayat submission lokal
-    try {
-      localStorage.setItem('metalverse_bahan_ajar_last_submission', JSON.stringify(payload));
-    } catch(e) {}
-
-    // Reset tombol
-    btn.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>Tersimpan &amp; Terkirim!</span>`;
-    btn.style.background = '#15803d';
-    setTimeout(() => {
-      btn.innerHTML = oldBtnText;
-      btn.style.background = '';
-      btn.disabled = false;
-    }, 4000);
-
-    // Tampilkan banner notifikasi
-    if (isSentToCloud) {
-      showToastBanner('Sinkronisasi Sukses! 📊', `Absen ${noAbsen} (${nama}): Skor PG ${pgScore}/100 dan jawaban uraian berhasil masuk ke Google Spreadsheet.`);
-    } else {
-      showToastBanner('Tersimpan di Sesi Lokal', `Data tersimpan rapi. Hubungkan URL Google Apps Script untuk merekap ke Cloud.`);
-    }
+async function submitFullAssessment() {
+  var val=function(id){var el=document.getElementById(id);return el?el.value.trim():'';};
+  var user=MetalVerseSync.getUser();
+  if(!user){
+    try{MetalVerseSync.setIdentity({role:'student',name:val('stu_name'),noAbsen:val('stu_absen'),kelas:val('stu_kelas'),asalSekolah:val('stu_school'),loginTime:new Date().toISOString()});}
+    catch(error){alert(error.message);return;}
   }
+  var grade=evaluateQuizPG(false);
+  var ids=['essay_case1_q1','essay_case1_q2','essay_case2_q1','essay_case2_q2','ref_mindful','ref_meaningful','ref_buddy','ref_joyful'];
+  var details=ids.map(function(id){return id+': '+val(id);}).join('\n');
+  var answers=studentAnswers;
+  var result=await metalverseSubmit({kategori:'Kuis & Uraian: Pemotongan Mekanik & Termal',rincianTugas:'Kuis PG '+grade.score+'/100 ('+grade.correctCount+'/5 benar).\nJawaban PG: '+JSON.stringify(answers)+'\n'+details,skor:grade.score,xp:Math.round(grade.score*1.5),status:grade.score>=75?'Kompeten (Tuntas Modul)':'Perlu Penguatan'},'btn-submit-action',true);
+  var log=document.getElementById('sync-console-log');
+  if(log){log.style.display='block';log.textContent=result.status==='success'?'Google Sheets mengonfirmasi nilai dan jawaban sudah diterima.':'Kiriman belum diterima Google Sheets. Data menunggu pengiriman ulang.';}
+  showToastBanner(result.status==='success'?'Tersimpan di Google Sheets':'Menunggu pengiriman',result.status==='success'?'Nilai dan jawaban lengkap sudah diterima.':'Biarkan browser menyimpan data; pengiriman akan dicoba lagi saat internet tersedia.');
+  return result;
+}
 
-  // Notifikasi Toast
   function showToastBanner(title, desc) {
     const toast = document.getElementById('toast-banner');
     document.getElementById('toast-title').innerText = title;

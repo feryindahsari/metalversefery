@@ -1657,6 +1657,7 @@
             }
         }
 </style>
+  <script src="./assets/metalverse-sync.js?v=20261022-1"></script>
 </head>
 <body>
 
@@ -9300,22 +9301,12 @@
                 ['name', 'kelas', 'asalSekolah'].every(key => typeof user[key] === 'string' && user[key].trim()) &&
                 /^\d+$/.test(String(user.noAbsen)) && Number.isSafeInteger(Number(user.noAbsen)) && Number(user.noAbsen) > 0;
         }
-        function readLabUserSession() {
-            try {
-                labIdentityMemory = JSON.parse(sessionStorage.getItem('metalverse_identity_v1') || 'null');
-            } catch (error) { /* Gunakan memori bila storage diblokir. */ }
-            return validLabIdentity(labIdentityMemory) ? JSON.stringify(labIdentityMemory.user) : null;
-        }
-        function writeLabUserSession(rawUser) {
-            const user = JSON.parse(rawUser);
-            if (!user.loginTime) user.loginTime = new Date().toISOString();
-            const saved = { user: user, expiresAt: Date.now() + 12 * 60 * 60 * 1000 };
-            if (!validLabIdentity(saved)) return;
-            labIdentityMemory = saved;
-            try { sessionStorage.setItem('metalverse_identity_v1', JSON.stringify(saved)); }
-            catch (error) { console.warn('Identitas Labs tersimpan di memori:', error); }
-        }
+        function readLabUserSession() { return MetalVerseSync.readUser(); }
+
+        function writeLabUserSession(rawUser) { try { MetalVerseSync.saveUser(rawUser); } catch(error) { console.warn(error.message); } }
+
         function clearLabUserSession() {
+            MetalVerseSync.clearIdentity();
             labIdentityMemory = null;
             try { sessionStorage.removeItem('metalverse_identity_v1'); } catch (error) {}
             try { localStorage.removeItem('metalverse_user_session'); } catch (error) {}
@@ -10014,151 +10005,20 @@
 
         const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxfZJ7pdx4BcJ9JjNkkX_KeQzz4ieFH65Xwz5DPMEYID41gYfgfzKoZr3U2Yg06_sM11Q/exec';
 
-        async function syncLabScoreToSheets(isSilent = false) {
-            const btn = document.getElementById('btnSyncSimSheets');
-            const oldHtml = btn ? btn.innerHTML : '';
-            if (btn) {
-                btn.innerHTML = 'â³ Mengirim ke Spreadsheet...';
-                btn.disabled = true;
-            }
-
-            const inpName = document.getElementById('rptInputName');
-            const inpAbsen = document.getElementById('rptInputAbsen');
-            const inpKelas = document.getElementById('rptInputKelas');
-            const rptProcess = document.getElementById('rptProcess');
-            const rptScore = document.getElementById('rptFinalScore');
-            const rptBadge = document.getElementById('rptVerdictBadge');
-            const rptFb = document.getElementById('rptFeedbackText');
-
-            let nama = inpName ? inpName.value.trim() : 'Peserta Didik';
-            let noAbsen = inpAbsen ? inpAbsen.value.trim() : '01';
-            let kelas = inpKelas ? inpKelas.value.trim() : 'XI TPFL';
-
-            if (!nama || nama === 'Peserta Didik (Siswa)') {
-                if (isSilent) return;
-                const promptName = prompt('Masukkan Nama Lengkap Anda:', nama !== 'Peserta Didik (Siswa)' ? nama : '');
-                if (promptName) {
-                    nama = promptName.trim();
-                    if (inpName) inpName.value = nama;
-                }
-            }
-
-            if (!noAbsen || noAbsen === '-' || noAbsen === '00') {
-                if (isSilent) return;
-                const promptAbsen = prompt('Masukkan Nomor Presensi / Absen Anda (Contoh: 05):', '01');
-                if (promptAbsen) {
-                    noAbsen = promptAbsen.trim();
-                    if (inpAbsen) inpAbsen.value = noAbsen;
-                }
-            }
-
-            // Save updated identity to session
-            try {
-                const sessionUser = {
-                    name: nama,
-                    noAbsen: noAbsen,
-                    kelas: kelas,
-                    asalSekolah: 'SMKN 2 Depok Sleman',
-                    role: 'student'
-                };
-                writeLabUserSession(JSON.stringify(sessionUser));
-            } catch(e) {}
-
-            const processName = rptProcess ? rptProcess.innerText.trim() : 'Simulasi Praktikum';
-            let rawScore = rptScore ? parseInt(rptScore.innerText) : 95;
-            if (isNaN(rawScore)) rawScore = 90;
-            const verdict = rptBadge ? rptBadge.innerText.trim() : 'Kompeten';
-            const feedback = rptFb ? rptFb.innerText.trim() : 'Hasil praktikum simulasi laboratorium.';
-
-            const now = new Date();
-            const timestamp = now.toLocaleDateString('id-ID', {
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
-            });
-
-            // Map process name to recognized category
-            let kategori = 'Simulasi Praktikum Lab';
-            const pLower = processName.toLowerCase();
-            if (pLower.includes('smaw')) kategori = 'Simulasi Pengelasan SMAW';
-            else if (pLower.includes('oaw')) kategori = 'Simulasi Pengelasan OAW';
-            else if (pLower.includes('cutting') || pLower.includes('potong') || pLower.includes('oxy')) kategori = 'Simulasi Pemotongan Mekanik/Termal';
-            else if (pLower.includes('plasma')) kategori = 'Simulasi Pemotongan Plasma';
-            else if (pLower.includes('gtaw') || pLower.includes('tig')) kategori = 'Simulasi Pengelasan GTAW / TIG';
-            else if (pLower.includes('gmaw') || pLower.includes('mig') || pLower.includes('mag')) kategori = 'Simulasi Pengelasan GMAW / MIG-MAG';
-            else if (pLower.includes('spot') || pLower.includes('rsw')) kategori = 'Simulasi Las Titik (RSW)';
-            else if (pLower.includes('bend')) kategori = 'Simulasi Tekuk Bending Pelat';
-
-            const payload = {
-                timestamp: timestamp,
-                noAbsen: noAbsen,
-                nama: nama,
-                kelas: kelas,
-                asalSekolah: 'SMKN 2 Depok Sleman',
-                role: 'student',
-                kategori: kategori,
-                rincianTugas: `${processName} (Skor: ${rawScore}/100 - ${verdict})`,
-                skor: rawScore,
-                xp: Math.round(rawScore * 1.5),
-                status: rawScore >= 75 ? 'Kompeten' : 'Perlu Remedial',
-                catatan: feedback
-            };
-
-            const customUrl = localStorage.getItem('metalverse_sheets_url');
-            const sheetsUrl = (customUrl && customUrl.startsWith('http')) ? customUrl : DEFAULT_SHEETS_URL;
-
-            let sentSuccess = false;
-            try {
-                await fetch(sheetsUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
-                });
-                sentSuccess = true;
-            } catch (err) {
-                console.warn('Direct fetch error:', err);
-            }
-
-            // PostMessage to parent or opener
-            try {
-                const msg = {
-                    type: 'METALVERSE_SIM_COMPLETED',
-                    category: kategori,
-                    task: payload.rincianTugas,
-                    score: rawScore,
-                    xp: payload.xp,
-                    status: payload.status,
-                    notes: feedback,
-                    nama: nama,
-                    noAbsen: noAbsen,
-                    kelas: kelas,
-                    asalSekolah: 'SMKN 2 Depok Sleman'
-                };
-                if (window.parent && window.parent !== window) {
-                    window.parent.postMessage(msg, '*');
-                }
-                if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage(msg, '*');
-                }
-            } catch(e) {}
-
-            if (btn) {
-                btn.innerHTML = 'âœ… Nilai Terkirim ke Spreadsheet!';
-                btn.style.background = '#059669';
-                setTimeout(() => {
-                    btn.innerHTML = oldHtml;
-                    btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                    btn.disabled = false;
-                }, 4000);
-            }
-
-            if (!isSilent) {
-                alert(`âœ… BERHASIL TERSINKRON!\n\nNama: ${nama}\nNo. Absen: ${noAbsen}\nPraktik: ${processName}\nNilai: ${rawScore}/100 (${verdict})\n\nNilai Anda telah otomatis tercatat ke Google Spreadsheet Guru!`);
-            } else {
-                const tip = document.getElementById('syncStatusTip');
-                if (tip) tip.innerText = `âœ… Tersinkron otomatis ke Spreadsheet (${rawScore}/100)`;
-            }
-        }
+async function syncLabScoreToSheets(isSilent) {
+  var user=MetalVerseSync.getUser();
+  if(!user){if(!isSilent)alert('Masuk melalui halaman utama MetalVerseFery sebelum mengirim hasil Labs.');return;}
+  var process=document.getElementById('rptProcess');
+  var scoreEl=document.getElementById('rptFinalScore');
+  var feedback=document.getElementById('rptFeedbackText');
+  var score=scoreEl?parseInt(scoreEl.innerText,10):NaN;
+  if(!Number.isFinite(score)){if(!isSilent)alert('Selesaikan evaluasi praktik terlebih dahulu.');return;}
+  var name=process?process.innerText.trim():'Simulasi Praktikum';
+  var result=await metalverseSubmit({kategori:'Simulasi Labs: '+name,rincianTugas:name+' — skor '+score+'/100.\n'+(feedback?feedback.innerText:''),skor:score,xp:Math.round(score*1.5),status:score>=75?'Kompeten':'Perlu Remedial'},'btnSyncSimSheets',!!isSilent);
+  var tip=document.getElementById('syncStatusTip');
+  if(tip)tip.innerText=result.status==='success'?'Hasil praktik sudah diterima Google Sheets.':'Hasil praktik belum diterima; kiriman menunggu untuk dicoba lagi.';
+  return result;
+}
 
         function updateHistoryTables() {
             const tableBodyModal = document.getElementById('tbodyHistoryModal');

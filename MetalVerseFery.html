@@ -456,6 +456,7 @@
     #login-modal .login-field:focus { outline: 2px solid #EA734F; outline-offset: 2px; }
     #login-modal button:focus-visible { outline: 3px solid #233730; outline-offset: 3px; }
   </style>
+  <script src="./assets/metalverse-sync.js?v=20261022-1"></script>
 </head>
 <body class="bg-[#F7F2EB] text-[#2B221E] font-sans min-h-screen antialiased flex flex-col login-required selection:bg-[#EA734F] selection:text-white">
 
@@ -4805,6 +4806,7 @@
     function setSessionUser(user) {
       if (!hasCompleteIdentity(user)) throw new Error('Identitas belum lengkap');
       AppState.currentUser = user;
+      if (window.MetalVerseSync) MetalVerseSync.setIdentity(user);
       try {
         sessionStorage.setItem('metalverse_identity_v1', JSON.stringify({
           user: user, expiresAt: Date.now() + 12 * 60 * 60 * 1000
@@ -4830,6 +4832,7 @@
     }
 
     function logoutUser() {
+      if (window.MetalVerseSync) MetalVerseSync.clearIdentity();
       AppState.currentUser = null;
       AppState.studentSubmissions = [];
       try { sessionStorage.removeItem('metalverse_identity_v1'); } catch (error) {}
@@ -5034,16 +5037,16 @@
 
       if (url && url.startsWith('http')) {
         if (headerDot) headerDot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
-        if (headerLabel) headerLabel.innerText = 'Sheets Terhubung';
+        if (headerLabel) headerLabel.innerText = 'Sheets Dikonfigurasi';
         if (statusTitle) {
-          statusTitle.innerText = 'Status: Terhubung ke Webhook Google Sheets Guru';
+          statusTitle.innerText = 'Status: Alamat penerima Google Sheets sudah diatur';
           statusTitle.className = 'font-bold text-emerald-900';
         }
         if (statusDesc) {
           statusDesc.innerText = 'Hasil simulasi lab, kuis & tugas siswa otomatis masuk ke Spreadsheet sesuai No. Absen.';
           statusDesc.className = 'text-[11px] text-emerald-700';
         }
-        if (btnSyncLabel) btnSyncLabel.innerText = 'Sheets Terhubung (Siap Kirim)';
+        if (btnSyncLabel) btnSyncLabel.innerText = 'Sheets Dikonfigurasi';
       } else {
         if (headerDot) headerDot.className = 'w-2 h-2 rounded-full bg-amber-400';
         if (headerLabel) headerLabel.innerText = 'Atur Sheets';
@@ -5060,54 +5063,8 @@
     }
 
     async function sendStudentTaskToSpreadsheet(activityData) {
-      const user = AppState.currentUser;
-      if (!hasCompleteIdentity(user)) { openLoginModal(); return; }
-
-      const now = new Date();
-      const timestamp = now.toLocaleDateString('id-ID', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
-      });
-
-      const payload = {
-        timestamp: timestamp,
-        noAbsen: (activityData.noAbsen && activityData.noAbsen !== '-') ? String(activityData.noAbsen).trim() : (user.noAbsen || '01'),
-        nama: activityData.nama || user.name || 'Siswa',
-        kelas: activityData.kelas || user.kelas || 'XI TFLM',
-        asalSekolah: activityData.asalSekolah || user.asalSekolah || 'SMKN 2 Depok Sleman',
-        role: user.role || 'student',
-        kategori: activityData.category || 'Simulasi',
-        rincianTugas: activityData.task || 'Tugas Praktikum',
-        skor: activityData.score !== undefined ? activityData.score : '-',
-        xp: activityData.xp || 0,
-        status: activityData.status || 'Selesai',
-        catatan: activityData.notes || ''
-      };
-
-      // Add to local history list
-      AppState.studentSubmissions.unshift(payload);
-      renderStudentSyncHistory();
-
-      // Send to Google Sheets if configured
-      const sheetsUrl = getEffectiveSheetsUrl();
-      if (sheetsUrl && sheetsUrl.startsWith('http')) {
-        try {
-          await fetch(sheetsUrl, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-              'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify(payload)
-          });
-          showToast('Tersinkron ke Spreadsheet! 📊', `Absen #${payload.noAbsen} (${payload.nama}): ${payload.rincianTugas} (Skor: ${payload.skor})`);
-        } catch (err) {
-          console.error('Spreadsheet sync error:', err);
-          showToast('Tersimpan Lokal', 'Data tersimpan di sesi lokal. Cek koneksi internet untuk sync Google Sheets.', 'warn');
-        }
-      } else {
-        showToast('Tersimpan Lokal', `${payload.rincianTugas} (Skor: ${payload.skor}).`);
-      }
+      if (!hasCompleteIdentity(AppState.currentUser)) { openLoginModal(); return; }
+      return metalverseSubmit({kategori:activityData.category||'Simulasi',rincianTugas:activityData.task||'Tugas Praktikum',skor:activityData.score!==undefined?activityData.score:'-',xp:activityData.xp||0,status:activityData.status||'Selesai',catatan:activityData.notes||''},null,true);
     }
 
     async function testSheetsConnection() {
@@ -5158,7 +5115,7 @@
           <td class="p-3">
             <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
               <i class="fa-solid fa-circle-check text-emerald-600"></i>
-              <span>${sub.status}</span>
+              <span>${sub.status} — ${sub.deliveryState === 'sent' ? 'Diterima Google Sheets' : 'Menunggu pengiriman'}</span>
             </span>
           </td>
         </tr>
@@ -5184,9 +5141,21 @@
         });
     }
 
-    // Listen for messages from child iframes (Quiz completion or Simulation results)
+    // Hanya catat riwayat setelah layanan bersama melaporkan status pengiriman.
+    window.addEventListener('metalverse:submission', event => {
+      const detail=event.detail, user=AppState.currentUser;
+      if (!detail || !user || detail.payload.nama!==user.name || detail.payload.kelas!==user.kelas || String(detail.payload.noAbsen)!==String(user.noAbsen)) return;
+      const entry={};
+      Object.keys(detail.payload).forEach(key=>{entry[key]=typeof detail.payload[key]==='string'?escapeUserText(detail.payload[key]):detail.payload[key];});
+      entry.deliveryState=detail.state; entry.submissionId=detail.id;
+      AppState.studentSubmissions=AppState.studentSubmissions.filter(item=>item.submissionId!==detail.id);
+      AppState.studentSubmissions.unshift(entry);
+      renderStudentSyncHistory();
+    });
+    // Listen for messages from older same-origin modules.
+
     window.addEventListener('message', (e) => {
-      if (!e.data) return;
+      if (!e.data || e.origin !== window.location.origin || e.data.sheetsHandled) return;
       if (e.data.type === 'METALVERSE_QUIZ_COMPLETED') {
         const q = e.data;
         sendStudentTaskToSpreadsheet({

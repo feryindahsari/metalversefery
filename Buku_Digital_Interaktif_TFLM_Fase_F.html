@@ -339,6 +339,7 @@
       animation: pulse-highlight 1.5s infinite;
     }
   </style>
+  <script src="./assets/metalverse-sync.js?v=20261022-1"></script>
 </head>
 <body class="theme-clay h-full flex flex-col font-sans transition-colors duration-200">
 
@@ -650,22 +651,22 @@
     // LocalStorage State Management
     function loadSavedState() {
       try {
-        const savedAns = localStorage.getItem('metalverse_buku_answers');
+        const savedAns = localStorage.getItem(MetalVerseSync.storageKey('metalverse_buku_answers'));
         if (savedAns) studentAnswers = JSON.parse(savedAns);
 
-        const savedSub = localStorage.getItem('metalverse_buku_submitted');
+        const savedSub = localStorage.getItem(MetalVerseSync.storageKey('metalverse_buku_submitted'));
         if (savedSub) quizSubmitted = JSON.parse(savedSub);
 
-        const savedEssay = localStorage.getItem('metalverse_buku_essay_answers');
+        const savedEssay = localStorage.getItem(MetalVerseSync.storageKey('metalverse_buku_essay_answers'));
         if (savedEssay) studentEssayAnswers = JSON.parse(savedEssay);
 
-        const savedEssayScores = localStorage.getItem('metalverse_buku_essay_scores');
+        const savedEssayScores = localStorage.getItem(MetalVerseSync.storageKey('metalverse_buku_essay_scores'));
         if (savedEssayScores) essayScores = JSON.parse(savedEssayScores);
 
-        const savedWp = localStorage.getItem('metalverse_buku_workplans');
+        const savedWp = localStorage.getItem(MetalVerseSync.storageKey('metalverse_buku_workplans'));
         if (savedWp) studentWorkPlans = JSON.parse(savedWp);
 
-        const savedChap = localStorage.getItem('metalverse_buku_last_chapter');
+        const savedChap = localStorage.getItem(MetalVerseSync.storageKey('metalverse_buku_last_chapter'));
         if (savedChap !== null) currentChapterIndex = parseInt(savedChap, 10) || 0;
 
         let savedTheme = localStorage.getItem('metalverse_buku_theme');
@@ -682,12 +683,12 @@
 
     function saveState() {
       try {
-        localStorage.setItem('metalverse_buku_answers', JSON.stringify(studentAnswers));
-        localStorage.setItem('metalverse_buku_submitted', JSON.stringify(quizSubmitted));
-        localStorage.setItem('metalverse_buku_essay_answers', JSON.stringify(studentEssayAnswers));
-        localStorage.setItem('metalverse_buku_essay_scores', JSON.stringify(essayScores));
-        localStorage.setItem('metalverse_buku_workplans', JSON.stringify(studentWorkPlans));
-        localStorage.setItem('metalverse_buku_last_chapter', currentChapterIndex.toString());
+        localStorage.setItem(MetalVerseSync.storageKey('metalverse_buku_answers'), JSON.stringify(studentAnswers));
+        localStorage.setItem(MetalVerseSync.storageKey('metalverse_buku_submitted'), JSON.stringify(quizSubmitted));
+        localStorage.setItem(MetalVerseSync.storageKey('metalverse_buku_essay_answers'), JSON.stringify(studentEssayAnswers));
+        localStorage.setItem(MetalVerseSync.storageKey('metalverse_buku_essay_scores'), JSON.stringify(essayScores));
+        localStorage.setItem(MetalVerseSync.storageKey('metalverse_buku_workplans'), JSON.stringify(studentWorkPlans));
+        localStorage.setItem(MetalVerseSync.storageKey('metalverse_buku_last_chapter'), currentChapterIndex.toString());
       } catch (e) {
         console.warn('Could not save to localStorage:', e);
       }
@@ -1534,13 +1535,7 @@
     // ================================================================
     // WORK PREPARATION (WP) SYSTEM & STANDAR BENGKEL TFLM
     // ================================================================
-    function getStudentSession() {
-      try {
-        const raw = localStorage.getItem('metalverse_user_session');
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-      return { name: 'Peserta Didik SMK TFLM', noAbsen: '01', kelas: 'XI Fabrikasi Logam', sekolah: 'SMK N 2 Depok Sleman' };
-    }
+    function getStudentSession() { return MetalVerseSync.getUser() || {name:'Belum login',noAbsen:'-',kelas:'-',asalSekolah:'-',sekolah:'-'}; }
 
     const DEFAULT_WP_TEMPLATES = {
       'jobsheet-1': {
@@ -1799,6 +1794,7 @@
         }, 2000);
       }
       updateWpStatusBadge(jsId);
+      syncWorkPlanToSheets(jsId);
       playSound('click');
     }
 
@@ -1809,6 +1805,7 @@
     function updateWpStep(jsId, stepIdx, field, val) {
       const wp = getWpData(jsId);
       if (wp.steps && wp.steps[stepIdx]) {
+        syncWorkPlanToSheets(jsId);
         wp.steps[stepIdx][field] = val;
         studentWorkPlans[jsId] = wp;
         saveState();
@@ -1829,6 +1826,7 @@
       });
       studentWorkPlans[jsId] = wp;
       saveState();
+      syncWorkPlanToSheets(jsId);
       renderWpRows(jsId);
       playSound('click');
     }
@@ -1841,6 +1839,7 @@
         wp.steps.forEach((st, i) => { st.no = i + 1; });
         studentWorkPlans[jsId] = wp;
         saveState();
+        syncWorkPlanToSheets(jsId);
         renderWpRows(jsId);
         playSound('click');
       }
@@ -1853,6 +1852,7 @@
         wp.accApproved = accEl.checked;
         studentWorkPlans[jsId] = wp;
         saveState();
+        syncWorkPlanToSheets(jsId);
         updateWpStatusBadge(jsId);
         if (wp.accApproved) {
           playSound('correct');
@@ -1909,6 +1909,7 @@
           };
         }
         saveState();
+        syncWorkPlanToSheets(jsId);
         initWorkPreparation(jsId);
         playSound('wrong');
       }
@@ -2458,21 +2459,7 @@
         playSound('wrong');
       }
 
-      // Sync score to parent MetalVerseFery (for Google Spreadsheet & Active Student Record)
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({
-            type: 'METALVERSE_QUIZ_COMPLETED',
-            chapId: chapId,
-            chapTitle: chap.title || `Bab ${chapId}`,
-            score: scoreData.score,
-            correct: scoreData.correct,
-            total: scoreData.total
-          }, '*');
-        }
-      } catch (err) {
-        console.warn('Could not postMessage to parent:', err);
-      }
+      syncGradeToLab(chapId, true);
 
       renderActiveSection();
       renderToc();
@@ -2611,73 +2598,22 @@
 
     const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxfZJ7pdx4BcJ9JjNkkX_KeQzz4ieFH65Xwz5DPMEYID41gYfgfzKoZr3U2Yg06_sM11Q/exec';
 
-    async function syncGradeToLab(chapId) {
-      playSound('correct');
-      const scoreData = getChapterScore(chapId);
-      const chap = window.BUKU_DATA.chapters.find(c => c.id === chapId) || { title: `Bab ${chapId}` };
-      
-      let user = { name: 'Siswa TPFL', noAbsen: '01', kelas: 'XI TPFL', asalSekolah: 'SMKN 2 Depok Sleman' };
-      try {
-        const rawUser = localStorage.getItem('metalverse_user_session');
-        if (rawUser) user = JSON.parse(rawUser);
-      } catch(e) {}
+async function syncGradeToLab(chapId, silent) {
+  var chap=window.BUKU_DATA.chapters.find(function(c){return c.id===chapId;});
+  if(!chap)return;
+  var grade=getChapterScore(chapId);
+  return metalverseSubmit({topik:MetalVerseSync.topicFor(chap.title,chap.id),kategori:'Kuis Buku: '+chap.title,rincianTugas:'Evaluasi '+chapId+': '+grade.correct+'/'+grade.total+' benar.\nJawaban pilihan ganda: '+JSON.stringify(studentAnswers[chapId]||{}),skor:grade.score,xp:Math.round(grade.score*1.5),status:grade.score>=75?'Kompeten (Tuntas Kuis)':'Perlu Remedial',catatan:'Buku digital '+chapId},null,!!silent);
+}
 
-      const now = new Date();
-      const timestamp = now.toLocaleDateString('id-ID', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
-      });
+function syncWorkPlanToSheets(jsId) {
+  window.metalverseWpTimers=window.metalverseWpTimers||{};
+  clearTimeout(window.metalverseWpTimers[jsId]);
+  window.metalverseWpTimers[jsId]=setTimeout(function(){
+    var wp=getWpData(jsId);
+    metalverseSubmit({topik:MetalVerseSync.topicFor(jsId,jsId),kategori:'Job Sheet / Work Preparation',rincianTugas:jsId+'\n'+JSON.stringify(wp),skor:'-',xp:0,status:'Work Preparation Disimpan'},null,true);
+  },1500);
+}
 
-      const payload = {
-        timestamp: timestamp,
-        noAbsen: user.noAbsen || '01',
-        nama: user.name || 'Siswa',
-        kelas: user.kelas || 'XI TPFL',
-        asalSekolah: user.asalSekolah || 'SMKN 2 Depok Sleman',
-        role: 'student',
-        kategori: `Kuis Buku: ${chap.title || chapId.toUpperCase()}`,
-        rincianTugas: `Evaluasi ${chapId.toUpperCase()}: ${scoreData.correct}/${scoreData.total} Benar`,
-        skor: scoreData.score,
-        xp: Math.round(scoreData.score * 1.5),
-        status: scoreData.score >= 75 ? 'Kompeten (Tuntas Kuis)' : 'Perlu Remedial',
-        catatan: `Sinkronisasi langsung dari modul buku digital ${chapId}`
-      };
-
-      const customSheetsUrl = localStorage.getItem('metalverse_sheets_url');
-      const sheetsUrl = (customSheetsUrl && customSheetsUrl.startsWith('http')) ? customSheetsUrl : DEFAULT_SHEETS_URL;
-
-      try {
-        await fetch(sheetsUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-      } catch (err) {
-        console.warn('Sheets sync error:', err);
-      }
-
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({
-            type: 'METALVERSE_QUIZ_COMPLETED',
-            chapId: chapId,
-            chapTitle: chap.title || `Bab ${chapId}`,
-            score: scoreData.score,
-            correct: scoreData.correct,
-            total: scoreData.total,
-            payload: payload
-          }, '*');
-        }
-      } catch (err) {}
-
-      alert(`✅ Berhasil! Nilai ${chapId.toUpperCase()} (${scoreData.score}/100) telah disinkronkan ke Google Spreadsheet Guru!`);
-    }
-
-
-    /* ================= ESSAY ASSESSMENT & GOOGLE SPREADSHEET ENGINE ================= */
-    
-    // Rubrik & Panduan Aspek Penilaian per Bab & Nomor Soal
     function getRubricHintForQuestion(chapId, code, qNum) {
       const hints = {
         'bab-1': {
@@ -2950,6 +2886,7 @@
     function handleEssayInput(chapId, qIndex, val) {
       if (!studentEssayAnswers[chapId]) studentEssayAnswers[chapId] = {};
       studentEssayAnswers[chapId][qIndex] = val;
+      delete essayScores[chapId];
 
       const wCount = countWords(val);
       const counterEl = document.getElementById(`word-count-${chapId}-${qIndex}`);
@@ -3068,221 +3005,30 @@
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
 
+      syncEssayToSheets(chapId, true);
       return essayScores[chapId];
     }
 
     // Sinkronisasi Nilai Essay ke Google Spreadsheet
-    async function syncEssayToSheets(chapId) {
-      playSound('click');
-      const chap = window.BUKU_DATA.chapters.find(c => c.id === chapId);
-      if (!chap) return;
-      const essays = getChapterEssayQuestions(chap);
-      const answers = (studentEssayAnswers[chapId]) || {};
+async function syncEssayToSheets(chapId, silent) {
+  var chap=window.BUKU_DATA.chapters.find(function(c){return c.id===chapId;});
+  if(!chap)return;
+  var grade=essayScores[chapId]||gradeChapterEssay(chapId);
+  var answers=studentEssayAnswers[chapId]||{};
+  var details=getChapterEssayQuestions(chap).map(function(q){return '['+q.code+'] '+(answers[q.index]||'(belum dijawab)');}).join('\n');
+  return metalverseSubmit({topik:MetalVerseSync.topicFor(chap.title,chap.id),kategori:'Asesmen Essay: '+chap.numberStr,rincianTugas:chap.title+' — nilai esai '+grade.score+'/100.\n'+details,skor:grade.score,xp:Math.round(grade.score*1.5)+grade.filledCount*10,status:grade.score>=75?'Kompeten (Tuntas Essay)':'Perlu Pendalaman'},'btn-sync-essay-'+chapId,!!silent);
+}
 
-      let gradeData = essayScores[chapId];
-      if (!gradeData) {
-        gradeData = gradeChapterEssay(chapId);
-      }
+async function syncCombinedGradeToSheets(chapId, silent) {
+  var chap=window.BUKU_DATA.chapters.find(function(c){return c.id===chapId;});
+  if(!chap)return;
+  var essays=getChapterEssayQuestions(chap);
+  var essay=essayScores[chapId]||(essays.length?gradeChapterEssay(chapId):{score:0});
+  var pg=getChapterScore(chapId);
+  var score=essays.length?Math.round((pg.score+essay.score)/2):pg.score;
+  return metalverseSubmit({topik:MetalVerseSync.topicFor(chap.title,chap.id),kategori:'Asesmen Lengkap: '+chap.numberStr,rincianTugas:chap.title+' — nilai akhir '+score+'/100; PG '+pg.score+'; esai '+essay.score+'.\nJawaban PG: '+JSON.stringify(studentAnswers[chapId]||{})+'\nJawaban esai: '+JSON.stringify(studentEssayAnswers[chapId]||{}),skor:score,xp:Math.round(score*2)+20,status:score>=75?'Kompeten (Tuntas Modul)':'Perlu Remedial'},'btn-sync-combined-'+chapId,!!silent);
+}
 
-      let user = { name: 'Peserta Didik', noAbsen: '01', kelas: 'XI TPFL', asalSekolah: 'SMKN 2 Depok Sleman' };
-      try {
-        const raw = localStorage.getItem('metalverse_user_session');
-        if (raw) user = JSON.parse(raw);
-      } catch(e) {}
-
-      if (!user.name || user.name === 'Peserta Didik (Siswa)' || user.name === 'Peserta Didik' || !user.noAbsen || user.noAbsen === '-') {
-        const pName = prompt('Masukkan Nama Lengkap Anda untuk Rekap Spreadsheet Guru:', user.name || '');
-        if (pName && pName.trim()) user.name = pName.trim();
-        const pAbsen = prompt('Masukkan Nomor Presensi / Absen Anda (Contoh: 05):', user.noAbsen !== '-' ? user.noAbsen : '01');
-        if (pAbsen && pAbsen.trim()) user.noAbsen = pAbsen.trim();
-        try {
-          localStorage.setItem('metalverse_user_session', JSON.stringify(user));
-          updateStudentSessionPill();
-        } catch(e) {}
-      }
-
-      const btn = document.getElementById(`btn-sync-essay-${chapId}`);
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Mengirim ke Spreadsheet...';
-      }
-
-      const now = new Date();
-      const timestamp = now.toLocaleDateString('id-ID', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
-      });
-
-      let excerpt = '';
-      essays.forEach(q => {
-        const a = (answers[q.index] || '').trim();
-        if (a) excerpt += `[${q.code}] ${a.slice(0, 45)}... `;
-      });
-
-      const payload = {
-        timestamp: timestamp,
-        noAbsen: user.noAbsen || '01',
-        nama: user.name || 'Siswa',
-        kelas: user.kelas || 'XI TPFL',
-        asalSekolah: user.asalSekolah || 'SMKN 2 Depok Sleman',
-        role: 'student',
-        kategori: `Asesmen Essay: ${chap.numberStr}`,
-        rincianTugas: `${chap.numberStr}: Nilai Essay ${gradeData.score}/100 (${gradeData.filledCount}/${essays.length} Soal Dijawab). ${excerpt}`,
-        skor: gradeData.score,
-        xp: Math.round(gradeData.score * 1.5) + (gradeData.filledCount * 10),
-        status: gradeData.score >= 75 ? 'Kompeten (Tuntas Essay)' : 'Perlu Pendalaman',
-        catatan: `Modul Buku Digital TFLM: ${chap.title} (${user.name})`
-      };
-
-      const sheetsUrl = DEFAULT_SHEETS_URL;
-      try {
-        await fetch(sheetsUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-      } catch(err) {
-        console.warn('Sheets sync error:', err);
-      }
-
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({
-            type: 'METALVERSE_ESSAY_COMPLETED',
-            chapId: chapId,
-            chapTitle: chap.title,
-            score: gradeData.score,
-            filled: gradeData.filledCount,
-            total: essays.length,
-            payload: payload
-          }, '*');
-        }
-      } catch(e) {}
-
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>Terkirim ke Spreadsheet!';
-      }
-
-      playSound('fanfare');
-      alert(`✅ NILAI ESSAY BERHASIL DIKIRIM KE GOOGLE SPREADSHEET!\n\n` +
-            `• Nama Siswa: ${user.name}\n` +
-            `• No. Presensi: ${user.noAbsen}\n` +
-            `• Kelas: ${user.kelas}\n` +
-            `• Modul: ${chap.numberStr} - ${chap.title}\n` +
-            `• Nilai Uraian / Essay: ${gradeData.score} / 100\n` +
-            `• Soal Terisi: ${gradeData.filledCount} dari ${essays.length} soal\n` +
-            `• Status: ${payload.status}\n\n` +
-            `Data jawaban essay dan skor telah tercatat di Google Spreadsheet guru.`);
-    }
-
-    // Sinkronisasi Nilai Lengkap (Pilihan Ganda + Essay)
-    async function syncCombinedGradeToSheets(chapId) {
-      playSound('click');
-      const chap = window.BUKU_DATA.chapters.find(c => c.id === chapId);
-      if (!chap) return;
-      const quizzes = chap.quizzes || [];
-      const essays = getChapterEssayQuestions(chap);
-
-      const pgScoreData = getChapterScore(chapId);
-      let essayData = essayScores[chapId];
-      if (!essayData && essays.length > 0) {
-        essayData = gradeChapterEssay(chapId);
-      }
-      const essayScore = essayData ? essayData.score : 0;
-      const combinedScore = Math.round((pgScoreData.score + essayScore) / 2);
-
-      let user = { name: 'Peserta Didik', noAbsen: '01', kelas: 'XI TPFL', asalSekolah: 'SMKN 2 Depok Sleman' };
-      try {
-        const raw = localStorage.getItem('metalverse_user_session');
-        if (raw) user = JSON.parse(raw);
-      } catch(e) {}
-
-      if (!user.name || user.name === 'Peserta Didik (Siswa)' || user.name === 'Peserta Didik' || !user.noAbsen || user.noAbsen === '-') {
-        const pName = prompt('Masukkan Nama Lengkap Anda untuk Rekap Spreadsheet Guru:', user.name || '');
-        if (pName && pName.trim()) user.name = pName.trim();
-        const pAbsen = prompt('Masukkan Nomor Presensi / Absen Anda (Contoh: 05):', user.noAbsen !== '-' ? user.noAbsen : '01');
-        if (pAbsen && pAbsen.trim()) user.noAbsen = pAbsen.trim();
-        try {
-          localStorage.setItem('metalverse_user_session', JSON.stringify(user));
-          updateStudentSessionPill();
-        } catch(e) {}
-      }
-
-      const btn = document.getElementById(`btn-sync-combined-${chapId}`);
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Mengirim Rekap Nilai...';
-      }
-
-      const now = new Date();
-      const timestamp = now.toLocaleDateString('id-ID', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
-      });
-
-      const payload = {
-        timestamp: timestamp,
-        noAbsen: user.noAbsen || '01',
-        nama: user.name || 'Siswa',
-        kelas: user.kelas || 'XI TPFL',
-        asalSekolah: user.asalSekolah || 'SMKN 2 Depok Sleman',
-        role: 'student',
-        kategori: `Asesmen Lengkap: ${chap.numberStr}`,
-        rincianTugas: `${chap.numberStr}: Nilai Akhir ${combinedScore}/100 [Kuis PG: ${pgScoreData.score}/100, Essay: ${essayScore}/100]`,
-        skor: combinedScore,
-        xp: Math.round(combinedScore * 2) + 20,
-        status: combinedScore >= 75 ? 'Kompeten (Tuntas Modul)' : 'Perlu Remedial',
-        catatan: `Rekap nilai komprehensif Bab ${chap.numberStr} (${user.name})`
-      };
-
-      const sheetsUrl = DEFAULT_SHEETS_URL;
-      try {
-        await fetch(sheetsUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-      } catch(err) {
-        console.warn('Sheets sync error:', err);
-      }
-
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({
-            type: 'METALVERSE_CHAPTER_FULL_COMPLETED',
-            chapId: chapId,
-            chapTitle: chap.title,
-            pgScore: pgScoreData.score,
-            essayScore: essayScore,
-            finalScore: combinedScore,
-            payload: payload
-          }, '*');
-        }
-      } catch(e) {}
-
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i>Semua Nilai Terkirim!';
-      }
-
-      playSound('fanfare');
-      alert(`✅ REKAPITULASI NILAI LENGKAP TELAH TERSINKRONISASI KE GOOGLE SPREADSHEET!\n\n` +
-            `• Nama Siswa: ${user.name}\n` +
-            `• No. Presensi: ${user.noAbsen}\n` +
-            `• Kelas: ${user.kelas}\n` +
-            `• Modul: ${chap.numberStr} (${chap.title})\n\n` +
-            `📊 Rincian Nilai:\n` +
-            `  - Skor Pilihan Ganda: ${pgScoreData.score} / 100\n` +
-            `  - Skor Uraian / Essay: ${essayScore} / 100\n` +
-            `  - Nilai Akhir Modul: ${combinedScore} / 100\n` +
-            `  - Status Kelulusan: ${payload.status}\n\n` +
-            `Seluruh data berhasil tercatat di Google Spreadsheet guru.`);
-    }
-
-    // Reset Jawaban Essay per Bab
     function resetChapterEssay(chapId) {
       if (confirm(`Apakah Anda yakin ingin mengosongkan seluruh jawaban essay untuk ${chapId.toUpperCase()}?\n\nJawaban akan dibersihkan agar siswa baru dapat mengerjakan dari awal.`)) {
         if (studentEssayAnswers[chapId]) delete studentEssayAnswers[chapId];
@@ -3317,7 +3063,7 @@
     function updateStudentSessionPill() {
       let user = null;
       try {
-        const raw = localStorage.getItem('metalverse_user_session');
+        const raw = MetalVerseSync.readUser();
         if (raw) user = JSON.parse(raw);
       } catch(e) {}
 
@@ -3335,7 +3081,7 @@
     function promptSwitchStudentBook() {
       let user = { name: '', noAbsen: '01', kelas: 'XI TPFL', asalSekolah: 'SMKN 2 Depok Sleman' };
       try {
-        const raw = localStorage.getItem('metalverse_user_session');
+        const raw = MetalVerseSync.readUser();
         if (raw) user = JSON.parse(raw);
       } catch(e) {}
 
@@ -3351,8 +3097,10 @@
       user.role = 'student';
 
       try {
-        localStorage.setItem('metalverse_user_session', JSON.stringify(user));
-      } catch(e) {}
+        MetalVerseSync.saveUser(JSON.stringify(user));
+        location.reload();
+        return;
+      } catch(e) { alert(e.message); return; }
 
       updateStudentSessionPill();
       alert(`✅ Identitas Siswa Berhasil Diperbarui:\n\nNama: ${user.name}\nNo. Presensi: ${user.noAbsen}\nKelas: ${user.kelas}`);
@@ -3548,7 +3296,7 @@
 
       let user = { name: 'Peserta Didik', noAbsen: '01', kelas: 'XI TPFL' };
       try {
-        const raw = localStorage.getItem('metalverse_user_session');
+        const raw = MetalVerseSync.readUser();
         if (raw) user = JSON.parse(raw);
       } catch(e) {}
 
