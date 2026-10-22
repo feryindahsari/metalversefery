@@ -9290,10 +9290,40 @@
         }
 
                 /* ================= STUDENT SESSION & LOGOUT MANAGEMENT ================= */
+        // Sesi identitas yang sama dengan portal, terbatas pada tab ini.
+        let labIdentityMemory = null;
+        function validLabIdentity(saved) {
+            if (!saved || !(saved.expiresAt > Date.now())) return false;
+            const user = saved.user;
+            return !!user && ['student', 'teacher'].includes(user.role) &&
+                ['name', 'kelas', 'asalSekolah'].every(key => typeof user[key] === 'string' && user[key].trim()) &&
+                /^\d+$/.test(String(user.noAbsen)) && Number.isSafeInteger(Number(user.noAbsen)) && Number(user.noAbsen) > 0;
+        }
+        function readLabUserSession() {
+            try {
+                labIdentityMemory = JSON.parse(sessionStorage.getItem('metalverse_identity_v1') || 'null');
+            } catch (error) { /* Gunakan memori bila storage diblokir. */ }
+            return validLabIdentity(labIdentityMemory) ? JSON.stringify(labIdentityMemory.user) : null;
+        }
+        function writeLabUserSession(rawUser) {
+            const user = JSON.parse(rawUser);
+            if (!user.loginTime) user.loginTime = new Date().toISOString();
+            const saved = { user: user, expiresAt: Date.now() + 12 * 60 * 60 * 1000 };
+            if (!validLabIdentity(saved)) return;
+            labIdentityMemory = saved;
+            try { sessionStorage.setItem('metalverse_identity_v1', JSON.stringify(saved)); }
+            catch (error) { console.warn('Identitas Labs tersimpan di memori:', error); }
+        }
+        function clearLabUserSession() {
+            labIdentityMemory = null;
+            try { sessionStorage.removeItem('metalverse_identity_v1'); } catch (error) {}
+            try { localStorage.removeItem('metalverse_user_session'); } catch (error) {}
+        }
+
         function updateLabStudentPill() {
             let user = null;
             try {
-                const rawUser = localStorage.getItem('metalverse_user_session');
+                const rawUser = readLabUserSession();
                 if (rawUser) {
                     user = JSON.parse(rawUser);
                 }
@@ -9320,7 +9350,7 @@
         function openStudentIdentityModal() {
             let user = null;
             try {
-                const rawUser = localStorage.getItem('metalverse_user_session');
+                const rawUser = readLabUserSession();
                 if (rawUser) user = JSON.parse(rawUser);
             } catch(e) {}
 
@@ -9375,7 +9405,7 @@
             };
 
             try {
-                localStorage.setItem('metalverse_user_session', JSON.stringify(sessionUser));
+                writeLabUserSession(JSON.stringify(sessionUser));
             } catch(e) {
                 console.error(e);
             }
@@ -9397,7 +9427,7 @@
         function logoutStudentFromLab() {
             let currentName = 'Peserta Didik';
             try {
-                const rawUser = localStorage.getItem('metalverse_user_session');
+                const rawUser = readLabUserSession();
                 if (rawUser) {
                     const u = JSON.parse(rawUser);
                     if (u.name) currentName = u.name;
@@ -9410,7 +9440,7 @@
             if (!confirmLogout) return;
 
             try {
-                localStorage.removeItem('metalverse_user_session');
+                clearLabUserSession();
             } catch(e) {}
 
             updateLabStudentPill();
@@ -9432,7 +9462,7 @@
 
         function logoutStudentAndRedirect() {
             try {
-                localStorage.removeItem('metalverse_user_session');
+                clearLabUserSession();
             } catch(e) {}
             window.location.href = "MetalVerseFery.html";
         }
@@ -9441,7 +9471,7 @@
         function openPrintReportModal() {
             // Auto load student session if available
             try {
-                const rawUser = localStorage.getItem('metalverse_user_session');
+                const rawUser = readLabUserSession();
                 if (rawUser) {
                     const u = JSON.parse(rawUser);
                     const inpName = document.getElementById('rptInputName');
@@ -10030,7 +10060,7 @@
                     asalSekolah: 'SMKN 2 Depok Sleman',
                     role: 'student'
                 };
-                localStorage.setItem('metalverse_user_session', JSON.stringify(sessionUser));
+                writeLabUserSession(JSON.stringify(sessionUser));
             } catch(e) {}
 
             const processName = rptProcess ? rptProcess.innerText.trim() : 'Simulasi Praktikum';
