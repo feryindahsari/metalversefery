@@ -9295,7 +9295,8 @@
         function validLabIdentity(saved) {
             if (!saved || !(saved.expiresAt > Date.now())) return false;
             const user = saved.user;
-            return !!user && ['student', 'teacher'].includes(user.role) &&
+            if (user && user.role === 'teacher') return typeof user.name === 'string' && !!user.name.trim() && user.teacherAccess === 'shared-password-v1';
+            return !!user && user.role === 'student' &&
                 ['name', 'kelas', 'asalSekolah'].every(key => typeof user[key] === 'string' && user[key].trim()) &&
                 /^\d+$/.test(String(user.noAbsen)) && Number.isSafeInteger(Number(user.noAbsen)) && Number(user.noAbsen) > 0;
         }

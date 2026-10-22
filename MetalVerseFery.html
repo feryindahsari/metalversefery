@@ -451,6 +451,7 @@
     #metalverse-app[hidden] { display: none !important; }
     body.login-required { overflow: hidden; }
     #login-modal { position: fixed; inset: 0; z-index: 10000; overflow-y: auto; }
+    #login-modal [hidden] { display: none !important; }
     #login-modal .login-field { width: 100%; padding: .7rem .8rem; border: 1px solid #D5C7B7; border-radius: .75rem; background: #fff; color: #2B221E; font-size: 16px; }
     #login-modal .login-field:focus { outline: 2px solid #EA734F; outline-offset: 2px; }
     #login-modal button:focus-visible { outline: 3px solid #233730; outline-offset: 3px; }
@@ -466,7 +467,7 @@
         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#DCEBE4] text-[#233730]">Fase F TFLM</span>
       </div>
       <h1 id="login-heading" class="mt-4 text-2xl font-heading font-extrabold text-[#2B221E]">Selamat datang di MetalVerseFery</h1>
-      <p id="login-description" class="mt-2 text-sm text-[#5D4E46]">Siswa dan guru wajib melengkapi identitas sebelum masuk ke dashboard. Semua kolom wajib diisi.</p>
+      <p id="login-description" class="mt-2 text-sm text-[#5D4E46]">Siswa mengisi identitas lengkap. Guru cukup mengisi nama dan password.</p>
       <form id="form-login-metalverse" onsubmit="handleFormLogin(event); return false;" class="mt-5 space-y-4" aria-describedby="login-description">
         <div>
           <label for="login-input-role" class="block text-xs font-bold text-[#2B221E] mb-1">Masuk sebagai <span class="text-red-500">*</span></label>
@@ -478,6 +479,7 @@
           <label for="login-input-nama" class="block text-xs font-bold text-[#2B221E] mb-1">Nama lengkap <span class="text-red-500">*</span></label>
           <input id="login-input-nama" name="nama" type="text" required maxlength="100" autocomplete="name" placeholder="Tuliskan nama lengkap Anda" class="login-field" />
         </div>
+        <div id="login-student-fields" class="space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="login-input-absen" class="block text-xs font-bold text-[#2B221E] mb-1">Nomor absen <span class="text-red-500">*</span></label>
@@ -492,6 +494,11 @@
         <div>
           <label for="login-input-sekolah" class="block text-xs font-bold text-[#2B221E] mb-1">Asal sekolah <span class="text-red-500">*</span></label>
           <input id="login-input-sekolah" name="asalSekolah" type="text" required maxlength="150" autocomplete="organization" placeholder="Tuliskan nama sekolah Anda" class="login-field" />
+        </div>
+        </div>
+        <div id="login-teacher-fields" hidden>
+          <label for="login-input-password" class="block text-xs font-bold text-[#2B221E] mb-1">Password guru <span class="text-red-500">*</span></label>
+          <input id="login-input-password" name="password" type="password" disabled maxlength="128" autocomplete="current-password" placeholder="Masukkan password guru" class="login-field" />
         </div>
         <p id="login-error" role="alert" class="text-sm text-red-700" hidden></p>
         <button type="submit" id="btn-login-submit" class="w-full py-3 rounded-2xl bg-[#EA734F] hover:bg-[#D95D39] text-white font-extrabold text-sm shadow-lg transition">
@@ -4671,8 +4678,8 @@
     };
 
     // ==============================================================
-    // IDENTITAS WAJIB UNTUK SISWA DAN GURU
-    // Gerbang identitas browser; tidak memverifikasi akun atau kewenangan guru.
+    // IDENTITAS SISWA & PASSWORD BERSAMA GURU
+    // Pengunci antarmuka situs statis; bukan autentikasi server.
     // ==============================================================
     function readLocalSetting(key) {
       try { return localStorage.getItem(key); } catch (error) { return null; }
@@ -4685,16 +4692,32 @@
     }
 
     function hasCompleteIdentity(user) {
-      return !!user && ['student', 'teacher'].includes(user.role) &&
-        ['name', 'kelas', 'asalSekolah'].every(key => typeof user[key] === 'string' && user[key].trim().length > 0) &&
+      if (!user || typeof user.name !== 'string' || !user.name.trim()) return false;
+      if (user.role === 'teacher') return user.teacherAccess === 'shared-password-v1';
+      return user.role === 'student' &&
+        ['kelas', 'asalSekolah'].every(key => typeof user[key] === 'string' && user[key].trim().length > 0) &&
         /^\d+$/.test(String(user.noAbsen)) && Number.isSafeInteger(Number(user.noAbsen)) && Number(user.noAbsen) > 0;
     }
 
     function updateLoginRole() {
       const teacher = document.getElementById('login-input-role').value === 'teacher';
       document.getElementById('btn-login-text').textContent = teacher ? 'Masuk ke Dashboard Guru' : 'Masuk ke Dashboard Siswa';
-      document.getElementById('login-role-help').textContent = teacher
-        ? 'Guru mengisi nomor presensi dan kelas yang diampu.' : 'Isi nomor absen dan kelas Anda.';
+      document.getElementById('login-student-fields').hidden = teacher;
+      document.getElementById('login-teacher-fields').hidden = !teacher;
+      ['absen', 'kelas', 'sekolah'].forEach(id => {
+        const input = document.getElementById('login-input-' + id);
+        input.disabled = teacher;
+        input.required = !teacher;
+      });
+      const password = document.getElementById('login-input-password');
+      password.disabled = !teacher;
+      password.required = teacher;
+      password.value = '';
+      password.removeAttribute('aria-invalid');
+      document.getElementById('login-error').hidden = true;
+      document.getElementById('login-description').textContent = teacher
+        ? 'Masuk sebagai guru dengan nama lengkap dan password guru.'
+        : 'Siswa wajib mengisi nama lengkap, nomor absen, kelas, dan asal sekolah.';
     }
 
     function closeLoginModal() {
@@ -4732,9 +4755,27 @@
         input.value = input.value.trim();
       });
       if (!form.reportValidity()) return false;
+      const teacher = document.getElementById('login-input-role').value === 'teacher';
+      const password = document.getElementById('login-input-password');
+      if (teacher && password.value !== '12345678') {
+        error.textContent = 'Password guru tidak sesuai. Silakan coba kembali.';
+        error.hidden = false;
+        password.setAttribute('aria-invalid', 'true');
+        password.focus();
+        return false;
+      }
+      password.removeAttribute('aria-invalid');
       const absen = document.getElementById('login-input-absen').value;
-      const user = {
-        role: document.getElementById('login-input-role').value,
+      const user = teacher ? {
+        role: 'teacher',
+        name: document.getElementById('login-input-nama').value,
+        noAbsen: 'Guru',
+        kelas: 'Guru Pengampu',
+        asalSekolah: 'Guru MetalVerseFery',
+        teacherAccess: 'shared-password-v1',
+        loginTime: new Date().toISOString()
+      } : {
+        role: 'student',
         name: document.getElementById('login-input-nama').value,
         noAbsen: absen.length < 2 ? '0' + absen : absen,
         kelas: document.getElementById('login-input-kelas').value,
@@ -4742,12 +4783,13 @@
         loginTime: new Date().toISOString()
       };
       if (!hasCompleteIdentity(user)) {
-        error.textContent = 'Lengkapi semua identitas. Nomor absen harus berupa bilangan bulat positif.';
+        error.textContent = teacher ? 'Nama lengkap guru wajib diisi.' : 'Lengkapi semua identitas. Nomor absen harus berupa bilangan bulat positif.';
         error.hidden = false;
         return false;
       }
       try {
         setSessionUser(user);
+        password.value = '';
         closeLoginModal();
         finishLogin();
       } catch (failure) {
@@ -4921,7 +4963,7 @@
       const dashWelcomeP = document.getElementById('dashboard-welcome-sub');
       if (dashWelcomeH1 && dashWelcomeP) {
         if (user.role === 'teacher') {
-          dashWelcomeH1.innerHTML = `Selamat Datang, Ibu ${user.name}!`;
+          dashWelcomeH1.innerHTML = `Selamat Datang, ${user.name}!`;
           dashWelcomeP.innerHTML = `Akses Penuh Guru Pengampu & Pengelola Pembelajaran. Seluruh modul, RPP Deep Learning, simulator, dan rekapitulasi nilai Google Spreadsheet siap dipantau.`;
         } else {
           dashWelcomeH1.innerHTML = `Selamat Datang, ${user.name}!`;
